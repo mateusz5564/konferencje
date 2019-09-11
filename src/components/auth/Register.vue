@@ -5,11 +5,11 @@
         <h2>Rejestracja</h2>
       </v-card-title>
       <v-card-text>
-        <v-form>
+        <v-form @submit.prevent="signup">
           <v-text-field type="email" label="Email" v-model="email"></v-text-field>
           <v-text-field type="password" label="Hasło" v-model="password"></v-text-field>
 
-          <v-btn class="ma-3" color="blue" large dark>Zarejestruj się</v-btn>
+          <v-btn class="ma-3" type="submit" color="blue" large dark>Zarejestruj się</v-btn>
           <br />
           <br />
         </v-form>
@@ -22,12 +22,28 @@
 
 
 <script>
+import db from '@/firebase/init'
+import firebase from 'firebase'
+
 export default {
   data() {
     return {
       email: null,
       password: null
     };
+  },
+  methods: {
+    signup(){
+      if(this.email && this.password){
+        firebase.auth().createUserWithEmailAndPassword(this.email, this.password)
+        .then(response => {
+          db.collection('users').doc(response.user.uid).set({username: this.email})
+        })
+        .catch(err => {
+          console.log(err)
+        })
+      }
+    }
   }
 };
 </script>
