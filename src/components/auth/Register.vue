@@ -13,6 +13,7 @@
           <br />
           <br />
         </v-form>
+        <v-btn @click="signupGoogle" color="red" outlined class="ma-3">Zarejestruj z Google</v-btn>
         <hr />
         <v-btn color="blue" outlined class="ma-3" :to="{name: 'logowanie'}">Logowanie</v-btn>
       </v-card-text>
@@ -24,6 +25,7 @@
 <script>
 import db from '@/firebase/init'
 import firebase from 'firebase'
+import router from '@/router'
 
 export default {
   data() {
@@ -37,12 +39,43 @@ export default {
       if(this.email && this.password){
         firebase.auth().createUserWithEmailAndPassword(this.email, this.password)
         .then(response => {
+          
           db.collection('users').doc(response.user.uid).set({username: this.email})
+          const usersRef = db.collection('users')
+          const query = usersRef.where("username", "==", this.email)
+          console.log(query)
         })
         .catch(err => {
           console.log(err)
         })
       }
+    },
+    signupGoogle(){
+
+    
+      let provider = new firebase.auth.GoogleAuthProvider();
+
+      firebase.auth().signInWithPopup(provider).then(result => {
+      // This gives you a Google Access Token. You can use it to access the Google API.
+      let token = result.credential.accessToken;
+      // The signed-in user info.
+      let user = result.user;
+
+      const usersRef = db.child('users')
+      const query = usersRef.orderByChild('username').equalTo(user.displayName)
+      console.log(query)
+
+      db.collection('users').doc(user.uid).set({username: user.displayName}).then(router.push({ name: 'home'}))
+      }).catch(error => {
+      // Handle Errors here.
+      let errorCode = error.code;
+      let errorMessage = error.message;
+      // The email of the user's account used.
+      let email = error.email;
+      // The firebase.auth.AuthCredential type that was used.
+      let credential = error.credential;
+
+    });
     }
   }
 };
