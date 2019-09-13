@@ -8,6 +8,8 @@
         <v-form @submit.prevent="signup">
           <v-text-field type="email" label="Email" v-model="email"></v-text-field>
           <v-text-field type="password" label="Hasło" v-model="password"></v-text-field>
+          <v-text-field @keyup="isUsernameTaken" type="text" label="Nazwa użytkownika" v-model="username"></v-text-field>
+          <p id="unFeedback" style="font-size: 40px; color: red;">{{ usernameFeedback }}</p>
 
           <v-btn class="ma-3" type="submit" color="blue" large dark>Zarejestruj się</v-btn>
           <br />
@@ -31,19 +33,40 @@ export default {
   data() {
     return {
       email: null,
-      password: null
+      password: null,
+      username: null,
+      usernameFeedback: null
     };
   },
   methods: {
+    isUsernameTaken(){
+      if(this.username){
+        db.collection('users').where("username", "==", this.username)
+        .get()
+        .then(
+          snapshot => {
+            snapshot.forEach(doc => {
+              name = doc.data().username
+            })
+          }
+        )
+        if(this.username === name) {
+          this.usernameFeedback = "Nazwa użytkownika zajęta!"
+          document.getElementById("unFeedback").style.color = "red";
+          return true
+        } else {
+          this.usernameFeedback = "Nazwa użytkownika wolna"
+          document.getElementById("unFeedback").style.color = "green";
+          return false
+        }
+      }
+    },
     signup(){
-      if(this.email && this.password){
+      if(this.email && this.password && !this.isUsernameTaken()){
+        console.log(this.isUsernameTaken)
         firebase.auth().createUserWithEmailAndPassword(this.email, this.password)
         .then(response => {
-          
           db.collection('users').doc(response.user.uid).set({username: this.email})
-          const usersRef = db.collection('users')
-          const query = usersRef.where("username", "==", this.email)
-          console.log(query)
         })
         .catch(err => {
           console.log(err)
