@@ -31,7 +31,6 @@
 <script>
 import db from '@/firebase/init'
 import firebase from 'firebase'
-import router from '@/router'
 
 export default {
   data() {
@@ -67,6 +66,9 @@ export default {
         firebase.auth().createUserWithEmailAndPassword(this.email, this.password)
         .then(response => {
           db.collection('users').doc(this.username).set({user_id: response.user.uid})
+          .then(() => {
+            this.$router.push({name: "home"})
+          })
         })
         .catch(err => {
           console.log(err)

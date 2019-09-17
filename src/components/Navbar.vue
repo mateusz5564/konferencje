@@ -13,7 +13,7 @@
         <v-icon class="pr-3" large left>mdi-account-circle</v-icon>Logowanie
       </v-btn>
 
-      <v-menu left bottom>
+      <v-menu offset-y min-width="300px">
         <template v-slot:activator="{ on }">
           <v-btn icon v-on="on">
             <v-avatar>
@@ -23,8 +23,20 @@
         </template>
 
         <v-list>
-          <v-list-item v-for="n in 5" :key="n" @click="() => {}">
-            <v-list-item-title>Option {{ n }}</v-list-item-title>
+          <v-list-item>
+            <v-list-item-title>User</v-list-item-title>
+          </v-list-item>
+
+          <v-divider></v-divider>
+
+          <v-list-item @click="logout" link>
+            <v-list-item-icon>
+              <v-icon>mdi-account-circle</v-icon>
+            </v-list-item-icon>
+
+            <v-list-item-content>
+              <v-list-item-title>Wyloguj</v-list-item-title>
+            </v-list-item-content>
           </v-list-item>
         </v-list>
       </v-menu>
@@ -56,6 +68,8 @@
 </template>
 
 <script>
+import firebase from 'firebase'
+
 export default {
   data() {
     return {
@@ -67,6 +81,14 @@ export default {
       right: null,
       drawer: true
     };
+  },
+  methods: {
+    logout(){
+      firebase.auth().signOut()
+      .then(() => {
+        this.$router.push({name: 'logowanie'})
+      })
+    }
   }
 };
 </script>
