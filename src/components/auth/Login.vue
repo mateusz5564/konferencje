@@ -5,13 +5,14 @@
         <h2>Logowanie</h2>
       </v-card-title>
       <v-card-text>
-        <v-form @submit.prevent>
-          <v-text-field label="Email"></v-text-field>
-          <v-text-field label="Hasło"></v-text-field>
+        <v-form @submit.prevent="login">
+          <v-text-field label="Email" type="email" v-model="email"></v-text-field>
+          <v-text-field label="Hasło" type="password" v-model="password"></v-text-field>
+          <p v-if="feedback" class="red--text">{{ feedback }}</p>
           <router-link :to="{name: 'home'}">Przypomnij hasło</router-link>
           <br />
           <br />
-          <v-btn class="ma-3" color="blue" large dark>Zaloguj się</v-btn>
+          <v-btn class="ma-3" color="blue" type="submit" large dark>Zaloguj się</v-btn>
           <br />
           <br />
           <hr />
@@ -23,7 +24,34 @@
 </template>
 
 <script>
-export default {};
+import firebase from 'firebase'
+
+export default {
+  data(){
+    return {
+      email: null,
+      password: null,
+      feedback: null
+    }
+  },
+  methods: {
+    login(){
+      if(this.email && this.password){
+        firebase.auth().signInWithEmailAndPassword(this.email, this.password)
+        .then(user => {
+          console.log(user)
+          this.$router.push({name: 'home'})
+        })
+        .catch(err => {
+          this.feedback = err.message
+        })
+        this.feedback = null
+      } else {
+        this.feedback = 'Wypełnij wszystkie pola'
+      }
+    }
+  }
+};
 </script>
 
 <style>

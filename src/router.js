@@ -3,12 +3,12 @@ import Router from 'vue-router'
 import Home from '@/views/Home'
 import Login from '@/components/auth/Login'
 import Register from '@/components/auth/Register'
+import firebase from 'firebase'
 
 Vue.use(Router)
 
-export default new Router({
-  mode: 'history',
-  base: process.env.BASE_URL,
+const router = new Router({
+
   routes: [
     {
       path: '/',
@@ -18,20 +18,33 @@ export default new Router({
     {
       path: '/logowanie',
       name: 'logowanie',
-      component: Login
+      component: Login,
+      meta: {
+        lockIfUserLogedIn: true
+      }
     },
     {
       path: '/rejestracja',
       name: 'rejestracja',
-      component: Register
-    },
-    {
-      path: '/about',
-      name: 'about',
-      // route level code-splitting
-      // this generates a separate chunk (about.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
-      component: () => import(/* webpackChunkName: "about" */ './views/About.vue')
+      component: Register,
+      meta: {
+        lockIfUserLogedIn: true
+      }
     }
   ]
 })
+
+router.beforeEach((to, from, next) => {
+    if(to.matched.some(rec => rec.meta.lockIfUserLogedIn)){
+      let user = firebase.auth().currentUser
+      if(user){
+        next(false)
+      } else {
+        next()
+      }
+    } else {
+      next()
+    }
+})
+
+export default router

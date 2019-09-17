@@ -9,11 +9,11 @@
 
       <div class="flex-grow-1"></div>
 
-      <v-btn class="ma-4" outlined x-large color="white" :to="{ name: 'logowanie'}">
+      <v-btn v-if="!user" class="ma-4" outlined x-large color="white" :to="{ name: 'logowanie'}">
         <v-icon class="pr-3" large left>mdi-account-circle</v-icon>Logowanie
       </v-btn>
 
-      <v-menu offset-y min-width="300px">
+      <v-menu v-if="user" offset-y min-width="300px">
         <template v-slot:activator="{ on }">
           <v-btn icon v-on="on">
             <v-avatar>
@@ -24,7 +24,10 @@
 
         <v-list>
           <v-list-item>
-            <v-list-item-title>User</v-list-item-title>
+            <v-avatar>
+              <img src="@/assets/logo.png" alt />
+            </v-avatar>
+            <v-list-item-title>{{ user.email }}</v-list-item-title>
           </v-list-item>
 
           <v-divider></v-divider>
@@ -42,15 +45,9 @@
       </v-menu>
     </v-app-bar>
 
+    <!-- NAVIGATION DRAWER -->
     <v-navigation-drawer app v-model="drawer" clipped color="blue accent-3" dark>
-      <v-list-item>
-        <v-list-item-content>
-          <v-list-item-title class="title">Application</v-list-item-title>
-          <v-list-item-subtitle>subtext</v-list-item-subtitle>
-        </v-list-item-content>
-      </v-list-item>
-
-      <v-divider></v-divider>
+      
 
       <v-list dense nav>
         <v-list-item v-for="item in items" :key="item.title" link>
@@ -74,13 +71,12 @@ export default {
   data() {
     return {
       items: [
-        { title: "Dashboard", icon: "mdi-view-dashboard" },
-        { title: "Photos", icon: "mdi-image" },
-        { title: "About", icon: "mdi-help-box" }
+        { title: "Wydarzenia", icon: "mdi-calendar" }
       ],
       right: null,
-      drawer: true
-    };
+      drawer: true,
+      user: null
+    }
   },
   methods: {
     logout(){
@@ -89,6 +85,15 @@ export default {
         this.$router.push({name: 'logowanie'})
       })
     }
+  },
+  created(){
+    firebase.auth().onAuthStateChanged((user) => {
+      if(user){
+        this.user = user
+      } else {
+        this.user = null
+      }
+    })
   }
 };
 </script>
