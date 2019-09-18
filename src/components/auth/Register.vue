@@ -20,9 +20,7 @@
         <v-btn color="blue" outlined class="ma-3" :to="{name: 'logowanie'}">Logowanie</v-btn>
       </v-card-text>
     </v-card>
-  <p></p>
-  asdassd
-  asdassd
+
   </div>
 </template>
 
