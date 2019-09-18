@@ -9,9 +9,9 @@
           <v-text-field label="Email" type="email" v-model="email"></v-text-field>
           <v-text-field label="Hasło" type="password" v-model="password"></v-text-field>
           <p v-if="feedback" class="red--text">{{ feedback }}</p>
-          <router-link :to="{name: 'home'}">Przypomnij hasło</router-link>
+          <!-- <router-link :to="{name: 'home'}">Przypomnij hasło</router-link>
           <br />
-          <br />
+          <br /> -->
           <v-btn class="ma-3" color="blue" type="submit" large dark>Zaloguj się</v-btn>
           <br />
           <br />

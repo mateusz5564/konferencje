@@ -19,10 +19,6 @@
         <hr />
         <v-btn color="blue" outlined class="ma-3" :to="{name: 'logowanie'}">Logowanie</v-btn>
       </v-card-text>
-      sssssssssssssss
-      sssssssssssssss
-      sssssssssssssss
-      sssssssssssssss
     </v-card>
   </div>
 </template>
