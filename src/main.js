@@ -11,7 +11,6 @@ let app = null
 
 // wait for firebae auth
 firebase.auth().onAuthStateChanged(() => {
-console.log(firebase.auth().currentUser)
 // reinitialize Vue instance only at the beggining or on refresh the app
   if(!app){
     app = new Vue({
