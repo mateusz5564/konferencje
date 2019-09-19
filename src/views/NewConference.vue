@@ -163,7 +163,7 @@
 
 <script>
 import firebase from 'firebase'
-
+import db from '@/firebase/init'
 
 export default {
   data() {
@@ -220,8 +220,23 @@ export default {
       // firebase.storage().ref('conferences/' + filename).put(this.image)
     },
     addConference() {
-      console.log(this.preparedStartDate)
-      console.log(this.preparedEndDate)
+      const latitude = Number(this.location.split(',')[0])
+      const longitude = Number(this.location.split(',')[1])
+      const geopoint = new firebase.firestore.GeoPoint(latitude, longitude)
+      db.collection('conferences').add(
+        {
+          title: this.title,
+          description: this.description,
+          location: geopoint,
+          start_date: firebase.firestore.Timestamp.fromDate(this.preparedStartDate),
+          end_date: firebase.firestore.Timestamp.fromDate(this.preparedEndDate)
+        })
+        .then(response => {
+          console.log(response)
+        })
+        .catch(err => {
+          console.log(err)
+        })
     }
   }
 };

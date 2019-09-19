@@ -17,11 +17,11 @@
         
           <v-img :src="conference.logo" height="294"></v-img>
 
-          <v-card-text class="headline mb-5">
+          <!-- <v-card-text class="headline mb-5">
             <div class="text--primary">
               {{conference.description}}
             </div>
-          </v-card-text>
+          </v-card-text> -->
 
           <v-card-actions>
             <div class="flex-grow-1"></div>
