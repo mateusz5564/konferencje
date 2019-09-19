@@ -215,14 +215,15 @@ export default {
   },
   methods: {
     uploadImage(){
-      console.log(this.image.name)
-      const filename = this.image.name 
-      // firebase.storage().ref('conferences/' + filename).put(this.image)
+      // const filename = this.image.name 
+      // const extention = filename.substring(filename.lastIndexOf('.'), filename.length)
+      // firebase.storage().ref('conferences/' + response.id + extention).put(this.image)
     },
     addConference() {
       const latitude = Number(this.location.split(',')[0])
       const longitude = Number(this.location.split(',')[1])
       const geopoint = new firebase.firestore.GeoPoint(latitude, longitude)
+      let key
       db.collection('conferences').add(
         {
           title: this.title,
@@ -233,6 +234,19 @@ export default {
         })
         .then(response => {
           console.log(response)
+          const filename = this.image.name 
+          const extention = filename.substring(filename.lastIndexOf('.'), filename.length)
+          key = response.id
+          firebase.storage().ref('conferences/' + response.id + extention).put(this.image)
+          .then(response => {
+            response.ref.getDownloadURL()
+            .then(downloadURL => {
+              db.collection('conferences').doc(key).update({logo: downloadURL})
+              .then(response => {
+                console.log('pomyslnie dodano konferencje')
+              })
+            })
+          })
         })
         .catch(err => {
           console.log(err)
