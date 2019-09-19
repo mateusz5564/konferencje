@@ -7,15 +7,15 @@
           <v-list-item>
             <v-list-item-content>
               <h2 class="headline font-weight-medium pb-4 pt-4">{{conference.title}}</h2>
-              <p class="pb-2 headline">{{conference.start_date.toDate()}} - {{conference.end_date.toDate()}}</p>
+              <p class="pb-2 headline">{{conference.start_date.toDate().toISOString()}} - {{conference.end_date.toDate()}}</p>
               <v-divider class="blue lighten-1"></v-divider>
               <div class="pt-2 pb-2 body-1 font-weight-medium">
               <v-icon>mdi-map-marker</v-icon> {{ conference.location }}
               </div>
             </v-list-item-content>
           </v-list-item>
-
-          <v-img src="https://cdn.vuetifyjs.com/images/cards/mountain.jpg" height="294"></v-img>
+        
+          <v-img :src="conference.logo" height="294"></v-img>
 
           <v-card-text class="headline mb-5">
             <div class="text--primary">

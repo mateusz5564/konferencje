@@ -6,7 +6,7 @@ var firebaseConfig = {
     authDomain: "konferencje-95600.firebaseapp.com",
     databaseURL: "https://konferencje-95600.firebaseio.com",
     projectId: "konferencje-95600",
-    storageBucket: "",
+    storageBucket: "gs://konferencje-95600.appspot.com",
     messagingSenderId: "777474069958",
     appId: "1:777474069958:web:c576fc89dc2c9588060ec7"
   };
