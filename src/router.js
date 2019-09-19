@@ -3,6 +3,7 @@ import Router from 'vue-router'
 import Home from '@/views/Home'
 import Login from '@/components/auth/Login'
 import Register from '@/components/auth/Register'
+import NewConference from '@/views/NewConference'
 import firebase from 'firebase'
 
 Vue.use(Router)
@@ -29,6 +30,14 @@ const router = new Router({
       component: Register,
       meta: {
         lockIfUserLogedIn: true
+      }
+    },
+    {
+      path: '/dodaj_konferencje',
+      name: 'dodaj_konferencje',
+      component: NewConference,
+      meta: {
+        requireAuth: true
       }
     }
   ]
