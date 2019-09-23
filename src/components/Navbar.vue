@@ -1,6 +1,6 @@
 <template>
   <nav>
-    <v-app-bar clipped-left flat app color="blue accent-4" dark>
+    <v-app-bar class="pr-6" clipped-left flat app color="blue accent-4" dark>
       <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
 
       <v-toolbar-title>
@@ -13,11 +13,16 @@
         <v-icon class="pr-3" large left>mdi-account-circle</v-icon>Logowanie
       </v-btn>
 
+      <v-btn v-if="user" class="mx-2" icon fab width="70" height="100" :to="{ name: 'dodaj_konferencje'}" >
+        <v-icon large>mdi-calendar-plus</v-icon>
+      </v-btn>
+
+      <!-- current user's menu -->
       <v-menu v-if="user" offset-y min-width="300px">
         <template v-slot:activator="{ on }">
-          <v-btn icon v-on="on">
+          <v-btn icon class="ml-2" v-on="on" fab >
             <v-avatar>
-              <img src="@/assets/logo.png" alt />
+              <img src="@/assets/logo.png" alt="user's avatar" />
             </v-avatar>
           </v-btn>
         </template>
@@ -50,13 +55,13 @@
       
 
       <v-list dense nav>
-        <v-list-item v-for="item in items" :key="item.title" link>
+        <v-list-item :to="{ name: 'home'}" link>
           <v-list-item-icon>
-            <v-icon>{{ item.icon }}</v-icon>
+            <v-icon>mdi-calendar</v-icon>
           </v-list-item-icon>
 
           <v-list-item-content>
-            <v-list-item-title>{{ item.title }}</v-list-item-title>
+            <v-list-item-title>Wydarzenia</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
       </v-list>
@@ -70,9 +75,6 @@ import firebase from 'firebase'
 export default {
   data() {
     return {
-      items: [
-        { title: "Wydarzenia", icon: "mdi-calendar" }
-      ],
       right: null,
       drawer: true,
       user: null
