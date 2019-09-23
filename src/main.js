@@ -4,11 +4,16 @@ import router from './router'
 import store from './store'
 import vuetify from './plugins/vuetify'
 import firebase from 'firebase'
+import DateFilter from '@/filters/dateFilter.js'
 
 Vue.config.productionTip = false
 
-let app = null
+//FILTERS
+Vue.filter('dateFilter', DateFilter)
 
+
+//init Vue instance only once
+let app = null
 // wait for firebae auth
 firebase.auth().onAuthStateChanged(() => {
 // reinitialize Vue instance only at the beggining or on refresh the app

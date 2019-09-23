@@ -7,7 +7,7 @@
           <v-list-item>
             <v-list-item-content>
               <h2 class="headline font-weight-medium pb-4 pt-4">{{conference.title}}</h2>
-              <p class="pb-2 headline">{{conference.start_date.toDate().toISOString()}} - {{conference.end_date.toDate()}}</p>
+              <p class="pb-2 ">{{conference.start_date.toDate() | dateFilter}} - {{conference.end_date.toDate() | dateFilter}}</p>
               <v-divider class="blue lighten-1"></v-divider>
               <div class="pt-2 pb-2 body-1 font-weight-medium">
               <v-icon>mdi-map-marker</v-icon> {{ conference.location }}
