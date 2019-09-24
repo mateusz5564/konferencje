@@ -11,6 +11,8 @@
               <v-divider class="blue lighten-1"></v-divider>
               <div class="pt-2 pb-2 body-1 font-weight-medium">
               <v-icon>mdi-map-marker</v-icon> {{ conference.location }}
+              <v-spacer></v-spacer>
+              <a :href="conference.link" target="_blank">zobacz na mapie</a>
               </div>
             </v-list-item-content>
           </v-list-item>
@@ -55,6 +57,8 @@ export default {
                 let address = response.data.results[0].formatted_address
                 let dataRef = doc.data()
                 dataRef.location = address
+                const link = `https://maps.google.com/?q=${address}`
+                dataRef.link = link
                 this.conferences.push(dataRef)
               })
               .catch(e => {
