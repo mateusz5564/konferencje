@@ -161,7 +161,6 @@
             label="Wybierz logo"
             prepend-icon="mdi-camera"
             v-model="image"
-            @change="uploadImage"
           ></v-file-input>
 
           <p id="feedback" style="font-size: 30px; color: red;">{{ feedback }}</p>
@@ -207,8 +206,6 @@ export default {
   watch: {
     search(val) {
       val && val !== this.select && this.querySelections(val)
-      console.log(this.select)
-      console.log(this.select.getGeometry)
     }
   },
   computed: {
@@ -240,15 +237,11 @@ export default {
     }
   },
   methods: {
-    uploadImage() {
-      // const filename = this.image.name
-      // const extention = filename.substring(filename.lastIndexOf('.'), filename.length)
-      // firebase.storage().ref('conferences/' + response.id + extention).put(this.image)
-    },
     addConference() {
-      const latitude = Number(this.location.split(",")[0])
-      const longitude = Number(this.location.split(",")[1])
+      const latitude = this.select.geometry.location.lat()
+      const longitude = this.select.geometry.location.lng()
       const geopoint = new firebase.firestore.GeoPoint(latitude, longitude)
+
       let key
       db.collection("conferences")
         .add({
@@ -289,12 +282,11 @@ export default {
     },
     querySelections(v) {
       this.loading = true
-
       const service = new google.maps.places.PlacesService(document.createElement('div'))
 
       service.findPlaceFromQuery({query: v, fields: ['name', 'geometry', 'formatted_address']}, (results, status) => {
         if (status === google.maps.places.PlacesServiceStatus.OK) {
-          this.candidates = results
+          // this.candidates = results
           this.items = results.filter(place => {
             return (place.name || '').toLowerCase().match((v || '').toLowerCase())
           })
