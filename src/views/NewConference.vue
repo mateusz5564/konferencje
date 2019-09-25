@@ -9,7 +9,6 @@
           <v-textarea v-model="title" auto-grow label="Tytuł" rows="1"></v-textarea>
           <v-textarea v-model="description" auto-grow label="Opis" rows="1"></v-textarea>
 
-          <!-- <v-text-field type="text" label="Lokalizacja" prepend-icon="mdi-map-marker" v-model="location"></v-text-field> -->
           <v-autocomplete
             label="Lokalizacja"
             prepend-icon="mdi-map-marker"
@@ -294,8 +293,8 @@ export default {
       })
       this.loading = false
     }
-  },
-};
+  }
+}
 </script>
 
 <style>

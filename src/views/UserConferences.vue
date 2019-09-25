@@ -5,7 +5,7 @@
       <v-col v-for="(conference, index) in conferences" :key="index" cols="12" xs="12" md="6" xl="4">
         <ConferenceThumbnail :conference="conference">
           <div class="pb-4" slot="floating-btn">
-            <v-btn fab color="orange accent-2" top right absolute>
+            <v-btn fab color="orange accent-2" :to="{name: 'edytuj_konferencje', params: {conference_id: conference.id}}" top right absolute>
               <v-icon>mdi-pencil</v-icon>
             </v-btn>
           </div>
@@ -39,6 +39,7 @@ export default {
               .then(response => {
                 let address = response.data.results[0].formatted_address
                 let dataRef = doc.data()
+                dataRef.id = doc.id
                 dataRef.location = address
                 const link = `https://maps.google.com/?q=${address}`
                 dataRef.link = link
