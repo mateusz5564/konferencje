@@ -168,7 +168,7 @@
 
 
           <h2 class="mt-5 mb-4">Aktualne logo</h2>
-          <v-img :src="logo" max-height="100%"></v-img>
+          <v-img :src="logo" max-width="100%" height="auto"></v-img>
 
           <v-file-input
             show-size
@@ -296,9 +296,6 @@ export default {
     },
     //update data
     updateConference() {
-
-      let key
-
       const conf = {}
       if(this.title != null && this.title !== ''){
         conf.title = this.title
@@ -323,33 +320,48 @@ export default {
         db.collection("conferences").doc(this.id)
         .update(conf)
         .then(response => {
-          // console.log(response)
-          // const filename = this.image.name
-          // const extention = filename.substring(
-          //   filename.lastIndexOf("."),
-          //   filename.length
-          // );
-          // key = response.id;
-          // firebase
-          //   .storage()
-          //   .ref("conferences/" + response.id + extention)
-          //   .put(this.image)
-          //   .then(response => {
-          //     response.ref.getDownloadURL().then(downloadURL => {
-          //       db.collection("conferences")
-          //         .doc(key)
-          //         .update({ logo: downloadURL })
-          //         .then(response => {
-          //           console.log("pomyslnie dodano konferencje")
-          //         });
-          //     });
-          //   });
-          console.log('zapisano konferencje')
+          if(this.image == null){
+            console.log('zapisano konferencje')
+            this.$router.push({name: 'moje_konferencje'})
+          }
         })
         .catch(err => {
           console.log(err)
         });
       }
+
+      //update logo
+      if(this.image !== null){
+        const filename = this.image.name
+        const extention = filename.substring(
+          filename.lastIndexOf("."),
+          filename.length
+        );
+
+        firebase.storage().ref().child("conferences/" + this.id + extention)
+        .delete().then(() => {
+          console.log('usunieto obecne logo')
+           firebase
+          .storage()
+          .ref("conferences/" + this.id + extention)
+          .put(this.image)
+          .then(response => {
+            response.ref.getDownloadURL().then(downloadURL => {
+              db.collection("conferences")
+                .doc(this.id)
+                .update({ logo: downloadURL })
+                .then(response => {
+                  console.log("pomyslnie edytowano konferencje")
+                  this.$router.push({name: 'moje_konferencje'})
+                });
+            });
+          });
+        })
+        .catch(err => {
+          console.log(err)
+        })
+      }
+
     },
     isEmpty(obj) {
     for(var prop in obj) {
