@@ -1,5 +1,5 @@
 <template>
-  <div class="edit_conference">
+  <div class="edit_conference mt-12">
     <v-card class="register__card pa-5" max-width="800px">
       <v-card-title class="justify-center">
         <h2>Edytuj konferencje</h2>
@@ -27,7 +27,7 @@
             clearable
             append-icon="mdi-map-search-outline"
           ></v-autocomplete>
-sssssssssss
+
           <v-row>
             <!-- START DATE AND TIME PICKERS -->
             <v-col cols="12" sm="6">
