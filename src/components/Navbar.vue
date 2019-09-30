@@ -37,6 +37,16 @@
 
           <v-divider></v-divider>
 
+          <v-list-item link :to="{name: 'moje_konferencje'}">
+            <v-list-item-icon>
+              <v-icon>mdi-calendar-star</v-icon>
+            </v-list-item-icon>
+
+            <v-list-item-content>
+              <v-list-item-title>Moje konferencje</v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
+
           <v-list-item @click="logout" link>
             <v-list-item-icon>
               <v-icon>mdi-account-circle</v-icon>

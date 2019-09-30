@@ -5,6 +5,7 @@ import Login from '@/components/auth/Login'
 import Register from '@/components/auth/Register'
 import NewConference from '@/views/NewConference'
 import EditConference from '@/components/EditConference'
+import UserConferences from '@/views/UserConferences'
 import firebase from 'firebase'
 
 Vue.use(Router)
@@ -42,10 +43,21 @@ const router = new Router({
       }
     },
     {
-    path: '/edytuj_konferencje',
-    name: 'edytuj_konferencje',
-    component: EditConference
-    }
+      path: '/edytuj_konferencje/:conference_id',
+      name: 'edytuj_konferencje',
+      component: EditConference,
+      meta: {
+        requireAuth: true
+      }
+    },
+    {
+      path: '/moje_konferencje',
+      name: 'moje_konferencje',
+      component: UserConferences,
+      meta: {
+        requireAuth: true
+      }
+      }
   ]
 })
 

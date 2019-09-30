@@ -1,18 +1,25 @@
 <template>
-  <div class="edit_conference">
-    <v-card class="register__card pa-5" max-width="800px">
+  <div class="edit_conference mt-12">
+    <v-card class="register__card pa-5" max-width="1200px">
       <v-card-title class="justify-center">
-        <h2>Edytuj konferencje</h2>
+        <h2 class="mb-4">Edytuj konferencje</h2>
       </v-card-title>
       <v-card-text>
-        <v-form @submit.prevent="">
+        <v-form @submit.prevent="updateConference">
           <v-textarea v-model="title" auto-grow label="Tytuł" rows="1"></v-textarea>
           <v-textarea v-model="description" auto-grow label="Opis" rows="1"></v-textarea>
 
-          <!-- <v-text-field type="text" label="Lokalizacja" prepend-icon="mdi-map-marker" v-model="location"></v-text-field> -->
+
+          <h2 class="mt-10 mb-1">Bieżąca lokalizacja</h2>
+          <div class="pt-2 pb-2 body-1 font-weight-medium">
+            <v-icon>mdi-map-marker</v-icon>
+            {{ location }}
+            <v-spacer></v-spacer>
+            <a :href="location_link" target="_blank">zobacz na mapie</a>
+          </div>
+
           <v-autocomplete
-            label="Lokalizacja"
-            prepend-icon="mdi-map-marker"
+            label="Wybierz nową lokalizację"
             v-model="select"
             :loading="loading"
             :items="items"
@@ -25,10 +32,12 @@
             hide-no-data
             hide-details
             clearable
-            append-icon="mdi-map-search-outline"
+            append-icon=""
+            prepend-inner-icon="mdi-map-search-outline"
           ></v-autocomplete>
 
-          <v-row>
+          <h2 class="mt-12">Data rozpoczęcia</h2>
+          <v-row class="mt-2">
             <!-- START DATE AND TIME PICKERS -->
             <v-col cols="12" sm="6">
               <v-menu
@@ -93,7 +102,8 @@
           </v-row>
 
           <!-- END DATE AND TIME PICKERS -->
-          <v-row>
+          <h2 class="mt-12">Data zakończenia</h2>
+          <v-row class="mt-2">
             <v-col cols="12" sm="6">
               <v-menu
                 ref="end_date_menu"
@@ -156,15 +166,19 @@
             </v-col>
           </v-row>
 
+
+          <h2 class="mt-5 mb-4">Aktualne logo</h2>
+          <v-img :src="logo" max-width="100%" height="auto"></v-img>
+
           <v-file-input
             show-size
-            label="Wybierz logo"
+            label="Wybierz nowe logo"
             prepend-icon="mdi-camera"
             v-model="image"
           ></v-file-input>
 
           <p id="feedback" style="font-size: 30px; color: red;">{{ feedback }}</p>
-          <v-btn class="ma-3" type="submit" color="blue" large dark>Dodaj konferencje</v-btn>
+          <v-btn class="ma-3" type="submit" color="blue" large dark>Zapisz konferencje</v-btn>
           <br />
           <br />
         </v-form>
@@ -174,17 +188,23 @@
 </template>
 
 <script>
+import db from '@/firebase/init'
+import firebase from 'firebase'
+import axios from 'axios'
+
 export default {
   data() {
     return {
+      id: null,
       title: null,
       start_date: null,
       start_time: null,
       end_date: null,
       end_time: null,
       location: null,
+      location_link: null,
       description: null,
-      logo: null,
+      logo: "",
       feedback: null,
       modal: true,
       start_date_menu: false,
@@ -197,6 +217,173 @@ export default {
       search: null,
       select: null,
       candidates: []
+    }
+  },
+  created(){
+    this.id = this.$route.params.conference_id
+    let ref = db.collection('conferences').doc(this.$route.params.conference_id)
+    ref.get().then(doc => {
+      if (doc.exists){
+        console.log(doc.data())
+        let data = doc.data()
+        this.title = data.title 
+        this.description = data.description
+        this.convertedStartDate(data.start_date)
+        this.convertedEndDate(data.end_date)
+        this.logo = data.logo
+        axios.post('https://maps.googleapis.com/maps/api/geocode/json?latlng=' + doc.data().location.latitude + ',' + doc.data().location.longitude + '&key=AIzaSyDtYbZokAi1OVXplmLIpuxlJpppE0fijPA')
+              .then(response => {
+                let address = response.data.results[0].formatted_address
+                this.location = address
+                const link = `https://maps.google.com/?q=${address}`
+                this.location_link = link
+              })
+              .catch(e => {
+                console.log(e)
+            })
+      } else {
+        console.log('Taka konferencja nie istenieje!')
+      }
+    })
+  },
+  watch: {
+    search(val) {
+      val && val !== this.select && this.querySelections(val)
+    }
+  },
+  computed: {
+    //read data
+    
+    //updating
+    preparedStartDate() {
+      const date = new Date(this.start_date)
+      if (typeof this.start_time === "string") {
+        let hours = this.start_time.match(/^(\d+)/)[1]
+        let minutes = this.start_time.match(/:(\d+)/)[1]
+        date.setHours(hours)
+        date.setMinutes(minutes)
+      } else {
+        date.setHours(this.start_time.getHours())
+        date.setMinutes(this.start_time.getMinutes())
+      }
+      return date;
+    },
+    preparedEndDate() {
+      const date = new Date(this.end_date)
+      if (typeof this.end_time === "string") {
+        let hours = this.end_time.match(/^(\d+)/)[1]
+        let minutes = this.end_time.match(/:(\d+)/)[1]
+        date.setHours(hours)
+        date.setMinutes(minutes)
+      } else {
+        date.setHours(this.end_time.getHours())
+        date.setMinutes(this.end_time.getMinutes())
+      }
+      return date;
+    }
+  },
+  methods: {
+    //read data
+    convertedStartDate(timestamp){
+      const date = new Date(timestamp.seconds*1000)
+      this.start_date = date.toISOString().substring(0,10)
+      this.start_time = date.toISOString().substring(11,16)
+    },
+    convertedEndDate(timestamp){
+      const date = new Date(timestamp.seconds*1000)
+      this.end_date = date.toISOString().substring(0,10)
+      this.end_time = date.toISOString().substring(11,16)
+    },
+    //update data
+    updateConference() {
+      const conf = {}
+      if(this.title != null && this.title !== ''){
+        conf.title = this.title
+      }
+      if(this.description != null && this.description !== ''){
+        conf.description = this.description
+      }
+      if(this.select !== null){
+        const latitude = this.select.geometry.location.lat()
+        const longitude = this.select.geometry.location.lng()
+        const geopoint = new firebase.firestore.GeoPoint(latitude, longitude)
+        conf.location = geopoint
+      }
+      if(this.start_date !== null){
+        conf.start_date = this.preparedStartDate
+      }
+      if(this.end_date !== null){
+        conf.end_date = this.preparedEndDate
+      }
+
+      if(!this.isEmpty(conf)){
+        db.collection("conferences").doc(this.id)
+        .update(conf)
+        .then(response => {
+          if(this.image == null){
+            console.log('zapisano konferencje')
+            this.$router.push({name: 'moje_konferencje'})
+          }
+        })
+        .catch(err => {
+          console.log(err)
+        });
+      }
+
+      //update logo
+      if(this.image !== null){
+        const filename = this.image.name
+        const extention = filename.substring(
+          filename.lastIndexOf("."),
+          filename.length
+        );
+
+        firebase.storage().ref().child("conferences/" + this.id + extention)
+        .delete().then(() => {
+          console.log('usunieto obecne logo')
+           firebase
+          .storage()
+          .ref("conferences/" + this.id + extention)
+          .put(this.image)
+          .then(response => {
+            response.ref.getDownloadURL().then(downloadURL => {
+              db.collection("conferences")
+                .doc(this.id)
+                .update({ logo: downloadURL })
+                .then(response => {
+                  console.log("pomyslnie edytowano konferencje")
+                  this.$router.push({name: 'moje_konferencje'})
+                });
+            });
+          });
+        })
+        .catch(err => {
+          console.log(err)
+        })
+      }
+
+    },
+    isEmpty(obj) {
+    for(var prop in obj) {
+      if(obj.hasOwnProperty(prop)) {
+        return false;
+      }
+    }
+    return JSON.stringify(obj) === JSON.stringify({});
+    },
+    querySelections(v) {
+      this.loading = true
+      const service = new google.maps.places.PlacesService(document.createElement('div'))
+
+      service.findPlaceFromQuery({query: v, fields: ['name', 'geometry', 'formatted_address']}, (results, status) => {
+        if (status === google.maps.places.PlacesServiceStatus.OK) {
+          // this.candidates = results
+          this.items = results.filter(place => {
+            return (place.name || '').toLowerCase().match((v || '').toLowerCase())
+          })
+        }
+      })
+      this.loading = false
     }
   }
 }

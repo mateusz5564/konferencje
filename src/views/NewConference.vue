@@ -9,7 +9,6 @@
           <v-textarea v-model="title" auto-grow label="Tytuł" rows="1"></v-textarea>
           <v-textarea v-model="description" auto-grow label="Opis" rows="1"></v-textarea>
 
-          <!-- <v-text-field type="text" label="Lokalizacja" prepend-icon="mdi-map-marker" v-model="location"></v-text-field> -->
           <v-autocomplete
             label="Lokalizacja"
             prepend-icon="mdi-map-marker"
@@ -241,6 +240,7 @@ export default {
       const latitude = this.select.geometry.location.lat()
       const longitude = this.select.geometry.location.lng()
       const geopoint = new firebase.firestore.GeoPoint(latitude, longitude)
+      let user = firebase.auth().currentUser
 
       let key
       db.collection("conferences")
@@ -251,7 +251,8 @@ export default {
           start_date: firebase.firestore.Timestamp.fromDate(
             this.preparedStartDate
           ),
-          end_date: firebase.firestore.Timestamp.fromDate(this.preparedEndDate)
+          end_date: firebase.firestore.Timestamp.fromDate(this.preparedEndDate),
+          user_id: user.uid
         })
         .then(response => {
           console.log(response)
@@ -272,6 +273,7 @@ export default {
                   .update({ logo: downloadURL })
                   .then(response => {
                     console.log("pomyslnie dodano konferencje")
+                    this.$router.push({name: 'moje_konferencje'})
                   });
               });
             });
@@ -294,8 +296,8 @@ export default {
       })
       this.loading = false
     }
-  },
-};
+  }
+}
 </script>
 
 <style>
