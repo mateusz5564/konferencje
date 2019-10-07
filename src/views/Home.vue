@@ -21,7 +21,13 @@ export default {
   },
   data(){
     return {
-      conferences: []
+      conferences: [
+        // name: 'Wydarzenie 1',
+        //   details: 'Pierwsze testowe wydarzenie',
+        //   start: '2019-10-07',
+        //   end: '2019-10-10',
+        //   color: 'green',
+      ]
     }
   },
   created(){
@@ -37,6 +43,7 @@ export default {
                 const link = `https://maps.google.com/?q=${address}`
                 dataRef.link = link
                 this.conferences.push(dataRef)
+                console.log(dataRef)
               })
               .catch(e => {
                 console.log(e)

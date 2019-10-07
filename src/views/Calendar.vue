@@ -66,7 +66,7 @@
             offset-x
           >
             <v-card color="grey lighten-4" min-width="350px" flat>
-              <v-toolbar :color="selectedEvent.color" dark>
+              <!-- <v-toolbar :color="selectedEvent.color" dark>
                 <v-btn icon>
                   <v-icon>mdi-pencil</v-icon>
                 </v-btn>
@@ -81,11 +81,13 @@
               </v-toolbar>
               <v-card-text>
                 <span v-html="selectedEvent.details"></span>
-              </v-card-text>
+              </v-card-text> -->
+              <ConferenceThumbnail :conference="selectedEvent" />
               <v-card-actions>
                 <v-btn text color="secondary" @click="selectedOpen = false">Cancel</v-btn>
               </v-card-actions>
             </v-card>
+          
           </v-menu>
         </v-sheet>
       </v-col>
@@ -95,10 +97,19 @@
 </template>
 
 <script>
+import ConferenceThumbnail from '@/components/ConferenceThumbnail.vue'
+import db from '@/firebase/init'
+import firebase from 'firebase'
+import axios from 'axios'
+
+
   export default {
+    components: {
+      ConferenceThumbnail
+    },
     data: () => ({
-      today: new Date(),
-      focus: new Date(),
+      today: '2019-10-07',
+      focus: '2019-10-07',
       type: 'month',
       typeToLabel: {
         month: 'Miesiąc',
@@ -111,22 +122,7 @@
       selectedEvent: {},
       selectedElement: null,
       selectedOpen: false,
-      events: [
-        {
-          name: 'Wydarzenie 1',
-          details: 'Pierwsze testowe wydarzenie',
-          start: '2019-10-07',
-          end: '2019-10-10',
-          color: 'green',
-        },
-        {
-          name: 'Wydarzenie 2',
-          details: 'Drugie wydarzenie testowe',
-          start: '2019-10-08 09:00',
-          end: '2019-10-10 19:30',
-          color: 'indigo',
-        },
-      ],
+      events: [],
     }),
     computed: {
       title () {
@@ -170,6 +166,14 @@
       this.$refs.calendar.checkChange()
     },
     methods: {
+      convertedStartDate(timestamp){
+        const date = new Date(timestamp.seconds*1000)
+        return date.toISOString().substring(0,16)
+      },
+      convertedEndDate(timestamp){
+        const date = new Date(timestamp.seconds*1000)
+        return date.toISOString().substring(0,16)
+      },
       viewDay ({ date }) {
         this.focus = date
         this.type = 'day'
@@ -207,11 +211,31 @@
         this.start = start
         this.end = end
       },
-      // nth (d) {
-      //   return d > 3 && d < 21
-      //     ? 'th'
-      //     : ['th', 'st', 'nd', 'rd', 'th', 'th', 'th', 'th', 'th', 'th'][d % 10]
-      // },
     },
+    created(){
+     db.collection('conferences')
+        .get()
+        .then(querySnapshot => {
+          querySnapshot.forEach(doc => {
+             axios.post('https://maps.googleapis.com/maps/api/geocode/json?latlng=' + doc.data().location.latitude + ',' + doc.data().location.longitude + '&key=AIzaSyDtYbZokAi1OVXplmLIpuxlJpppE0fijPA')
+              .then(response => {
+                let address = response.data.results[0].formatted_address
+                let dataRef = doc.data()
+                dataRef.location = address
+                const link = `https://maps.google.com/?q=${address}`
+                dataRef.link = link
+                dataRef.name = dataRef.title
+                dataRef.details = "szczegoly"
+                dataRef.start = this.convertedStartDate(doc.data().start_date)
+                dataRef.end = this.convertedStartDate(doc.data().end_date)
+                dataRef.color = 'green'
+                this.events.push(dataRef)
+              })
+              .catch(e => {
+                console.log(e)
+            })
+          })
+        })
+  }
   }
 </script>
