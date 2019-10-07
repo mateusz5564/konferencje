@@ -6,6 +6,7 @@ import Register from '@/components/auth/Register'
 import NewConference from '@/views/NewConference'
 import EditConference from '@/components/EditConference'
 import UserConferences from '@/views/UserConferences'
+import Calendar from '@/views/Calendar'
 import firebase from 'firebase'
 
 Vue.use(Router)
@@ -57,7 +58,12 @@ const router = new Router({
       meta: {
         requireAuth: true
       }
-      }
+    },
+    {
+      path: '/kalendarz',
+      name: 'kalendarz',
+      component: Calendar
+    }
   ]
 })
 

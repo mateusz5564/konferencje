@@ -61,7 +61,7 @@
     </v-app-bar>
 
     <!-- NAVIGATION DRAWER -->
-    <v-navigation-drawer app v-model="drawer" clipped color="blue accent-3" dark>
+    <v-navigation-drawer app v-model="drawer" width="300" clipped color="blue accent-3" dark>
       
 
       <v-list dense nav>
@@ -72,6 +72,16 @@
 
           <v-list-item-content>
             <v-list-item-title>Wydarzenia</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+
+         <v-list-item :to="{ name: 'kalendarz'}" link>
+          <v-list-item-icon>
+            <v-icon>mdi-calendar-month</v-icon>
+          </v-list-item-icon>
+
+          <v-list-item-content>
+            <v-list-item-title>Kalendarz</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
       </v-list>
