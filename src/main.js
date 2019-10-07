@@ -6,6 +6,7 @@ import vuetify from './plugins/vuetify'
 import firebase from 'firebase'
 import DateFilter from '@/filters/dateFilter.js'
 
+
 Vue.config.productionTip = false
 
 //FILTERS
