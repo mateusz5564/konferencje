@@ -68,7 +68,7 @@
             <v-card color="grey lighten-4" max-width="400px" flat>
               <CalendarThumbnail :conference="selectedEvent"> 
                 <div slot="close-btn">
-                  <v-btn text icon color="orange"> 
+                  <v-btn text icon color="orange" @click="addToGoogleCalendar(selectedEvent)"> 
                     <v-icon>mdi-calendar-plus</v-icon>
                   </v-btn>
                   <v-btn class="ml-4" text icon @click="selectedOpen = false"> 
@@ -160,6 +160,18 @@ import axios from 'axios'
       this.$refs.calendar.checkChange()
     },
     methods: {
+      addToGoogleCalendar(event){
+        console.log(event)
+        // const link = `https://calendar.google.com/calendar/r/eventedit?location=${event.location}&text=${event.title}&dates=${event.start}/${event.end}&details=${event.description}`
+        let start = new Date(event.start)
+        let end = new Date(event.end)
+
+        let startString = start.toISOString().replace(/-|:|/g, '').substring(0, 15) + 'Z'
+        let endString = end.toISOString().replace(/-|:|/g, '').substring(0, 15) + 'Z'
+
+        const link = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${event.title}&dates=${startString}/${endString}&details=${event.description}`
+        window.open(link, '_blank')
+      },
       convertedStartDate(timestamp){
         const date = new Date(timestamp.seconds*1000)
         return date.toISOString().substring(0,16)
@@ -233,3 +245,9 @@ import axios from 'axios'
   }
   }
 </script>
+
+<style>
+  a {
+    text-decoration: none;
+  }
+</style>
