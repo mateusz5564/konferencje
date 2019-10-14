@@ -65,27 +65,16 @@
             full-width
             offset-x
           >
-            <v-card color="grey lighten-4" min-width="350px" flat>
-              <!-- <v-toolbar :color="selectedEvent.color" dark>
-                <v-btn icon>
-                  <v-icon>mdi-pencil</v-icon>
-                </v-btn>
-                <v-toolbar-title v-html="selectedEvent.name"></v-toolbar-title>
-                <div class="flex-grow-1"></div>
-                <v-btn icon>
-                  <v-icon>mdi-heart</v-icon>
-                </v-btn>
-                <v-btn icon>
-                  <v-icon>mdi-dots-vertical</v-icon>
-                </v-btn>
-              </v-toolbar>
-              <v-card-text>
-                <span v-html="selectedEvent.details"></span>
-              </v-card-text> -->
-              <ConferenceThumbnail :conference="selectedEvent" />
-              <v-card-actions>
-                <v-btn text color="secondary" @click="selectedOpen = false">Cancel</v-btn>
-              </v-card-actions>
+            <v-card color="grey lighten-4" max-width="600px" flat>
+              <CalendarThumbnail :conference="selectedEvent"> 
+                <div slot="close-btn">
+                  <v-btn text color="secondary" @click="selectedOpen = false">Zamknij</v-btn>
+                </div>
+
+              </CalendarThumbnail>
+              <!-- <v-card-actions>
+                <v-btn text color="secondary" @click="selectedOpen = false">Zamknij</v-btn>
+              </v-card-actions> -->
             </v-card>
           
           </v-menu>
@@ -97,7 +86,7 @@
 </template>
 
 <script>
-import ConferenceThumbnail from '@/components/ConferenceThumbnail.vue'
+import CalendarThumbnail from '@/components/CalendarThumbnail.vue'
 import db from '@/firebase/init'
 import firebase from 'firebase'
 import axios from 'axios'
@@ -105,7 +94,7 @@ import axios from 'axios'
 
   export default {
     components: {
-      ConferenceThumbnail
+      CalendarThumbnail
     },
     data: () => ({
       today: '2019-10-07',
