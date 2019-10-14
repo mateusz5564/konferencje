@@ -65,10 +65,15 @@
             full-width
             offset-x
           >
-            <v-card color="grey lighten-4" max-width="600px" flat>
+            <v-card color="grey lighten-4" max-width="400px" flat>
               <CalendarThumbnail :conference="selectedEvent"> 
                 <div slot="close-btn">
-                  <v-btn text color="secondary" @click="selectedOpen = false">Zamknij</v-btn>
+                  <v-btn text icon color="orange"> 
+                    <v-icon>mdi-calendar-plus</v-icon>
+                  </v-btn>
+                  <v-btn class="ml-4" text icon @click="selectedOpen = false"> 
+                    <v-icon>mdi-close</v-icon>
+                  </v-btn>
                 </div>
 
               </CalendarThumbnail>
