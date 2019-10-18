@@ -1,7 +1,7 @@
 <template>
   <div class="conference_thumbnail">
     
-    <v-card class="mx-auto">
+    <v-card class="mx-auto" >
       <v-list-item>
         <v-list-item-content>
           <div class="d-flex justify-end">

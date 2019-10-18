@@ -13,7 +13,7 @@
         <v-icon class="pr-3" large left>mdi-account-circle</v-icon>Logowanie
       </v-btn>
 
-      <v-btn v-if="user" class="mx-2" icon fab width="70" height="100" :to="{ name: 'dodaj_konferencje'}" >
+      <v-btn v-if="user" class="mx-2" icon fab :to="{ name: 'dodaj_konferencje'}" >
         <v-icon large>mdi-calendar-plus</v-icon>
       </v-btn>
 
@@ -61,7 +61,7 @@
     </v-app-bar>
 
     <!-- NAVIGATION DRAWER -->
-    <v-navigation-drawer app v-model="drawer" width="300" clipped color="blue accent-3" dark>
+    <v-navigation-drawer app v-model="drawer" width="260" clipped color="blue accent-3" dark>
       
 
       <v-list dense nav>
