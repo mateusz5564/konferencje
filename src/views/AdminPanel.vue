@@ -194,9 +194,6 @@ export default {
     },
 
     editConference(item) {
-      // this.editedIndex = this.conference.indexOf(item);
-      // this.editedItem = Object.assign({}, item);
-      // this.editConferenceDialog = true;
       this.$router.push({name: 'edytuj_konferencje', params: {conference_id: item.id}})
     },
 

@@ -322,7 +322,8 @@ export default {
         .then(response => {
           if(this.image == null){
             console.log('zapisano konferencje')
-            this.$router.push({name: 'moje_konferencje'})
+            // this.$router.push({name: 'moje_konferencje'})
+            this.$router.go(-1)
           }
         })
         .catch(err => {
@@ -352,7 +353,8 @@ export default {
                 .update({ logo: downloadURL })
                 .then(response => {
                   console.log("pomyslnie edytowano konferencje")
-                  this.$router.push({name: 'moje_konferencje'})
+                  // this.$router.push({name: 'moje_konferencje'})
+                  this.$router.go(-1)
                 });
             });
           });
