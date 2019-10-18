@@ -171,15 +171,10 @@ export default {
               let dataRef = doc.data();
               dataRef.location = address;
               const link = `https://maps.google.com/?q=${address}`;
-              dataRef.link = link;
-              dataRef.start_date = doc
-                .data()
-                .start_date.toDate()
-                .toISOString();
-              dataRef.end_date = doc
-                .data()
-                .end_date.toDate()
-                .toISOString();
+              dataRef.link = link
+              dataRef.id = doc.id
+              dataRef.start_date = doc.data().start_date.toDate().toISOString();
+              dataRef.end_date = doc.data().end_date.toDate().toISOString();
               this.conferences.push(dataRef);
               console.log(dataRef);
             })
@@ -201,7 +196,8 @@ export default {
     editConference(item) {
       // this.editedIndex = this.conference.indexOf(item);
       // this.editedItem = Object.assign({}, item);
-      this.editConferenceDialog = true;
+      // this.editConferenceDialog = true;
+      this.$router.push({name: 'edytuj_konferencje', params: {conference_id: item.id}})
     },
 
     deleteItem(item) {
