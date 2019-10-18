@@ -7,6 +7,7 @@ import NewConference from '@/views/NewConference'
 import EditConference from '@/components/EditConference'
 import UserConferences from '@/views/UserConferences'
 import Calendar from '@/views/Calendar'
+import AdminPanel from '@/views/AdminPanel'
 import firebase from 'firebase'
 
 Vue.use(Router)
@@ -63,6 +64,11 @@ const router = new Router({
       path: '/kalendarz',
       name: 'kalendarz',
       component: Calendar
+    },
+    {
+      path: '/admin_panel',
+      name: 'admin_panel',
+      component: AdminPanel
     }
   ]
 })

@@ -65,7 +65,18 @@
       
 
       <v-list dense nav>
-        <v-list-item :to="{ name: 'home'}" link>
+        <v-list-item-group>
+        <v-list-item :to="{ name: 'admin_panel'}" link>
+          <v-list-item-icon>
+            <v-icon>mdi-wrench</v-icon>
+          </v-list-item-icon>
+
+          <v-list-item-content>
+            <v-list-item-title>Panel Administracyjny</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+
+        <v-list-item exact :to="{ name: 'home'}">
           <v-list-item-icon>
             <v-icon>mdi-calendar</v-icon>
           </v-list-item-icon>
@@ -84,7 +95,9 @@
             <v-list-item-title>Kalendarz</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
+        </v-list-item-group>
       </v-list>
+      
     </v-navigation-drawer>
   </nav>
 </template>
