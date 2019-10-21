@@ -2,7 +2,7 @@
   <v-container class="grey lighten-5">
     <h2 class="mb-6 headline font-weight-black" >Moje konferencje</h2>
     <v-row>
-      <v-col v-for="(conference, index) in conferences" :key="index" cols="12" xs="12" md="6" xl="4">
+      <v-col v-for="(conference, index) in conferences" :key="index" cols="12" xs="12" md="4" xl="3">
         <ConferenceThumbnail :conference="conference">
           <div class="pb-4" slot="floating-btn">
             <v-btn fab color="orange accent-2" :to="{name: 'edytuj_konferencje', params: {conference_id: conference.id}}" top right absolute>

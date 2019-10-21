@@ -19,7 +19,6 @@
             :return-object=true
             item-text="name"
             cache-items
-            class="mx-4"
             flat
             hide-no-data
             hide-details
