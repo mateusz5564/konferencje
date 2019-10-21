@@ -17,7 +17,7 @@
         </v-form>
         <!-- <v-btn @click="signupGoogle" color="red" outlined class="ma-3">Zarejestruj z Google</v-btn> -->
         <hr />
-        <v-btn color="blue" outlined class="ma-3" :to="{name: 'logowanie'}">Logowanie</v-btn>
+        <v-btn color="blue" outlined class="ma-3 mt-10" :to="{name: 'logowanie'}">Logowanie</v-btn>
       </v-card-text>
     </v-card>
 
