@@ -9,7 +9,7 @@
           <v-text-field label="Email" type="email" v-model="email"></v-text-field>
           <v-text-field label="Hasło" type="password" v-model="password"></v-text-field>
           <p class="text-left font-weight-medium">
-            <router-link :to="{name: 'home'}">Przypomnij hasło</router-link>
+            <a @click.stop="dialog = true">Przypomnij hasło</a>
           </p>
           <p v-if="feedback" class="red--text">{{ feedback }}</p>
           <v-btn class="ma-3" color="blue" type="submit" large dark>Zaloguj się</v-btn>
@@ -21,18 +21,30 @@
         </v-form>
       </v-card-text>
     </v-card>
+
+     <v-dialog
+      v-model="dialog"
+      max-width="500px"
+    >
+      <ResetPassword />
+    </v-dialog>
   </div>
 </template>
 
 <script>
 import firebase from 'firebase'
+import ResetPassword from '@/components/ResetPassword'
 
 export default {
+  components: {
+    ResetPassword
+  },
   data(){
     return {
       email: null,
       password: null,
-      feedback: null
+      feedback: null,
+      dialog: false
     }
   },
   methods: {
