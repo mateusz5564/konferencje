@@ -1,6 +1,6 @@
 <template>
   <v-container class="grey lighten-5">
-    <h2 class="mb-6 headline font-weight-black" >Lista konferencji</h2>
+    <h2 class="mb-3 subtitle-1 font-weight-black" >Lista konferencji</h2>
     <v-row>
       <v-col v-for="(conference, index) in conferences" :key="index" cols="12" xs="12" md="4" xl="3">
         <ConferenceThumbnail :conference="conference" />

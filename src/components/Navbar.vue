@@ -13,24 +13,24 @@
         <v-icon class="pr-3" large left>mdi-account-circle</v-icon>Logowanie
       </v-btn>
 
-      <v-btn v-if="user" class="mx-2" icon fab :to="{ name: 'dodaj_konferencje'}">
-        <v-icon large>mdi-calendar-plus</v-icon>
+      <v-btn v-if="user" class="mx-2" small icon fab :to="{ name: 'dodaj_konferencje'}">
+        <v-icon >mdi-calendar-plus</v-icon>
       </v-btn>
 
       <!-- current user's menu -->
       <v-menu v-if="user" offset-y min-width="300px">
         <template v-slot:activator="{ on }">
-          <v-btn icon class="ml-2" v-on="on" fab>
-            <v-avatar>
-              <img src="@/assets/logo.png" alt="user's avatar" />
+          <v-btn icon small v-on="on" fab>
+            <v-avatar size="24">
+              <img src="@/assets/testav.png" alt="user's avatar" />
             </v-avatar>
           </v-btn>
         </template>
 
         <v-list>
-          <v-list-item>
-            <v-avatar>
-              <img src="@/assets/logo.png" alt />
+          <v-list-item class="mb-2">
+            <v-avatar size="40" class="mr-3">
+              <img src="@/assets/testav.png" alt />
             </v-avatar>
             <v-list-item-title>{{ user.email }}</v-list-item-title>
           </v-list-item>
