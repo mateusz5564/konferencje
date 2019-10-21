@@ -1,6 +1,6 @@
 <template>
   <nav>
-    <v-app-bar class="pr-6 grey lighten-5" elevate-on-scroll  app  >
+    <v-app-bar class="pr-6 blue darken-3" elevate-on-scroll clipped-left dark app>
       <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
 
       <v-toolbar-title>
@@ -9,8 +9,8 @@
 
       <div class="flex-grow-1"></div>
 
-      <v-btn v-if="!user" class="ma-4" outlined x-large color="white" :to="{ name: 'logowanie'}">
-        <v-icon class="pr-3" large left>mdi-account-circle</v-icon>Logowanie
+      <v-btn v-if="!user" outlined large color="white" :to="{ name: 'logowanie'}">
+        <v-icon class="pr-2" size="28" left>mdi-account-circle</v-icon>Logowanie
       </v-btn>
 
       <v-btn v-if="user" class="mx-2" small icon fab :to="{ name: 'dodaj_konferencje'}">
@@ -61,10 +61,10 @@
     </v-app-bar>
 
     <!-- NAVIGATION DRAWER -->
-    <v-navigation-drawer app v-model="drawer" width="260"  color="blue accent-3" dark>
+    <v-navigation-drawer app v-model="drawer" width="260" clipped color="blue darken-3" dark>
       <v-list dense nav>
         <v-list-item-group>
-          <v-list-item :to="{ name: 'admin_panel'}" link>
+          <v-list-item v-if="isAdmin" :to="{ name: 'admin_panel'}" link>
             <v-list-item-icon>
               <v-icon>mdi-wrench</v-icon>
             </v-list-item-icon>
@@ -108,6 +108,7 @@ export default {
       right: null,
       drawer: true,
       user: null,
+      isAdmin: null
     };
   },
   methods: {
@@ -124,6 +125,9 @@ export default {
     firebase.auth().onAuthStateChanged(user => {
       if (user) {
         this.user = user;
+        user.getIdTokenResult().then((token) => {
+           this.isAdmin = token.claims.admin
+        })
       } else {
         this.user = null;
       }

@@ -68,11 +68,24 @@ const router = new Router({
     {
       path: '/admin_panel',
       name: 'admin_panel',
-      component: AdminPanel
+      component: AdminPanel,
+      beforeEnter: (to, form, next) => {
+        let user = firebase.auth().currentUser
+        user.getIdTokenResult().then((token) => {
+          if(token.claims.admin){
+            // console.log("You are an admin")
+            next()
+          } else {
+            console.log("You are not an admin")
+            next(false)
+          }
+        })
+      }
     }
   ]
 })
 
+//lock is user is logged in
 router.beforeEach((to, from, next) => {
     if(to.matched.some(rec => rec.meta.lockIfUserLogedIn)){
       let user = firebase.auth().currentUser
@@ -84,6 +97,22 @@ router.beforeEach((to, from, next) => {
     } else {
       next()
     }
+})
+
+//require auth to visit
+router.beforeEach((to, from, next) => {
+  if(to.matched.some(rec => rec.meta.requireAuth)){
+    let user = firebase.auth().currentUser
+    if(user){
+      // console.log("You are logged in")
+      next()
+    } else {
+      console.log("You are not logged in")
+      next(false)
+    }
+  } else {
+    next()
+  }
 })
 
 export default router

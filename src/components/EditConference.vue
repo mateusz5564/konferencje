@@ -2,7 +2,7 @@
   <div class="edit_conference ">
     <v-card class="register__card pa-5" max-width="1000px">
       <v-card-title class="justify-center">
-        <h3 class="mb-2">Edytuj konferencje</h3>
+        <h3 class="mb-5 headline">Edycja konferencji</h3>
       </v-card-title>
       <v-card-text>
         <v-form @submit.prevent="updateConference">

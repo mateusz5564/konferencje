@@ -2,7 +2,7 @@
   <div class="new_conference mt-12">
     <v-card class="register__card pa-5" max-width="800px">
       <v-card-title class="justify-center">
-        <h2>Dodaj konferencje</h2>
+        <h2 class="headline">Nowa konferencja</h2>
       </v-card-title>
       <v-card-text>
         <v-form @submit.prevent="addConference">
