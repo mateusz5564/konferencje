@@ -1,6 +1,6 @@
 <template>
   <nav>
-    <v-app-bar class="pr-6" clipped-left flat app color="blue accent-4" dark>
+    <v-app-bar class="pr-6 grey lighten-5" elevate-on-scroll  app  >
       <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
 
       <v-toolbar-title>
@@ -61,7 +61,7 @@
     </v-app-bar>
 
     <!-- NAVIGATION DRAWER -->
-    <v-navigation-drawer app v-model="drawer" width="260" clipped color="blue accent-3" dark>
+    <v-navigation-drawer app v-model="drawer" width="260"  color="blue accent-3" dark>
       <v-list dense nav>
         <v-list-item-group>
           <v-list-item :to="{ name: 'admin_panel'}" link>
