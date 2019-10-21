@@ -13,14 +13,14 @@
         <v-icon class="pr-3" large left>mdi-account-circle</v-icon>Logowanie
       </v-btn>
 
-      <v-btn v-if="user" class="mx-2" icon fab :to="{ name: 'dodaj_konferencje'}" >
+      <v-btn v-if="user" class="mx-2" icon fab :to="{ name: 'dodaj_konferencje'}">
         <v-icon large>mdi-calendar-plus</v-icon>
       </v-btn>
 
       <!-- current user's menu -->
       <v-menu v-if="user" offset-y min-width="300px">
         <template v-slot:activator="{ on }">
-          <v-btn icon class="ml-2" v-on="on" fab >
+          <v-btn icon class="ml-2" v-on="on" fab>
             <v-avatar>
               <img src="@/assets/logo.png" alt="user's avatar" />
             </v-avatar>
@@ -62,73 +62,72 @@
 
     <!-- NAVIGATION DRAWER -->
     <v-navigation-drawer app v-model="drawer" width="260" clipped color="blue accent-3" dark>
-      
-
       <v-list dense nav>
         <v-list-item-group>
-        <v-list-item :to="{ name: 'admin_panel'}" link>
-          <v-list-item-icon>
-            <v-icon>mdi-wrench</v-icon>
-          </v-list-item-icon>
+          <v-list-item :to="{ name: 'admin_panel'}" link>
+            <v-list-item-icon>
+              <v-icon>mdi-wrench</v-icon>
+            </v-list-item-icon>
 
-          <v-list-item-content>
-            <v-list-item-title>Panel Administracyjny</v-list-item-title>
-          </v-list-item-content>
-        </v-list-item>
+            <v-list-item-content>
+              <v-list-item-title>Panel Administracyjny</v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
 
-        <v-list-item exact :to="{ name: 'home'}">
-          <v-list-item-icon>
-            <v-icon>mdi-calendar</v-icon>
-          </v-list-item-icon>
+          <v-list-item exact :to="{ name: 'home'}">
+            <v-list-item-icon>
+              <v-icon>mdi-calendar</v-icon>
+            </v-list-item-icon>
 
-          <v-list-item-content>
-            <v-list-item-title>Wydarzenia</v-list-item-title>
-          </v-list-item-content>
-        </v-list-item>
+            <v-list-item-content>
+              <v-list-item-title>Wydarzenia</v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
 
-         <v-list-item :to="{ name: 'kalendarz'}" link>
-          <v-list-item-icon>
-            <v-icon>mdi-calendar-month</v-icon>
-          </v-list-item-icon>
+          <v-list-item :to="{ name: 'kalendarz'}" link>
+            <v-list-item-icon>
+              <v-icon>mdi-calendar-month</v-icon>
+            </v-list-item-icon>
 
-          <v-list-item-content>
-            <v-list-item-title>Kalendarz</v-list-item-title>
-          </v-list-item-content>
-        </v-list-item>
+            <v-list-item-content>
+              <v-list-item-title>Kalendarz</v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
         </v-list-item-group>
       </v-list>
-      
     </v-navigation-drawer>
   </nav>
 </template>
 
 <script>
-import firebase from 'firebase'
+import firebase from "firebase";
 
 export default {
   data() {
     return {
       right: null,
       drawer: true,
-      user: null
-    }
+      user: null,
+    };
   },
   methods: {
-    logout(){
-      firebase.auth().signOut()
-      .then(() => {
-        this.$router.push({name: 'logowanie'})
-      })
+    logout() {
+      firebase
+        .auth()
+        .signOut()
+        .then(() => {
+          this.$router.push({ name: "logowanie" });
+        });
     }
   },
-  created(){
-    firebase.auth().onAuthStateChanged((user) => {
-      if(user){
-        this.user = user
+  created() {
+    firebase.auth().onAuthStateChanged(user => {
+      if (user) {
+        this.user = user;
       } else {
-        this.user = null
+        this.user = null;
       }
-    })
+    });
   }
 };
 </script>

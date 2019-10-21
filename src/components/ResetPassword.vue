@@ -7,8 +7,8 @@
       <v-card-text>
         <v-form @submit.prevent="reset">
           <p class="mt-3 pl-10 pr-10 font-weight-bold">Aby zresetować hasło, podaj adres email swojego konta, zostanie na niego wysłany link resetujący hasło</p>
-          <v-text-field label="Email" type="email" v-model="email"></v-text-field>
-          <p v-if="feedback" class="red--text">{{ feedback }}</p>
+          <v-text-field label="Email" type="email" required v-model="email"></v-text-field>
+          <!-- <p v-if="feedback" class="red--text text-left">{{ feedback }}</p> -->
           <v-btn class="ma-3" color="blue" type="submit" large dark>Wyślij</v-btn>
         </v-form>
       </v-card-text>
@@ -18,8 +18,7 @@
       v-model="snackbar"
         :color="color"
         top
-        timeout="5000"
-        absolute
+        :timeout=timeout
     >
     <div>
       <v-icon class="mr-2">{{icon}}</v-icon>
@@ -37,21 +36,48 @@
 </template>
 
 <script>
+import firebase from 'firebase'
+
 export default {
   data() {
     return {
+      email: null,
       snackbar: false,
-      color: 'success',
-      icon: 'mdi-check-circle',
-      text: 'Wysłano link resetujący'
+      color: '',
+      icon: '',
+      text: '',
+      timeout: 5000
     }
   },
   methods: {
     reset(){
-      this.snackbar = true
-      this.icon = "mdi-alert-circle"
-      this.color = "error"
-      this.text = "Nie udało się wysłać linku"
+      const auth = firebase.auth()
+      if(this.email){
+        this.feedback = ''
+        auth.sendPasswordResetEmail(this.email).then(() => {
+          this.email = ''
+          this.$emit('resetPasswordSent')
+        }).catch(err => {
+          console.log(err)
+          this.color = "error"
+          this.icon = "mdi-alert-circle"
+          this.text = "Błąd! Nie udało się wysłać wiadomości"
+          this.snackbar = true
+          switch(err.message){
+            case "There is no user record corresponding to this identifier. The user may have been deleted.": 
+              this.text = "Konto o podanym adresie nie istnieje!"
+              break;
+            case "The email address is badly formatted.":
+              this.text = "Nie poprawny adres email!"
+              break;
+          }
+        })
+      } else {
+        this.color = "error"
+        this.icon = "mdi-alert-circle"
+        this.text = "Podaj adres email!"
+        this.snackbar = true
+      }
     }
   }
 }
