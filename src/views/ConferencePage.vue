@@ -1,20 +1,20 @@
 <template>
   <div class="conference-page">
     <div v-if="exist">
-    <v-card class="mx-auto" >
+    <v-card class="mx-auto" flat max-width="800px" >
       <slot name="floating-btn"></slot>
     
       <v-list-item>
         <v-list-item-content>
-          <v-list-item-title class="title font-weight-regular mt-2">{{title}}</v-list-item-title>
-          <p class="pb-2 body-2">{{start_date | dateFilter}} - {{end_date | dateFilter}}</p>
+          <v-list-item-text class="title font-weight-regular mt-2">{{title}}</v-list-item-text>
+          <!-- <p class="pb-2 body-2">{{start_date | dateFilter}} - {{end_date | dateFilter}}</p>
           <v-divider class="blue lighten-1"></v-divider>
           <div class="pt-2 pb-2 body-2 font-weight-medium grey--text">
             <v-icon>mdi-map-marker</v-icon>
             {{ location }}
             <v-spacer></v-spacer>
             <a class="body-2" :href="link" target="_blank">zobacz na mapie</a>
-          </div>
+          </div> -->
         </v-list-item-content>
       </v-list-item>
 
@@ -24,6 +24,38 @@
         <div class="text--primary">{{description}}</div>
       </v-card-text>
     </v-card>
+
+<v-card
+    class="mx-auto"
+    max-width="500"
+  >
+
+  <v-row class="ma-0 pt-3 pb-3">
+    <v-col class="d-flex justify-center align-start" cols=2>
+      <v-icon color="blue" large>mdi-calendar</v-icon>
+    </v-col>
+    <v-col class="pt-2 pb-2 body-2 font-weight-bold grey--black">
+      <p class="ma-0 body-2">{{start_date | dateFilter}} - {{end_date | dateFilter}}</p>
+    </v-col>
+  </v-row>
+
+
+  <v-divider class="blue lighten-1"></v-divider>
+
+
+  <v-row class="ma-0 pt-3 pb-3">
+    <v-col cols=2 class="d-flex justify-center align-start" justify-self="center">
+      <v-icon color="blue" large>mdi-map-marker-radius</v-icon>
+    </v-col>
+    <v-col class="pt-2 pb-2 body-2 font-weight-medium grey--text" cols=10>
+      {{ location }}
+      <a class="body-2 d-block" :href="link" target="_blank">zobacz na mapie</a>
+    </v-col>
+  </v-row>
+
+
+  </v-card>
+
   </div>
 
   <div v-if="!exist" class="test">
@@ -75,7 +107,7 @@ export default {
                 let address = response.data.results[0].formatted_address
                 this.location = address
                 const link = `https://maps.google.com/?q=${address}`
-                this.location_link = link
+                this.link = link
               })
               .catch(e => {
                 console.log(e)
