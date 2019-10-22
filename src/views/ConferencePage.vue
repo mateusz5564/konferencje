@@ -1,77 +1,54 @@
 <template>
   <div class="conference-page">
     <div v-if="exist">
-    <v-card class="mx-auto" flat max-width="800px" >
-      <slot name="floating-btn"></slot>
-    
-      <v-list-item>
-        <v-list-item-content>
-          <v-list-item-text class="title font-weight-regular mt-2">{{title}}</v-list-item-text>
-          <!-- <p class="pb-2 body-2">{{start_date | dateFilter}} - {{end_date | dateFilter}}</p>
-          <v-divider class="blue lighten-1"></v-divider>
-          <div class="pt-2 pb-2 body-2 font-weight-medium grey--text">
-            <v-icon>mdi-map-marker</v-icon>
-            {{ location }}
-            <v-spacer></v-spacer>
-            <a class="body-2" :href="link" target="_blank">zobacz na mapie</a>
-          </div> -->
-        </v-list-item-content>
-      </v-list-item>
+    <v-container>
+      <v-row justify="center">
+        <v-col lg="auto">
+          <v-card class="mx-auto" outlined max-width="800px">
+              <v-card-text class="headline font-weight-light mt-2 black--text">{{title}}</v-card-text>
 
-      <v-img :src="logo" height="500"></v-img>
+              <v-img :src="logo" height="auto"></v-img>
 
-      <v-card-text class="headline mb-5">
-        <div class="text--primary">{{description}}</div>
-      </v-card-text>
-    </v-card>
+              <v-card-text class="body-2 mb-5">
+                <div class="text--primary">{{description}}</div>
+              </v-card-text>
+            </v-card>
+        </v-col>
+        <v-col lg="auto">
+          <v-card class="mx-auto" outlined width="400">
+              <div class="d-flex flex-row pa-5">
+                <v-icon class="pr-3" color="blue" large>mdi-calendar</v-icon>
+                <p class="ma-0 body-1">{{start_date | dateFilter}} - {{end_date | dateFilter}}</p>
+              </div>
 
-<v-card
-    class="mx-auto"
-    max-width="500"
-  >
+              <v-divider class="blue lighten-1"></v-divider>
 
-  <v-row class="ma-0 pt-3 pb-3">
-    <v-col class="d-flex justify-center align-start" cols=2>
-      <v-icon color="blue" large>mdi-calendar</v-icon>
-    </v-col>
-    <v-col class="pt-2 pb-2 body-2 font-weight-bold grey--black">
-      <p class="ma-0 body-2">{{start_date | dateFilter}} - {{end_date | dateFilter}}</p>
-    </v-col>
-  </v-row>
+              <div class="d-flex flex-row pa-5">
+                <v-icon class="pr-3" color="blue" large>mdi-map-marker-radius</v-icon>
+                <div class="d-flex flex-column">
+                  <span class="body-1">{{ location }}</span>
+                  <a class="body-2" :href="link" target="_blank">zobacz na mapie</a>
+                </div>
+              </div>
+            </v-card>
+        </v-col>
+      </v-row>
+    </v-container>
+    </div>
 
-
-  <v-divider class="blue lighten-1"></v-divider>
-
-
-  <v-row class="ma-0 pt-3 pb-3">
-    <v-col cols=2 class="d-flex justify-center align-start" justify-self="center">
-      <v-icon color="blue" large>mdi-map-marker-radius</v-icon>
-    </v-col>
-    <v-col class="pt-2 pb-2 body-2 font-weight-medium grey--text" cols=10>
-      {{ location }}
-      <a class="body-2 d-block" :href="link" target="_blank">zobacz na mapie</a>
-    </v-col>
-  </v-row>
-
-
-  </v-card>
-
-  </div>
-
-  <div v-if="!exist" class="test">
-    <h2>Nie znaleziono konferencji</h2>
-  </div>
-
+    <div v-if="!exist" class="test">
+      <h2>Nie znaleziono konferencji</h2>
+    </div>
   </div>
 </template>
 
 <script>
-import db from '@/firebase/init'
-import firebase from 'firebase'
-import axios from 'axios'
+import db from "@/firebase/init";
+import firebase from "firebase";
+import axios from "axios";
 
 export default {
-  data () {
+  data() {
     return {
       exist: false,
       id: null,
@@ -85,41 +62,50 @@ export default {
       description: null,
       logo: "",
       feedback: null,
-      image: null,
-    }
+      image: null
+    };
   },
-  created(){
-    this.id = this.$route.params.conference_id
-    let ref = db.collection('conferences').doc(this.$route.params.conference_id)
+  created() {
+    this.id = this.$route.params.conference_id;
+    let ref = db
+      .collection("conferences")
+      .doc(this.$route.params.conference_id);
     ref.get().then(doc => {
-      if (doc.exists){
-        let data = doc.data()
-        this.exist = true
-        this.title = data.title 
-        this.description = data.description
+      if (doc.exists) {
+        let data = doc.data();
+        this.exist = true;
+        this.title = data.title;
+        this.description = data.description;
         // this.convertedStartDate(data.start_date)
         // this.convertedEndDate(data.end_date)
-        this.start_date = data.start_date.toDate()
-        this.end_date = data.end_date.toDate()
-        this.logo = data.logo
-        axios.post('https://maps.googleapis.com/maps/api/geocode/json?latlng=' + doc.data().location.latitude + ',' + doc.data().location.longitude + '&key=AIzaSyDtYbZokAi1OVXplmLIpuxlJpppE0fijPA')
-              .then(response => {
-                let address = response.data.results[0].formatted_address
-                this.location = address
-                const link = `https://maps.google.com/?q=${address}`
-                this.link = link
-              })
-              .catch(e => {
-                console.log(e)
-            })
+        this.start_date = data.start_date.toDate();
+        this.end_date = data.end_date.toDate();
+        this.logo = data.logo;
+        axios
+          .post(
+            "https://maps.googleapis.com/maps/api/geocode/json?latlng=" +
+              doc.data().location.latitude +
+              "," +
+              doc.data().location.longitude +
+              "&key=AIzaSyDtYbZokAi1OVXplmLIpuxlJpppE0fijPA"
+          )
+          .then(response => {
+            let address = response.data.results[0].formatted_address;
+            this.location = address;
+            const link = `https://maps.google.com/?q=${address}`;
+            this.link = link;
+          })
+          .catch(e => {
+            console.log(e);
+          });
       } else {
-        console.log('Taka konferencja nie istenieje!')
+        console.log("Taka konferencja nie istenieje!");
       }
-    })
-  },
+    });
+  }
   // computed: {
   //   //read data
-    
+
   //   //updating
   //   preparedStartDate() {
   //     const date = new Date(this.start_date)
@@ -161,10 +147,9 @@ export default {
   //     this.end_time = date.toISOString().substring(11,16)
   //   },
   // }
-}
+};
 </script>
 
 
 <style>
-
 </style>
