@@ -18,14 +18,10 @@
       </v-list-item>
 
       <v-img :src="conference.logo" height="200"></v-img>
-
-      <!-- <v-card-text class="headline mb-5">
-        <div class="text--primary">{{conference.description}}</div>
-      </v-card-text>-->
-
+      
       <v-card-actions>
         <div class="flex-grow-1"></div>
-        <v-btn text color="blue accent-4">więcej informacji</v-btn>
+        <v-btn text :to="{name: 'konferencja', params: { conference_id: conference.id}}" color="blue accent-4">więcej informacji</v-btn>
       </v-card-actions>
     </v-card>
   </div>

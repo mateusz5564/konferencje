@@ -64,7 +64,7 @@
     <v-navigation-drawer app v-model="drawer" width="260" clipped color="blue darken-3" dark>
       <v-list dense nav>
         <v-list-item-group>
-          <v-list-item v-if="isAdmin" :to="{ name: 'admin_panel'}" link>
+          <v-list-item v-if="user && isAdmin" :to="{ name: 'admin_panel'}" link>
             <v-list-item-icon>
               <v-icon>mdi-wrench</v-icon>
             </v-list-item-icon>

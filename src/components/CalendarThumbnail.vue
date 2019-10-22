@@ -21,7 +21,7 @@
 
       <v-card-actions>
         <div class="flex-grow-1"></div>
-        <v-btn text color="blue accent-4">więcej informacji</v-btn>
+        <v-btn text :to="{name: 'konferencja', params: { conference_id: conference.id}}" color="blue accent-4">więcej informacji</v-btn>
       </v-card-actions>
     </v-card>
   </div>

@@ -223,7 +223,6 @@ export default {
     let ref = db.collection('conferences').doc(this.$route.params.conference_id)
     ref.get().then(doc => {
       if (doc.exists){
-        console.log(doc.data())
         let data = doc.data()
         this.title = data.title 
         this.description = data.description

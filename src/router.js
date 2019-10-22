@@ -8,6 +8,7 @@ import EditConference from '@/components/EditConference'
 import UserConferences from '@/views/UserConferences'
 import Calendar from '@/views/Calendar'
 import AdminPanel from '@/views/AdminPanel'
+import ConferencePage from '@/views/ConferencePage'
 import firebase from 'firebase'
 
 Vue.use(Router)
@@ -59,6 +60,11 @@ const router = new Router({
       meta: {
         requireAuth: true
       }
+    },
+    {
+      path: '/konferencja/:conference_id',
+      name: 'konferencja',
+      component: ConferencePage
     },
     {
       path: '/kalendarz',
