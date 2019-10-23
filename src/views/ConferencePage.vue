@@ -1,10 +1,10 @@
 <template>
   <div class="conference-page">
     <div v-if="exist">
-    <v-container>
-      <v-row justify="center">
-        <v-col lg="auto">
-          <v-card class="mx-auto" outlined max-width="800px">
+      <v-container>
+        <v-row justify="center">
+          <v-col lg="auto">
+            <v-card class="mx-auto" outlined max-width="800px">
               <v-card-text class="headline font-weight-light mt-2 black--text">{{title}}</v-card-text>
 
               <v-img :src="logo" height="auto"></v-img>
@@ -13,9 +13,9 @@
                 <div class="text--primary">{{description}}</div>
               </v-card-text>
             </v-card>
-        </v-col>
-        <v-col lg="auto">
-          <v-card class="mx-auto" outlined width="400">
+          </v-col>
+          <v-col lg="auto">
+            <v-card class="mx-auto" outlined width="400">
               <div class="d-flex flex-row pa-5">
                 <v-icon class="pr-3" color="blue" large>mdi-calendar</v-icon>
                 <p class="ma-0 body-1">{{start_date | dateFilter}} - {{end_date | dateFilter}}</p>
@@ -31,9 +31,11 @@
                 </div>
               </div>
             </v-card>
-        </v-col>
-      </v-row>
-    </v-container>
+          </v-col>
+        </v-row>
+      </v-container>
+
+      <v-btn @click="downloadIcsFile">CLICK</v-btn>
     </div>
 
     <div v-if="!exist" class="test">
@@ -46,6 +48,7 @@
 import db from "@/firebase/init";
 import firebase from "firebase";
 import axios from "axios";
+import { saveAs } from "file-saver";
 
 export default {
   data() {
@@ -62,8 +65,38 @@ export default {
       description: null,
       logo: "",
       feedback: null,
-      image: null
+      image: null,
     };
+  },
+  methods: {
+    downloadIcsFile() {
+      var blob = new Blob(
+        [
+`BEGIN:VCALENDAR
+VERSION:2.0
+METHOD:PUBLISH
+BEGIN:VEVENT
+DTSTART:${this.start_date.toISOString()}
+DTEND:${this.end_date.toISOString()}
+LOCATION:${this.location}
+TRANSP:OPAQUE
+SEQUENCE:0
+UID:
+DTSTAMP:20191023T133357Z
+SUMMARY:${this.title}
+DESCRIPTION:${this.description} <br><br> Strona konferencji: http://localhost:8080/#${this.$route.fullPath}
+URL:http://localhost:8080/#${this.$route.fullPath}
+PRIORITY:1
+CLASS:PUBLIC
+END:VEVENT
+END:VCALENDAR
+`
+        ],
+        { type: "text/plain;charset=utf-8" }
+      );
+      const filename = this.title + ".ics"
+      saveAs(blob, filename);
+    }
   },
   created() {
     this.id = this.$route.params.conference_id;
@@ -76,8 +109,6 @@ export default {
         this.exist = true;
         this.title = data.title;
         this.description = data.description;
-        // this.convertedStartDate(data.start_date)
-        // this.convertedEndDate(data.end_date)
         this.start_date = data.start_date.toDate();
         this.end_date = data.end_date.toDate();
         this.logo = data.logo;
@@ -103,50 +134,6 @@ export default {
       }
     });
   }
-  // computed: {
-  //   //read data
-
-  //   //updating
-  //   preparedStartDate() {
-  //     const date = new Date(this.start_date)
-  //     if (typeof this.start_time === "string") {
-  //       let hours = this.start_time.match(/^(\d+)/)[1]
-  //       let minutes = this.start_time.match(/:(\d+)/)[1]
-  //       date.setHours(hours)
-  //       date.setMinutes(minutes)
-  //     } else {
-  //       date.setHours(this.start_time.getHours())
-  //       date.setMinutes(this.start_time.getMinutes())
-  //     }
-  //     return date;
-  //   },
-  //   preparedEndDate() {
-  //     const date = new Date(this.end_date)
-  //     if (typeof this.end_time === "string") {
-  //       let hours = this.end_time.match(/^(\d+)/)[1]
-  //       let minutes = this.end_time.match(/:(\d+)/)[1]
-  //       date.setHours(hours)
-  //       date.setMinutes(minutes)
-  //     } else {
-  //       date.setHours(this.end_time.getHours())
-  //       date.setMinutes(this.end_time.getMinutes())
-  //     }
-  //     return date;
-  //   }
-  // },
-  // methods: {
-  //   //read data
-  //   convertedStartDate(timestamp){
-  //     const date = new Date(timestamp.seconds*1000)
-  //     this.start_date = date.toISOString().substring(0,10)
-  //     this.start_time = date.toISOString().substring(11,16)
-  //   },
-  //   convertedEndDate(timestamp){
-  //     const date = new Date(timestamp.seconds*1000)
-  //     this.end_date = date.toISOString().substring(0,10)
-  //     this.end_time = date.toISOString().substring(11,16)
-  //   },
-  // }
 };
 </script>
 
