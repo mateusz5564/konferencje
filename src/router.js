@@ -9,6 +9,7 @@ import UserConferences from '@/views/UserConferences'
 import Calendar from '@/views/Calendar'
 import AdminPanel from '@/views/AdminPanel'
 import ConferencePage from '@/views/ConferencePage'
+import UserProfile from '@/views/UserProfile'
 import firebase from 'firebase'
 
 Vue.use(Router)
@@ -70,6 +71,14 @@ const router = new Router({
       path: '/kalendarz',
       name: 'kalendarz',
       component: Calendar
+    },
+    {
+      path: '/profil/:username',
+      name: 'profil',
+      component: UserProfile,
+      meta: {
+        requireAuth: true
+      }
     },
     {
       path: '/admin_panel',

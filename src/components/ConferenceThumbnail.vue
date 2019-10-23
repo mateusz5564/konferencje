@@ -17,7 +17,7 @@
         </v-list-item-content>
       </v-list-item>
 
-      <v-img :src="conference.logo" height="200"></v-img>
+      <v-img :src="conference.logo" aspect-ratio="16/9" height="200"></v-img>
       
       <v-card-actions>
         <div class="flex-grow-1"></div>

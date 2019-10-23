@@ -32,7 +32,7 @@
             <v-avatar size="40" class="mr-3">
               <img src="@/assets/testav.png" alt />
             </v-avatar>
-            <v-list-item-title>{{ user.email }}</v-list-item-title>
+            <v-list-item-title>{{ profil.username }}</v-list-item-title>
           </v-list-item>
 
           <v-divider></v-divider>
@@ -44,6 +44,16 @@
 
             <v-list-item-content>
               <v-list-item-title>Moje konferencje</v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
+
+          <v-list-item link :to="{name: 'profil', params: {username: profil.username}}">
+            <v-list-item-icon>
+              <v-icon>mdi-account</v-icon>
+            </v-list-item-icon>
+
+            <v-list-item-content>
+              <v-list-item-title>Profil</v-list-item-title>
             </v-list-item-content>
           </v-list-item>
 
@@ -101,6 +111,7 @@
 
 <script>
 import firebase from "firebase";
+import db from '@/firebase/init'
 
 export default {
   data() {
@@ -108,7 +119,8 @@ export default {
       right: null,
       drawer: true,
       user: null,
-      isAdmin: null
+      isAdmin: null,
+      profil: null
     };
   },
   methods: {
@@ -125,6 +137,13 @@ export default {
     firebase.auth().onAuthStateChanged(user => {
       if (user) {
         this.user = user;
+        db.collection('users').where("user_id", "==", user.uid)
+        .get()
+        .then(querySnapshot => {
+          querySnapshot.forEach(doc => {
+            this.profil = doc.data()
+          })
+        })
         user.getIdTokenResult().then((token) => {
            this.isAdmin = token.claims.admin
         })
