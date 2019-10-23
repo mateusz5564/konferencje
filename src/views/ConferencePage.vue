@@ -35,7 +35,8 @@
         </v-row>
       </v-container>
 
-      <v-btn @click="downloadIcsFile">CLICK</v-btn>
+      <ExportConference :conference="conference"/>
+
     </div>
 
     <div v-if="!exist" class="test">
@@ -49,8 +50,12 @@ import db from "@/firebase/init";
 import firebase from "firebase";
 import axios from "axios";
 import { saveAs } from "file-saver";
+import ExportConference from '@/components/ExportConference'
 
 export default {
+  components: {
+    ExportConference
+  },
   data() {
     return {
       exist: false,
@@ -66,6 +71,7 @@ export default {
       logo: "",
       feedback: null,
       image: null,
+      conference: {}
     };
   },
   methods: {
@@ -129,6 +135,15 @@ END:VCALENDAR
           .catch(e => {
             console.log(e);
           });
+
+      this.conference.id = this.id
+      this.conference.title = this.title
+      this.conference.start_date = this.start_date.toISOString()
+      this.conference.end_date = this.end_date.toISOString()
+      this.conference.location = this.location
+      this.conference.link = this.link
+      this.conference.description = this.description
+      this.conference.logo = this.logo
       } else {
         console.log("Taka konferencja nie istenieje!");
       }

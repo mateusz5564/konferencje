@@ -71,6 +71,7 @@
                   <v-btn text icon color="orange" @click="addToGoogleCalendar(selectedEvent)"> 
                     <v-icon>mdi-calendar-plus</v-icon>
                   </v-btn>
+                  <ExportConference :conference="conference"/>
                   <v-btn class="ml-4" text icon @click="selectedOpen = false"> 
                     <v-icon>mdi-close</v-icon>
                   </v-btn>
@@ -92,6 +93,7 @@
 
 <script>
 import CalendarThumbnail from '@/components/CalendarThumbnail.vue'
+import ExportConference from '@/components/ExportConference.vue'
 import db from '@/firebase/init'
 import firebase from 'firebase'
 import axios from 'axios'
@@ -99,7 +101,8 @@ import axios from 'axios'
 
   export default {
     components: {
-      CalendarThumbnail
+      CalendarThumbnail,
+      ExportConference
     },
     data: () => ({
       today: '2019-10-07',
@@ -113,6 +116,7 @@ import axios from 'axios'
       },
       start: null,
       end: null,
+      conference: {},
       selectedEvent: {},
       selectedElement: null,
       selectedOpen: false,
@@ -199,6 +203,14 @@ import axios from 'axios'
       showEvent ({ nativeEvent, event }) {
         const open = () => {
           this.selectedEvent = event
+          this.conference.id = event.id
+          this.conference.title = event.title
+          this.conference.start_date = new Date(event.start_date.seconds *1000).toISOString()
+          this.conference.end_date = new Date(event.end_date.seconds *1000).toISOString()
+          this.conference.location = event.location
+          this.conference.link = event.link
+          this.conference.description = event.description
+          this.conference.logo = event.logo
           this.selectedElement = nativeEvent.target
           setTimeout(() => this.selectedOpen = true, 10)
         }
