@@ -18,7 +18,10 @@
             <v-card class="mx-auto" outlined width="400">
               <div class="d-flex flex-row pa-5">
                 <v-icon class="pr-3" color="blue" large>mdi-calendar</v-icon>
-                <p class="ma-0 body-1">{{start_date | dateFilter}} - {{end_date | dateFilter}}</p>
+                <div class="d-flex flex-column">
+                  <span class="body-1">{{start_date | dateFilter}} - {{end_date | dateFilter}}</span>
+                    <a @click.stop="dialog = true">dodaj do kalendarza</a>
+                </div>
               </div>
 
               <v-divider class="blue lighten-1"></v-divider>
@@ -35,7 +38,10 @@
         </v-row>
       </v-container>
 
+    <v-dialog v-model="dialog" max-width="350px">
       <ExportConference :conference="conference"/>
+    </v-dialog>
+      
 
     </div>
 
@@ -58,6 +64,7 @@ export default {
   },
   data() {
     return {
+      dialog: false,
       exist: false,
       id: null,
       title: null,

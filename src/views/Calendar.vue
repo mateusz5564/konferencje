@@ -68,10 +68,9 @@
             <v-card color="grey lighten-4" max-width="400px" flat>
               <CalendarThumbnail :conference="selectedEvent"> 
                 <div slot="close-btn">
-                  <v-btn text icon color="orange" @click="addToGoogleCalendar(selectedEvent)"> 
+                  <v-btn text icon color="blue" @click.stop="dialog = true"> 
                     <v-icon>mdi-calendar-plus</v-icon>
                   </v-btn>
-                  <ExportConference :conference="conference"/>
                   <v-btn class="ml-4" text icon @click="selectedOpen = false"> 
                     <v-icon>mdi-close</v-icon>
                   </v-btn>
@@ -82,6 +81,10 @@
                 <v-btn text color="secondary" @click="selectedOpen = false">Zamknij</v-btn>
               </v-card-actions> -->
             </v-card>
+
+            <v-dialog v-model="dialog" max-width="350px">
+              <ExportConference :conference="conference"/>
+            </v-dialog>
           
           </v-menu>
         </v-sheet>
@@ -105,6 +108,7 @@ import axios from 'axios'
       ExportConference
     },
     data: () => ({
+      dialog: false,
       today: '2019-10-07',
       focus: '2019-10-07',
       type: 'month',
