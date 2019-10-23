@@ -1,10 +1,34 @@
 <template>
-  <div class="export-calendar">
-    <v-btn text icon color="orange" @click="addToGoogleCalendar"> 
-      <v-icon>mdi-calendar-plus</v-icon>
-    </v-btn>
-    <v-btn @click="downloadIcsFile">CLICK</v-btn>
-  </div>
+   <v-card
+    class="mx-auto"
+    max-width="350"
+    tile
+  >
+    <v-list flat>
+      <v-subheader class="title text-center">Dodaj do kalendarza</v-subheader>
+      <v-divider></v-divider>
+      <v-list-item-group exact>
+        <v-list-item @click="addToGoogleCalendar">
+          <v-list-item-icon>
+            <v-icon>mdi-google</v-icon>
+          </v-list-item-icon>
+          <v-list-item-content>
+            <v-list-item-title>Google Calendar</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+
+        <v-list-item @click="downloadIcsFile">
+          <v-list-item-icon>
+            <v-icon>mdi-calendar-multiple</v-icon>
+          </v-list-item-icon>
+          <v-list-item-content>
+            <v-list-item-title>iCalendar</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+      </v-list-item-group>
+    </v-list>
+  </v-card>
+
 </template>
 
 <script>
