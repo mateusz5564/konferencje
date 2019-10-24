@@ -1,10 +1,10 @@
 <template>
   <nav>
-    <v-app-bar class="pr-6 blue darken-3" elevate-on-scroll clipped-left dark app>
+    <v-app-bar class="pr-5 blue darken-3" elevate-on-scroll clipped-left dark app>
       <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
 
       <v-toolbar-title>
-        <router-link :to="{name: 'home'}" tag="span" style="cursor: pointer;">Konferencje</router-link>
+        <router-link :to="{name: 'home'}" tag="span" style="cursor: pointer;"><span class="font-weight-bold headline">konferencje</span></router-link>
       </v-toolbar-title>
 
       <div class="flex-grow-1"></div>
