@@ -165,7 +165,6 @@
             </v-col>
           </v-row>
 
-
           <h2 class="mt-5 mb-4">Aktualne logo</h2>
           <v-img :src="logo" max-width="100%" height="auto"></v-img>
 
@@ -337,7 +336,9 @@ export default {
           filename.length
         );
 
-        firebase.storage().ref().child("conferences/" + this.id + extention)
+        
+
+        firebase.storage().refFromURL(this.logo)
         .delete().then(() => {
           console.log('usunieto obecne logo')
            firebase
