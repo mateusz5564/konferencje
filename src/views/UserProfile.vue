@@ -96,31 +96,24 @@ export default {
   data(){
     return {
       profile: null,
-      currentUser: null,
       isOwner: false,
-      showSettings: true
+      showSettings: true,
+      currentUser: null
     }
   },
   created(){
     var user = firebase.auth().currentUser;
     firebase.auth().onAuthStateChanged(user => {
       if (user) {
-        this.currentUser = user;
-        db.collection('users').where("user_id", "==", user.uid)
+        db.collection('users').where("username", "==", this.$route.params.username)
         .get()
         .then(querySnapshot => {
           querySnapshot.forEach(doc => {
-            if(doc.data().username === this.$route.params.username){
+            this.profile = doc.data()
+            if(doc.data().user_id === user.uid){
               this.isOwner = true
-              this.profile = doc.data()
-            } else {
-              this.currentUser = null
-              let ref = db.collection('users')
-              ref.doc(this.$route.params.username).get()
-              .then(user => {
-                this.profile = user.data()
-              })
-            }
+              this.currentUser = user
+            } 
           })
         })
       } 

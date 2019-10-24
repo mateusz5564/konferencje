@@ -41,20 +41,22 @@ export default {
   },
   methods: {
     isUsernameTaken(){
+      console.log("sdasdasdas")
       if(this.username){
-        db.collection('users').doc(this.username)
+        db.collection('users').where("username", "==", this.username)
         .get()
-        .then(doc => {
-          if(doc.exists) {
+        .then(querySnapshot => {
+          querySnapshot.forEach(doc => {
             this.usernameFeedback = "Nazwa użytkownika zajęta!"
             document.getElementById("unFeedback").style.color = "red";
             return true
-        } else {
-            this.usernameFeedback = "Nazwa użytkownika wolna"
-            document.getElementById("unFeedback").style.color = "green";
-            return false
-        }
+          })
         })
+        this.usernameFeedback = "Nazwa użytkownika wolna"
+        document.getElementById("unFeedback").style.color = "green";
+        return false
+      } else {
+        this.usernameFeedback = null
       }
     },
     signup(){
@@ -62,7 +64,7 @@ export default {
         console.log(this.isUsernameTaken)
         firebase.auth().createUserWithEmailAndPassword(this.email, this.password)
         .then(response => {
-          db.collection('users').doc(this.username).set({user_id: response.user.uid})
+          db.collection('users').doc(response.user.uid).set({user_id: response.user.uid, username: this.username})
           .then(() => {
             this.$router.push({name: "home"})
           })

@@ -28,7 +28,7 @@
         </template>
 
         <v-list>
-          <v-list-item class="mb-2">
+          <v-list-item v-if="profil" class="mb-2">
             <v-avatar size="40" class="mr-4">
               <img src="@/assets/testav.png" alt />
             </v-avatar>
@@ -47,7 +47,7 @@
             </v-list-item-content>
           </v-list-item>
 
-          <v-list-item link :to="{name: 'profil', params: {username: profil.username}}">
+          <v-list-item link v-if="profil" :to="{name: 'profil', params: {username: profil.username}}">
             <v-list-item-icon>
               <v-icon>mdi-account</v-icon>
             </v-list-item-icon>
