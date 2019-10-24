@@ -12,7 +12,7 @@
           <div class="d-flex flex-column">
             <div class="username d-flex flex-row">
               <h2 class="mb-4 mr-5 headline">{{ profile.username }}</h2>
-              <v-btn small dark color="blue" outlined @click="showSettings = !showSettings">Ustawienia</v-btn>
+              <v-btn v-if="isOwner" small dark color="blue" outlined @click="showSettings = !showSettings">Ustawienia</v-btn>
             </div>
             <p class="subtitle-1 font-weight-medium">{{ profile.fullname }}</p>
             <p clas="subtitle-1">{{ profile.bio }}</p>
@@ -22,7 +22,7 @@
       
     </v-card>
     
- <v-card v-if="currentUser && showSettings" max-width="800px">
+ <v-card v-if="isOwner && showSettings" max-width="800px">
 
     <v-tabs vertical>
       <v-tab class="tab">
@@ -97,7 +97,7 @@ export default {
     return {
       profile: null,
       currentUser: null,
-      currentUserProfile: null,
+      isOwner: false,
       showSettings: true
     }
   },
@@ -110,18 +110,21 @@ export default {
         .get()
         .then(querySnapshot => {
           querySnapshot.forEach(doc => {
-            this.profile = doc.data()
+            if(doc.data().username === this.$route.params.username){
+              this.isOwner = true
+              this.profile = doc.data()
+            } else {
+              this.currentUser = null
+              let ref = db.collection('users')
+              ref.doc(this.$route.params.username).get()
+              .then(user => {
+                this.profile = user.data()
+              })
+            }
           })
         })
-      } else {
-        this.currentUser = null
-        let ref = db.collection('users')
-        ref.doc(this.$route.params.username).get()
-        .then(user => {
-          this.profile = user.data()
-        })
-      }
-    });
+      } 
+    })
   }
 }
 </script>

@@ -29,7 +29,7 @@
 
         <v-list>
           <v-list-item class="mb-2">
-            <v-avatar size="40" class="mr-3">
+            <v-avatar size="40" class="mr-4">
               <img src="@/assets/testav.png" alt />
             </v-avatar>
             <v-list-item-title>{{ profil.username }}</v-list-item-title>
