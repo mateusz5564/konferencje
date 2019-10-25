@@ -22,7 +22,7 @@
         <template v-slot:activator="{ on }">
           <v-btn icon small v-on="on" fab>
             <v-avatar size="24">
-              <img src="@/assets/testav.png" alt="user's avatar" />
+              <img :src="avatarSrc" alt="user's avatar" />
             </v-avatar>
           </v-btn>
         </template>
@@ -30,7 +30,7 @@
         <v-list>
           <v-list-item v-if="profil" class="mb-2">
             <v-avatar size="40" class="mr-4">
-              <img src="@/assets/testav.png" alt />
+              <img :src="avatarSrc" alt />
             </v-avatar>
             <v-list-item-title>{{ profil.username }}</v-list-item-title>
           </v-list-item>
@@ -120,7 +120,8 @@ export default {
       drawer: true,
       user: null,
       isAdmin: null,
-      profil: null
+      profil: null,
+      avatarSrc: "/img/testav.846bff6f.png"
     };
   },
   methods: {
@@ -142,6 +143,9 @@ export default {
         .then(querySnapshot => {
           querySnapshot.forEach(doc => {
             this.profil = doc.data()
+            if(this.profil.logo){
+                this.avatarSrc = this.profil.logo
+            }
           })
         })
         user.getIdTokenResult().then((token) => {

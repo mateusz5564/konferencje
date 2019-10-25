@@ -3,9 +3,12 @@
     <v-card class="mb-5 pa-10" max-width="800px" v-if="profile">
       <div class="d-flex flex-row">
         <div class="avatar">
-          <v-avatar size="200">
-            <img src="@/assets/testav.png" />
+          <v-avatar size="200" @click="$refs.imageInput.click()">
+            <img :src="avatarSrc" />
           </v-avatar>
+          <a v-if="isOwner" class="d-block text-center mt-3" @click="$refs.imageInput.click()">zmień avatar</a>
+          <input type="file" style="display: none" ref="imageInput" @change="onImageSelected">
+
         </div>
         <div class="user-info ml-10">
           <div class="d-flex flex-column">
@@ -130,7 +133,9 @@ export default {
       currentPassword: null,
       currentPasswordEmailTab: null,
       email: null,
-      newPassword: null
+      newPassword: null,
+      selectedImage: null,
+      avatarSrc: "/img/testav.846bff6f.png"
     };
   },
   created() {
@@ -143,6 +148,9 @@ export default {
           .then(querySnapshot => {
             querySnapshot.forEach(doc => {
               this.profile = doc.data();
+              if(this.profile.logo){
+                this.avatarSrc = this.profile.logo
+              }
               if (doc.data().user_id === user.uid) {
                 this.isOwner = true;
                 this.currentUser = user;
@@ -154,6 +162,63 @@ export default {
     });
   },
   methods: {
+    onImageSelected(event){
+      var user = firebase.auth().currentUser;
+      this.selectedImage = event.target.files[0]
+
+      if(this.selectedImage){
+        const filename = this.selectedImage.name
+        const extension = filename.substring(
+          filename.lastIndexOf("."),
+          filename.length
+        );
+      
+      if(this.profile.logo){
+        firebase.storage().refFromURL(this.profile.logo)
+        .delete().then(() => {
+          console.log('usunieto obecny avatar')
+          firebase
+          .storage()
+          .ref("avatars/" + user.uid + extension)
+          .put(this.selectedImage)
+          .then(response => {
+            response.ref.getDownloadURL().then(downloadURL => {
+              db.collection("users")
+                .doc(user.uid)
+                .update({ logo: downloadURL })
+                .then(response => {
+                  console.log("pomyslnie ustawiono avatar")
+                  this.avatarSrc = downloadURL
+                  this.setSnackbar2("success", "Avatar został zmieniony!")
+                });
+            });
+          });
+        })
+        .catch(err => {
+          console.log(err)
+          this.setSnackbar2("error", "Nie udało się zmienić avataru!")
+        })
+      } else {
+         firebase
+          .storage()
+          .ref("avatars/" + user.uid + extension)
+          .put(this.selectedImage)
+          .then(response => {
+            response.ref.getDownloadURL().then(downloadURL => {
+              db.collection("users")
+                .doc(user.uid)
+                .update({ logo: downloadURL })
+                .then(response => {
+                  console.log("pomyslnie ustawiono avatar")
+                  this.avatarSrc = downloadURL
+                  this.setSnackbar2("success", "Avatar został zmieniony!")
+                });
+            });
+          });
+      }
+      
+      }
+    },
     updateProfile() {
       const prof = {};
       if (this.profile.username != null && this.profile.username !== "") {

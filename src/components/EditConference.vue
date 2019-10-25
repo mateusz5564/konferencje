@@ -336,8 +336,6 @@ export default {
           filename.length
         );
 
-        
-
         firebase.storage().refFromURL(this.logo)
         .delete().then(() => {
           console.log('usunieto obecne logo')
