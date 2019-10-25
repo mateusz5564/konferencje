@@ -76,8 +76,9 @@
           <v-tab-item class="raz">
             <v-card flat>
               <v-card-text>
-                <v-form @submit.prevent>
-                  <v-text-field v-model="currentUser.email" outlined label="Adres Email"></v-text-field>
+                <v-form @submit.prevent="changeEmail">
+                  <v-text-field v-model="email" outlined label="Adres Email"></v-text-field>
+                  <v-text-field v-model="currentPasswordEmailTab" outlined type="password" label="Podaj aktualne hasło"></v-text-field>
                   <v-btn type="submit" color="blue" dark>Zapisz</v-btn>
                   <br />
                   <br />
@@ -127,6 +128,8 @@ export default {
       text: "",
       timeout: 5000,
       currentPassword: null,
+      currentPasswordEmailTab: null,
+      email: null,
       newPassword: null
     };
   },
@@ -143,6 +146,7 @@ export default {
               if (doc.data().user_id === user.uid) {
                 this.isOwner = true;
                 this.currentUser = user;
+                this.email = user.email
               }
             });
           });
@@ -173,13 +177,12 @@ export default {
         });
     },
     changePassword() {
-      let user = firebase.auth().currentUser;
-      let newPassword = this.newPassword;
+      let user = firebase.auth().currentUser
+      let newPassword = this.newPassword
+      const credential = firebase.auth.EmailAuthProvider.credential(user.email, this.currentPassword)
 
-      firebase
-        .auth()
-        .signInWithEmailAndPassword(user.email, this.currentPassword)
-        .then(user => {
+        user.reauthenticateWithCredential(credential)
+        .then(() => {
           firebase.auth().currentUser.updatePassword(newPassword)
             .then(() => {
               console.log("zmieniono hasło")
@@ -192,7 +195,29 @@ export default {
         })
         .catch(err => {
           console.log(err)
-          this.setSnackbar2("error", "Hasło zostało zmienione!")
+          this.setSnackbar2("error", "Nie udało się zmienić hasła!")
+        })
+    },
+    changeEmail(){
+      let user = firebase.auth().currentUser
+      let newEmail = this.newPassword
+      const credential = firebase.auth.EmailAuthProvider.credential(user.email, this.currentPasswordEmailTab)
+
+        user.reauthenticateWithCredential(credential)
+        .then(() => {
+          firebase.auth().currentUser.updateEmail(this.email)
+            .then(() => {
+              console.log("zmieniono email")
+              this.setSnackbar2("success", "Adres email został zmieniony!")
+            })
+            .catch(err => {
+              console.log(err)
+              this.setSnackbar2("error", "Nie udało się zmienić adresu email!")
+            })
+        })
+        .catch(err => {
+          console.log(err)
+          this.setSnackbar2("error", "Nie udało się zmienić adresu email!")
         })
     },
     setSnackbar() {
