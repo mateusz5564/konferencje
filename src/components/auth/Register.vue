@@ -41,7 +41,6 @@ export default {
   },
   methods: {
     isUsernameTaken(){
-      console.log("sdasdasdas")
       if(this.username){
         db.collection('users').where("username", "==", this.username)
         .get()

@@ -14,7 +14,7 @@
       </v-card-text>
     </v-card>
 
-    <v-snackbar
+    <!-- <v-snackbar
       v-model="snackbar"
         :color="color"
         top
@@ -30,7 +30,7 @@
       >
         <v-icon>mdi-close</v-icon>
       </v-btn>
-    </v-snackbar>
+    </v-snackbar> -->
 
   </div>
 </template>
@@ -39,14 +39,20 @@
 import firebase from 'firebase'
 
 export default {
+  props: ["uemail"],
   data() {
     return {
-      email: null,
-      snackbar: false,
-      color: '',
-      icon: '',
-      text: '',
-      timeout: 5000
+      email: '',
+      // snackbar: false,
+      // color: '',
+      // icon: '',
+      // text: '',
+      // timeout: 5000
+    }
+  },
+  created(){
+    if(this.uemail){
+      this.email = this.uemail
     }
   },
   methods: {
