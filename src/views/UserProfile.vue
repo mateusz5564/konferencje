@@ -113,6 +113,7 @@
 import db from "@/firebase/init";
 import firebase from "firebase";
 import ResetPassword from "@/components/ResetPassword";
+import { bus } from '../main'
 
 export default {
   components: {
@@ -189,6 +190,8 @@ export default {
                 .then(response => {
                   console.log("pomyslnie ustawiono avatar")
                   this.avatarSrc = downloadURL
+                  this.profile.logo = downloadURL
+                  bus.$emit('updateAvatar', downloadURL)
                   this.setSnackbar2("success", "Avatar został zmieniony!")
                 });
             });
@@ -211,6 +214,8 @@ export default {
                 .then(response => {
                   console.log("pomyslnie ustawiono avatar")
                   this.avatarSrc = downloadURL
+                  this.profile.logo = downloadURL
+                  bus.$emit('updateAvatar', downloadURL)
                   this.setSnackbar2("success", "Avatar został zmieniony!")
                 });
             });
@@ -315,5 +320,8 @@ export default {
 }
 p {
   margin: 0 !important;
+}
+.v-avatar img{
+  border: 1px solid grey
 }
 </style>

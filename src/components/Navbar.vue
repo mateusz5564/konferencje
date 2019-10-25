@@ -110,8 +110,9 @@
 </template>
 
 <script>
-import firebase from "firebase";
+import firebase from "firebase"
 import db from '@/firebase/init'
+import { bus } from '../main'
 
 export default {
   data() {
@@ -154,7 +155,11 @@ export default {
       } else {
         this.user = null;
       }
-    });
+    })
+
+    bus.$on('updateAvatar', (data) =>{
+      this.avatarSrc = data
+    })
   }
 };
 </script>

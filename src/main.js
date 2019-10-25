@@ -8,6 +8,7 @@ import DateFilter from '@/filters/dateFilter.js'
 
 
 Vue.config.productionTip = false
+export const bus = new Vue();
 
 //FILTERS
 Vue.filter('dateFilter', DateFilter)
