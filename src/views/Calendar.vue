@@ -1,10 +1,10 @@
 <template>
   <div class="calendar_view mt-1">
     <v-container class="grey lighten-5">
-    <v-row class="fill-height">
+    <v-row class="fill-height elevation-5">
       <v-col>
         <v-sheet height="65">
-          <v-toolbar flat dark>
+          <v-toolbar flat>
             <v-btn outlined class="mr-4" @click="setToday">Dzisiaj</v-btn>
 
             <v-btn fab text small @click="prev">
@@ -44,7 +44,7 @@
 
         <v-sheet height="75vh">
           <v-calendar
-          dark
+          
             ref="calendar"
             v-model="focus"
             color="primary"
@@ -251,7 +251,7 @@ import axios from 'axios'
                 dataRef.details = "szczegoly"
                 dataRef.start = this.convertedStartDate(doc.data().start_date)
                 dataRef.end = this.convertedStartDate(doc.data().end_date)
-                dataRef.color = 'green'
+                dataRef.color = 'blue'
                 this.events.push(dataRef)
               })
               .catch(e => {
