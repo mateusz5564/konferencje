@@ -37,6 +37,7 @@ export default {
           querySnapshot.forEach(doc => {
              axios.post('https://maps.googleapis.com/maps/api/geocode/json?latlng=' + doc.data().location.latitude + ',' + doc.data().location.longitude + '&key=AIzaSyDtYbZokAi1OVXplmLIpuxlJpppE0fijPA')
               .then(response => {
+                console.log(response)
                 let address = response.data.results[0].formatted_address
                 let dataRef = doc.data()
                 dataRef.id = doc.id

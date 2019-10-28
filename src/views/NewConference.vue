@@ -298,7 +298,9 @@ export default {
       service.textSearch({query: v, fields: ['name', 'geometry', 'formatted_address']}, (results, status) => {
         if (status === google.maps.places.PlacesServiceStatus.OK) {
           this.items = results
-          this.items = results.map(item => item.name = `${item.name}, ${item.formatted_address}`)
+          this.items.forEach(item => {
+            item.name = `${item.name}, ${item.formatted_address}`
+          })
         }
       })
       this.loading = false
