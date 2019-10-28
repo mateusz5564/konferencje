@@ -9,7 +9,7 @@
 
               <v-img :src="logo" height="auto"></v-img>
 
-              <v-card-text class="body-2 mb-5">
+              <v-card-text class="body-2 mb-5 mt-5">
                 <div class="text--primary">{{description}}</div>
               </v-card-text>
             </v-card>
