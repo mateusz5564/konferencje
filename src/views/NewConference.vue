@@ -1,17 +1,17 @@
 <template>
   <div class="new_conference mt-12">
-    <v-card class="register__card pa-5" max-width="800px">
+    <v-card class="register__card pa-5" max-width="900px">
       <v-card-title class="justify-center">
-        <h2 class="headline">Nowa konferencja</h2>
+        <h2 class="headline mb-5">Nowa konferencja</h2>
       </v-card-title>
       <v-card-text>
         <v-form @submit.prevent="addConference">
-          <v-textarea v-model="title" auto-grow label="Tytuł" rows="1"></v-textarea>
-          <v-textarea v-model="description" auto-grow label="Opis" rows="1"></v-textarea>
+          <v-textarea outlined v-model="title" auto-grow label="Tytuł" rows="1"></v-textarea>
+          <v-textarea outlined v-model="description" auto-grow label="Opis" rows="1"></v-textarea>
 
           <v-autocomplete
+          class="mb-5"
             label="Lokalizacja"
-            prepend-icon="mdi-map-marker"
             v-model="select"
             :loading="loading"
             :items="items"
@@ -20,6 +20,7 @@
             item-text="name"
             cache-items
             flat
+            outlined
             hide-no-data
             hide-details
             clearable
@@ -28,7 +29,7 @@
 
           <v-row>
             <!-- START DATE AND TIME PICKERS -->
-            <v-col cols="12" sm="6">
+            <v-col class="pb-0 ma-0" cols="12" sm="6">
               <v-menu
                 ref="start_date_menu"
                 v-model="start_date_menu"
@@ -43,8 +44,9 @@
                   <v-text-field
                     v-model="start_date"
                     label="Data rozpoczęcia"
-                    prepend-icon="mdi-calendar"
+                    prepend-inner-icon="mdi-calendar"
                     readonly
+                    outlined
                     v-on="on"
                   ></v-text-field>
                 </template>
@@ -57,7 +59,7 @@
             </v-col>
 
             <!-- START TIME PICKER -->
-            <v-col cols="12" sm="6">
+            <v-col class="pb-0 ma-0" cols="12" sm="6">
               <v-menu
                 ref="start_time_menu"
                 v-model="start_time_menu"
@@ -74,8 +76,9 @@
                   <v-text-field
                     v-model="start_time"
                     label="Godzina rozpoczęcia"
-                    prepend-icon="mdi-clock-outline"
+                    prepend-inner-icon="mdi-clock-outline"
                     readonly
+                    outlined
                     v-on="on"
                   ></v-text-field>
                 </template>
@@ -92,7 +95,7 @@
 
           <!-- END DATE AND TIME PICKERS -->
           <v-row>
-            <v-col cols="12" sm="6">
+            <v-col class="pb-0 pt-0 ma-0" cols="12" sm="6">
               <v-menu
                 ref="end_date_menu"
                 v-model="end_date_menu"
@@ -107,8 +110,9 @@
                   <v-text-field
                     v-model="end_date"
                     label="Data zakończenia"
-                    prepend-icon="mdi-calendar"
+                    prepend-inner-icon="mdi-calendar"
                     readonly
+                    outlined
                     v-on="on"
                   ></v-text-field>
                 </template>
@@ -121,7 +125,7 @@
             </v-col>
 
             <!-- END TIME PICKER -->
-            <v-col cols="12" sm="6">
+            <v-col class="pb-0 pt-0 ma-0" cols="12" sm="6">
               <v-menu
                 ref="end_time_menu"
                 v-model="end_time_menu"
@@ -138,8 +142,9 @@
                   <v-text-field
                     v-model="end_time"
                     label="Godzina zakończenia"
-                    prepend-icon="mdi-clock-outline"
+                    prepend-inner-icon="mdi-clock-outline"
                     readonly
+                    outlined
                     v-on="on"
                   ></v-text-field>
                 </template>
@@ -157,8 +162,10 @@
           <v-file-input
             show-size
             label="Wybierz logo"
-            prepend-icon="mdi-camera"
+            prepend-icon=""
+            prepend-inner-icon="mdi-camera"
             v-model="image"
+            outlined
           ></v-file-input>
 
           <p id="feedback" style="font-size: 30px; color: red;">{{ feedback }}</p>

@@ -1,6 +1,6 @@
 <template>
   <nav>
-    <v-app-bar class="pr-5 blue darken-3" elevate-on-scroll clipped-left dark app>
+    <v-app-bar class="pr-5 blue darken-3" flat clipped-left dark app>
       <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
 
       <v-toolbar-title>
@@ -21,7 +21,7 @@
       <v-menu v-if="user" offset-y min-width="300px">
         <template v-slot:activator="{ on }">
           <v-btn icon small v-on="on" fab>
-            <v-avatar size="24">
+            <v-avatar v-if="avatarSrc" size="24">
               <img :src="avatarSrc" alt="user's avatar" />
             </v-avatar>
           </v-btn>
@@ -122,7 +122,7 @@ export default {
       user: null,
       isAdmin: null,
       profil: null,
-      avatarSrc: "/img/testav.846bff6f.png"
+      avatarSrc: ""
     };
   },
   methods: {
@@ -136,6 +136,7 @@ export default {
     }
   },
   created() {
+    this.avatarSrc = null
     firebase.auth().onAuthStateChanged(user => {
       if (user) {
         this.user = user;
@@ -146,6 +147,8 @@ export default {
             this.profil = doc.data()
             if(this.profil.logo){
                 this.avatarSrc = this.profil.logo
+            } else {
+              this.avatarSrc = "/img/testav.846bff6f.png"
             }
           })
         })
@@ -160,7 +163,9 @@ export default {
     bus.$on('updateAvatar', (data) =>{
       this.avatarSrc = data
     })
-  }
+
+  
+  },
 };
 </script>
 
