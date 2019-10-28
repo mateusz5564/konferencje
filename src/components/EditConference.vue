@@ -6,12 +6,12 @@
       </v-card-title>
       <v-card-text>
         <v-form @submit.prevent="updateConference">
-          <v-textarea v-model="title" auto-grow label="Tytuł" rows="1"></v-textarea>
-          <v-textarea v-model="description" auto-grow label="Opis" rows="1"></v-textarea>
+          <v-textarea v-model="title" outlined auto-grow label="Tytuł" rows="1"></v-textarea>
+          <v-textarea v-model="description" outlined auto-grow label="Opis" rows="1"></v-textarea>
 
 
-          <h2 class="mt-10 mb-1">Bieżąca lokalizacja</h2>
-          <div class="pt-2 pb-2 body-1 font-weight-medium">
+          <h2 class="mt-4">Lokalizacja</h2>
+          <div class="pt-2 pb-2 mb-2 body-1 font-weight-medium">
             <v-icon>mdi-map-marker</v-icon>
             {{ location }}
             <v-spacer></v-spacer>
@@ -32,10 +32,11 @@
             hide-details
             clearable
             append-icon=""
+            outlined
             prepend-inner-icon="mdi-map-search-outline"
           ></v-autocomplete>
 
-          <h2 class="mt-12">Data rozpoczęcia</h2>
+          <h2 class="mt-10">Data rozpoczęcia</h2>
           <v-row class="mt-2">
             <!-- START DATE AND TIME PICKERS -->
             <v-col cols="12" sm="6">
@@ -53,8 +54,9 @@
                   <v-text-field
                     v-model="start_date"
                     label="Data rozpoczęcia"
-                    prepend-icon="mdi-calendar"
+                    prepend-inner-icon="mdi-calendar"
                     readonly
+                    outlined
                     v-on="on"
                   ></v-text-field>
                 </template>
@@ -84,8 +86,9 @@
                   <v-text-field
                     v-model="start_time"
                     label="Godzina rozpoczęcia"
-                    prepend-icon="mdi-clock-outline"
+                    prepend-inner-icon="mdi-clock-outline"
                     readonly
+                    outlined
                     v-on="on"
                   ></v-text-field>
                 </template>
@@ -101,7 +104,7 @@
           </v-row>
 
           <!-- END DATE AND TIME PICKERS -->
-          <h2 class="mt-12">Data zakończenia</h2>
+          <h2 class="">Data zakończenia</h2>
           <v-row class="mt-2">
             <v-col cols="12" sm="6">
               <v-menu
@@ -118,8 +121,9 @@
                   <v-text-field
                     v-model="end_date"
                     label="Data zakończenia"
-                    prepend-icon="mdi-calendar"
+                    prepend-inner-icon="mdi-calendar"
                     readonly
+                    outlined
                     v-on="on"
                   ></v-text-field>
                 </template>
@@ -149,8 +153,9 @@
                   <v-text-field
                     v-model="end_time"
                     label="Godzina zakończenia"
-                    prepend-icon="mdi-clock-outline"
+                    prepend-inner-icon="mdi-clock-outline"
                     readonly
+                    outlined
                     v-on="on"
                   ></v-text-field>
                 </template>
@@ -165,13 +170,15 @@
             </v-col>
           </v-row>
 
-          <h2 class="mt-5 mb-4">Aktualne logo</h2>
-          <v-img :src="logo" max-width="100%" height="auto"></v-img>
+          <h2 class="mt-5 mb-5">Aktualne logo</h2>
+          <v-img class="elevation-3 mb-6" :src="logo" max-width="100%" height="auto"></v-img>
 
           <v-file-input
             show-size
             label="Wybierz nowe logo"
-            prepend-icon="mdi-camera"
+            prepend-inner-icon="mdi-camera"
+            prepend-icon=""
+            outlined
             v-model="image"
           ></v-file-input>
 
@@ -389,5 +396,7 @@ export default {
 </script>
 
 <style>
-
+.edit-logo{
+  border: 1px solid black;
+}
 </style>
