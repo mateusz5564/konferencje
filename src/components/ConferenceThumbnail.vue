@@ -6,13 +6,20 @@
       <v-list-item>
         <v-list-item-content>
           <v-list-item-title class="title font-weight-regular mt-2">{{conference.title}}</v-list-item-title>
-          <p class="pb-2 body-2">{{conference.start_date.toDate() | dateFilter}} - {{conference.end_date.toDate() | dateFilter}}</p>
+          <p class="pb-2 caption">{{conference.start_date.toDate() | dateFilter}} <span v-if="test">- {{conference.end_date.toDate() | dateFilter}}</span></p>
           <v-divider class="blue lighten-1"></v-divider>
-          <div class="pt-2 pb-2 body-2 font-weight-medium grey--text">
-            <v-icon>mdi-map-marker</v-icon>
-            {{ conference.location }}
-            <v-spacer></v-spacer>
-            <a class="body-2" :href="conference.link" target="_blank">zobacz na mapie</a>
+          <div class="location d-flex pt-2 pb-2 caption font-weight-medium grey--text">
+            <div class="location__icon">
+              <v-icon>mdi-map-marker</v-icon>
+            </div>
+              <div class="d-flex flex-column ml-1">
+                <div class="location__name">
+                {{ conference.location }}
+                </div>
+                <div class="location__link">
+                  <a class="font-weight-medium" :href="conference.link" target="_blank">zobacz na mapie</a>
+                </div>
+              </div>
           </div>
         </v-list-item-content>
       </v-list-item>
@@ -31,11 +38,23 @@
 export default {
   props: ["conference"],
   data() {
-    return {};
+    return {
+      test: true
+    }
+  },
+  created() {
+    let start_date = this.conference.start_date.toDate()
+    let end_date = this.conference.end_date.toDate()
+    if(start_date.toISOString().substring(0, 10) == end_date.toISOString().substring(0, 10)){
+      this.test = false
+    }
   }
-};
+}
+
 </script>
 
 <style>
-
+.location{
+  height: 60px;
+}
 </style>

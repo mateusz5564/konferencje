@@ -7,14 +7,21 @@
           <div class="d-flex justify-end">
             <slot name="close-btn"></slot>
           </div>
-          <h2 class="headline font-weight-medium pb-4">{{conference.title}}</h2>
-          <p class="pb-2">{{conference.start_date.toDate() | dateFilter}} - {{conference.end_date.toDate() | dateFilter}}</p>
+          <h2 class="headline font-weight-medium pb-1">{{conference.title}}</h2>
+          <p class="pb-2 caption">{{conference.start_date.toDate() | dateFilter}} - {{conference.end_date.toDate() | dateFilter}}</p>
           <v-divider class="blue lighten-1"></v-divider>
-          <div class="pt-2 pb-2 body-1 font-weight-medium">
-            <v-icon>mdi-map-marker</v-icon>
-            {{ conference.location }}
-            <v-spacer></v-spacer>
-            <a :href="conference.link" target="_blank">zobacz na mapie</a>
+          <div class="location d-flex pt-2 pb-2 caption font-weight-medium grey--text">
+            <div class="location__icon">
+              <v-icon>mdi-map-marker</v-icon>
+            </div>
+              <div class="d-flex flex-column ml-1">
+                <div class="location__name">
+                {{ conference.location }}
+                </div>
+                <div class="location__link">
+                  <a class="font-weight-medium" :href="conference.link" target="_blank">zobacz na mapie</a>
+                </div>
+              </div>
           </div>
         </v-list-item-content>
       </v-list-item>
@@ -31,9 +38,10 @@
 export default {
   props: ["conference"],
   data() {
-    return {};
-  }
-};
+    return {
+    }
+  },
+}
 </script>
 
 <style>

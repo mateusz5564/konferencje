@@ -9,6 +9,7 @@
           <v-textarea outlined v-model="title" auto-grow label="Tytuł" rows="1"></v-textarea>
           <v-textarea outlined v-model="description" auto-grow label="Opis" rows="1"></v-textarea>
 
+          <div class="test">
           <v-autocomplete
           class="mb-5"
             label="Lokalizacja"
@@ -18,7 +19,8 @@
             :search-input.sync="search"
             :return-object=true
             item-text="name"
-            cache-items
+            no-filter
+            auto-select-first
             flat
             outlined
             hide-no-data
@@ -26,7 +28,7 @@
             clearable
             append-icon="mdi-map-search-outline"
           ></v-autocomplete>
-
+</div>
           <v-row>
             <!-- START DATE AND TIME PICKERS -->
             <v-col class="pb-0 ma-0" cols="12" sm="6">
@@ -205,7 +207,8 @@ export default {
       items: [],
       search: null,
       select: null,
-      candidates: []
+      candidates: [],
+      loading: false
     }
   },
   watch: {
@@ -292,12 +295,10 @@ export default {
       this.loading = true
       const service = new google.maps.places.PlacesService(document.createElement('div'))
 
-      service.findPlaceFromQuery({query: v, fields: ['name', 'geometry', 'formatted_address']}, (results, status) => {
+      service.textSearch({query: v, fields: ['name', 'geometry', 'formatted_address']}, (results, status) => {
         if (status === google.maps.places.PlacesServiceStatus.OK) {
-          // this.candidates = results
-          this.items = results.filter(place => {
-            return (place.name || '').toLowerCase().match((v || '').toLowerCase())
-          })
+          this.items = results
+          this.items = results.map(item => item.name = `${item.name}, ${item.formatted_address}`)
         }
       })
       this.loading = false
@@ -307,4 +308,5 @@ export default {
 </script>
 
 <style>
+
 </style>

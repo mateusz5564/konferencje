@@ -9,7 +9,6 @@
           <v-textarea v-model="title" outlined auto-grow label="Tytuł" rows="1"></v-textarea>
           <v-textarea v-model="description" outlined auto-grow label="Opis" rows="1"></v-textarea>
 
-
           <h2 class="mt-4">Lokalizacja</h2>
           <div class="pt-2 pb-2 mb-2 body-1 font-weight-medium">
             <v-icon>mdi-map-marker</v-icon>
@@ -26,7 +25,7 @@
             :search-input.sync="search"
             :return-object=true
             item-text="name"
-            cache-items
+            no-filter
             flat
             hide-no-data
             hide-details
@@ -381,12 +380,10 @@ export default {
       this.loading = true
       const service = new google.maps.places.PlacesService(document.createElement('div'))
 
-      service.findPlaceFromQuery({query: v, fields: ['name', 'geometry', 'formatted_address']}, (results, status) => {
+      service.textSearch({query: v, fields: ['name', 'geometry', 'formatted_address']}, (results, status) => {
         if (status === google.maps.places.PlacesServiceStatus.OK) {
-          // this.candidates = results
-          this.items = results.filter(place => {
-            return (place.name || '').toLowerCase().match((v || '').toLowerCase())
-          })
+          this.items = results
+          this.items = results.map(item => item.name = `${item.name}, ${item.formatted_address}`)
         }
       })
       this.loading = false

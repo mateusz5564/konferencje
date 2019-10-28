@@ -236,7 +236,6 @@ import axios from 'axios'
     },
     created(){
       this.today = new Date().toISOString().slice(0, 10)
-      console.log("sssss" + this.today)
      db.collection('conferences')
         .get()
         .then(querySnapshot => {
