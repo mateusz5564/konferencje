@@ -3,7 +3,7 @@
     <v-card class="mb-5 pa-10" max-width="800px" v-if="profile">
       <div class="d-flex flex-row">
         <div class="avatar">
-          <v-avatar size="200" @click="$refs.imageInput.click()">
+          <v-avatar class="avatar__img" size="200" @click="$refs.imageInput.click()">
             <img :src="avatarSrc" />
           </v-avatar>
           <a v-if="isOwner" class="d-block text-center mt-3" @click="$refs.imageInput.click()">zmień avatar</a>
@@ -136,7 +136,7 @@ export default {
       email: null,
       newPassword: null,
       selectedImage: null,
-      avatarSrc: "/img/testav.846bff6f.png"
+      avatarSrc: "https://firebasestorage.googleapis.com/v0/b/konferencje-95600.appspot.com/o/avatars%2FdefaultAvatar.png?alt=media&token=f5fbdbef-b80e-41e5-bf48-e99b0d6f91a6"
     };
   },
   created() {
@@ -257,15 +257,19 @@ export default {
             .then(() => {
               console.log("zmieniono hasło")
               this.setSnackbar2("success", "Hasło zostało zmienione!")
+              this.currentPassword = ""
+              this.newPassword = ""
             })
             .catch(err => {
               console.log(err)
               this.setSnackbar2("error", "Nie udało się zmienić hasła!")
+              this.currentPassword = ""
             })
         })
         .catch(err => {
           console.log(err)
           this.setSnackbar2("error", "Nie udało się zmienić hasła!")
+          this.currentPassword = ""
         })
     },
     changeEmail(){
@@ -279,15 +283,18 @@ export default {
             .then(() => {
               console.log("zmieniono email")
               this.setSnackbar2("success", "Adres email został zmieniony!")
+              this.currentPassword = ""
             })
             .catch(err => {
               console.log(err)
               this.setSnackbar2("error", "Nie udało się zmienić adresu email!")
+              this.currentPassword = ""
             })
         })
         .catch(err => {
           console.log(err)
           this.setSnackbar2("error", "Nie udało się zmienić adresu email!")
+          this.currentPassword = ""
         })
     },
     setSnackbar() {
@@ -323,5 +330,8 @@ p {
 }
 .v-avatar img{
   border: 1px solid grey
+}
+.avatar__img{
+  cursor: pointer;
 }
 </style>
