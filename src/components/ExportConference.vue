@@ -59,18 +59,13 @@ export default {
 VERSION:2.0
 METHOD:PUBLISH
 BEGIN:VEVENT
+SUMMARY:${this.conference.title}
 DTSTART:${this.conference.start_date}
 DTEND:${this.conference.end_date}
 LOCATION:${this.conference.location}
-TRANSP:OPAQUE
-SEQUENCE:0
-UID:
-DTSTAMP:20191023T133357Z
-SUMMARY:${this.conference.title}
-DESCRIPTION:${this.conference.description} <br><br> Strona konferencji: http://localhost:8080/#/konferencje/${this.conference.id}
-URL:http://localhost:8080/#/konferencje/${this.conference.id}
-PRIORITY:1
-CLASS:PUBLIC
+GEO:${this.conference.geo.latitude};${this.conference.geo.longitude}
+DESCRIPTION: Więcej informacji: http://localhost:8080/#/konferencja/${this.conference.id}
+URL:http://localhost:8080/#/konferencja/${this.conference.id}
 END:VEVENT
 END:VCALENDAR
 `

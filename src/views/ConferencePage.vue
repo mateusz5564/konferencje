@@ -73,6 +73,7 @@ export default {
       end_date: null,
       end_time: null,
       location: null,
+      geo: null,
       link: null,
       description: null,
       logo: "",
@@ -82,34 +83,35 @@ export default {
     };
   },
   methods: {
-    downloadIcsFile() {
-      var blob = new Blob(
-        [
-`BEGIN:VCALENDAR
-VERSION:2.0
-METHOD:PUBLISH
-BEGIN:VEVENT
-DTSTART:${this.start_date.toISOString()}
-DTEND:${this.end_date.toISOString()}
-LOCATION:${this.location}
-TRANSP:OPAQUE
-SEQUENCE:0
-UID:
-DTSTAMP:20191023T133357Z
-SUMMARY:${this.title}
-DESCRIPTION:${this.description} <br><br> Strona konferencji: http://localhost:8080/#${this.$route.fullPath}
-URL:http://localhost:8080/#${this.$route.fullPath}
-PRIORITY:1
-CLASS:PUBLIC
-END:VEVENT
-END:VCALENDAR
-`
-        ],
-        { type: "text/plain;charset=utf-8" }
-      );
-      const filename = this.title + ".ics"
-      saveAs(blob, filename);
-    }
+//     downloadIcsFile() {
+//       console.log('wtf')
+//       var blob = new Blob(
+//         [
+// `BEGIN:VCALENDAR
+// VERSION:2.0
+// METHOD:PUBLISH
+// BEGIN:VEVENT
+// DTSTART:${this.start_date.toISOString()}
+// DTEND:${this.end_date.toISOString()}
+// LOCATION:${this.location}
+// TRANSP:OPAQUE
+// SEQUENCE:0
+// UID:
+// DTSTAMP:20191023T133357Z
+// SUMMARY:${this.title}
+// DESCRIPTION: Strona konferencji: http://localhost:8080/#${this.$route.fullPath}
+// URL:http://localhost:8080/#${this.$route.fullPath}
+// PRIORITY:1
+// CLASS:PUBLIC
+// END:VEVENT
+// END:VCALENDAR
+// `
+//         ],
+//         { type: "text/plain;charset=utf-8" }
+//       );
+//       const filename = this.title + ".ics"
+//       saveAs(blob, filename);
+//     }
   },
   created() {
     this.id = this.$route.params.conference_id;
@@ -125,6 +127,7 @@ END:VCALENDAR
         this.start_date = data.start_date.toDate();
         this.end_date = data.end_date.toDate();
         this.logo = data.logo;
+        this.geo = data.location;
         axios
           .post(
             "https://maps.googleapis.com/maps/api/geocode/json?latlng=" +
@@ -135,22 +138,22 @@ END:VCALENDAR
           )
           .then(response => {
             let address = response.data.results[0].formatted_address;
-            this.location = address;
+            this.location = address; 
             const link = `https://maps.google.com/?q=${address}`;
             this.link = link;
+            this.conference.id = this.id
+            this.conference.title = this.title
+            this.conference.start_date = this.start_date.toISOString()
+            this.conference.end_date = this.end_date.toISOString()
+            this.conference.location = this.location
+            this.conference.link = this.link
+            this.conference.description = this.description
+            this.conference.logo = this.logo
+            this.conference.geo = this.geo
           })
           .catch(e => {
             console.log(e);
           });
-
-      this.conference.id = this.id
-      this.conference.title = this.title
-      this.conference.start_date = this.start_date.toISOString()
-      this.conference.end_date = this.end_date.toISOString()
-      this.conference.location = this.location
-      this.conference.link = this.link
-      this.conference.description = this.description
-      this.conference.logo = this.logo
       } else {
         console.log("Taka konferencja nie istenieje!");
       }

@@ -40,7 +40,6 @@ export default {
                 // console.log(response)
                 let address = response.data.results[0].formatted_address
                 let dataRef = doc.data()
-                console.log(doc.data())
                 dataRef.id = doc.id
                 dataRef.location = address
                 // const link = `https://maps.google.com/?q=${address}`
