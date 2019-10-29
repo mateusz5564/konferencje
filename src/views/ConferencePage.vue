@@ -82,37 +82,6 @@ export default {
       conference: {}
     };
   },
-  methods: {
-//     downloadIcsFile() {
-//       console.log('wtf')
-//       var blob = new Blob(
-//         [
-// `BEGIN:VCALENDAR
-// VERSION:2.0
-// METHOD:PUBLISH
-// BEGIN:VEVENT
-// DTSTART:${this.start_date.toISOString()}
-// DTEND:${this.end_date.toISOString()}
-// LOCATION:${this.location}
-// TRANSP:OPAQUE
-// SEQUENCE:0
-// UID:
-// DTSTAMP:20191023T133357Z
-// SUMMARY:${this.title}
-// DESCRIPTION: Strona konferencji: http://localhost:8080/#${this.$route.fullPath}
-// URL:http://localhost:8080/#${this.$route.fullPath}
-// PRIORITY:1
-// CLASS:PUBLIC
-// END:VEVENT
-// END:VCALENDAR
-// `
-//         ],
-//         { type: "text/plain;charset=utf-8" }
-//       );
-//       const filename = this.title + ".ics"
-//       saveAs(blob, filename);
-//     }
-  },
   created() {
     this.id = this.$route.params.conference_id;
     let ref = db
