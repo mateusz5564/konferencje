@@ -40,16 +40,17 @@ export default {
     }
   },
   methods: {
-    addToGoogleCalendar(){
-      console.log(this.conference)
-      // const link = `https://calendar.google.com/calendar/r/eventedit?location=${event.location}&text=${event.title}&dates=${event.start}/${event.end}&details=${event.description}`
+    addToGoogleCalendar(){ 
       let start = new Date(this.conference.start_date)
       let end = new Date(this.conference.end_date)
 
       let startString = start.toISOString().replace(/-|:|/g, '').substring(0, 15) + 'Z'
       let endString = end.toISOString().replace(/-|:|/g, '').substring(0, 15) + 'Z'
+      console.log(this.conference.location.replace(/ /g, '+'))
 
-      const link = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${this.conference.title}&dates=${startString}/${endString}&details=${this.conference.description}`
+      const link = `https://calendar.google.com/calendar/r/eventedit?location=${encodeURIComponent(this.conference.location)}
+      &text=${encodeURIComponent(this.conference.title)}&dates=${startString}/${endString}&details=${encodeURIComponent("Więcej informacji: http://localhost:8080/#/konferencja/")}${this.conference.id}`
+      
       window.open(link, '_blank')
     },
     downloadIcsFile() {
