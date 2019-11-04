@@ -7,7 +7,7 @@
             <img :src="avatarSrc" />
           </v-avatar>
           <a v-if="isOwner" class="d-block text-center mt-3" @click="$refs.imageInput.click()">zmień avatar</a>
-          <input type="file" style="display: none" ref="imageInput" @change="onImageSelected">
+          <input v-if="isOwner" type="file" style="display: none" ref="imageInput" @change="onImageSelected">
 
         </div>
         <div class="user-info ml-10">

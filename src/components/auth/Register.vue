@@ -9,7 +9,7 @@
           <v-text-field type="email" label="Email" v-model="email"></v-text-field>
           <v-text-field type="password" label="Hasło" v-model="password"></v-text-field>
           <v-text-field @keyup="isUsernameTaken" type="text" label="Nazwa użytkownika" v-model="username"></v-text-field>
-          <p id="unFeedback" style="font-size: 40px; color: red;">{{ usernameFeedback }}</p>
+          <p class="body-1 red--text" id="unFeedback" >{{ usernameFeedback }}</p>
           <p class="red--text">{{ feedback }}</p>
           <v-btn class="ma-3" type="submit" color="blue" large dark>Zarejestruj się</v-btn>
           <br />
@@ -51,7 +51,7 @@ export default {
             return true
           })
         })
-        this.usernameFeedback = "Nazwa użytkownika wolna"
+        this.usernameFeedback = ""
         document.getElementById("unFeedback").style.color = "green";
         return false
       } else {
