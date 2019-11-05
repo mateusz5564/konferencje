@@ -21,37 +21,35 @@ export default {
   },
   data(){
     return {
-      conferences: [
-        // name: 'Wydarzenie 1',
-        //   details: 'Pierwsze testowe wydarzenie',
-        //   start: '2019-10-07',
-        //   end: '2019-10-10',
-        //   color: 'green',
-      ]
+      conferences: []
     }
   },
   created(){
-     db.collection('conferences')
-        .get()
-        .then(querySnapshot => {
-          querySnapshot.forEach(doc => {
-             axios.post('https://maps.googleapis.com/maps/api/geocode/json?latlng=' + doc.data().location.latitude + ',' + doc.data().location.longitude + '&key=AIzaSyDtYbZokAi1OVXplmLIpuxlJpppE0fijPA')
-              .then(response => {
-                // console.log(response)
-                let address = response.data.results[0].formatted_address
-                let dataRef = doc.data()
-                dataRef.id = doc.id
-                dataRef.location = address
-                // const link = `https://maps.google.com/?q=${address}`
-                const link = `https://maps.google.com/?q=${doc.data().location.latitude},${doc.data().location.longitude}`
-                dataRef.link = link
-                this.conferences.push(dataRef)
-              })
-              .catch(e => {
-                console.log(e)
-            })
-          })
+    db.collection("conferences")
+      .orderBy("start_date", "asc")
+      .get()
+      .then(async querySnapshot => {
+        let docs = []
+        querySnapshot.forEach(doc => {
+          let dataRef = doc.data()
+          dataRef.id = doc.id
+          docs.push(dataRef)
+          console.log('doc')
         })
-  }
+
+        for(let i in docs) {
+          console.log(docs[i])
+          const test = axios.post('https://maps.googleapis.com/maps/api/geocode/json?latlng=' + docs[i].location.latitude + ',' + docs[i].location.longitude + '&key=AIzaSyDtYbZokAi1OVXplmLIpuxlJpppE0fijPA')
+          let result = await test;
+          console.log(result.data.results[0].formatted_address)
+          docs[i].address = result.data.results[0].formatted_address
+          // const link = `https://maps.google.com/?q=${address}`
+          const link = `https://maps.google.com/?q=${docs[i].location.latitude},${docs[i].location.longitude}`
+          docs[i].link = link
+          console.log(docs[i])
+        }
+        this.conferences = docs
+    })
+  },
 }
 </script>

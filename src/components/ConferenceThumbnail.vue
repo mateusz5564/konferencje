@@ -14,7 +14,7 @@
             </div>
               <div class="d-flex flex-column ml-1">
                 <div class="location__name">
-                {{ conference.location }}
+                {{ conference.address }}
                 </div>
                 <div class="location__link">
                   <a class="font-weight-medium" :href="conference.link" target="_blank">zobacz na mapie</a>
