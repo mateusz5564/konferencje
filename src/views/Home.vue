@@ -1,6 +1,23 @@
 <template>
   <v-container class="grey lighten-5">
-    <h2 class="mb-3 subtitle-1 font-weight-black" >Lista konferencji</h2>
+    <v-progress-linear
+        class="mb-4"
+        :active="loading"
+        :indeterminate="loading"
+        color="blue accent-4"
+      ></v-progress-linear>
+
+      <div class="d-flex">
+        <h2 class="mb-3 subtitle-1 font-weight-black" >Lista konferencji</h2>
+        <v-spacer></v-spacer>
+        <v-select
+          :items="items"
+          label="Kategoria"
+          solo
+          flat
+        ></v-select>
+      </div>
+
     <v-row>
       <v-col v-for="(conference, index) in conferences" :key="index" cols="12" xs="12" md="4" xl="3">
         <ConferenceThumbnail :conference="conference" />
@@ -21,7 +38,9 @@ export default {
   },
   data(){
     return {
-      conferences: []
+      conferences: [],
+      items: [],
+      loading: true,
     }
   },
   created(){
@@ -34,21 +53,26 @@ export default {
           let dataRef = doc.data()
           dataRef.id = doc.id
           docs.push(dataRef)
-          console.log('doc')
         })
 
         for(let i in docs) {
-          console.log(docs[i])
           const test = axios.post('https://maps.googleapis.com/maps/api/geocode/json?latlng=' + docs[i].location.latitude + ',' + docs[i].location.longitude + '&key=AIzaSyDtYbZokAi1OVXplmLIpuxlJpppE0fijPA')
           let result = await test;
-          console.log(result.data.results[0].formatted_address)
           docs[i].address = result.data.results[0].formatted_address
           // const link = `https://maps.google.com/?q=${address}`
           const link = `https://maps.google.com/?q=${docs[i].location.latitude},${docs[i].location.longitude}`
           docs[i].link = link
-          console.log(docs[i])
         }
         this.conferences = docs
+        this.loading = false
+    })
+
+    db.collection("categories")
+    .get()
+    .then(querySnapshot => {
+      querySnapshot.forEach(doc => {
+        this.items.push(doc.id)
+      })
     })
   },
 }
