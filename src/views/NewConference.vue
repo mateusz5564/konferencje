@@ -7,6 +7,12 @@
       <v-card-text>
         <v-form @submit.prevent="addConference">
           <v-textarea outlined v-model="title" auto-grow label="Tytuł" rows="1"></v-textarea>
+          <v-select
+          v-model="selectedCategory"
+          :items="categories"
+          label="Kategoria"
+          outlined
+          ></v-select>
           <v-textarea outlined v-model="description" auto-grow label="Opis" rows="1"></v-textarea>
 
           <div class="test">
@@ -28,7 +34,7 @@
             clearable
             append-icon="mdi-map-search-outline"
           ></v-autocomplete>
-</div>
+          </div>
           <v-row>
             <!-- START DATE AND TIME PICKERS -->
             <v-col class="pb-0 ma-0" cols="12" sm="6">
@@ -208,8 +214,13 @@ export default {
       search: null,
       select: null,
       candidates: [],
-      loading: false
+      loading: false,
+      selectedCategory: null,
+      categories: []
     }
+  },
+  created(){
+    this.getCategories()
   },
   watch: {
     search(val) {
@@ -255,6 +266,7 @@ export default {
       db.collection("conferences")
         .add({
           title: this.title,
+          category_id: this.selectedCategory,
           description: this.description,
           location: geopoint,
           start_date: firebase.firestore.Timestamp.fromDate(
@@ -304,6 +316,15 @@ export default {
         }
       })
       this.loading = false
+    },
+    getCategories(){
+      db.collection("categories")
+      .get()
+      .then(querySnapshot => {
+        querySnapshot.forEach(doc => {
+          this.categories.push(doc.id)
+        })
+      })
     }
   }
 }
