@@ -11,6 +11,8 @@
         <h2 class="mb-3 subtitle-1 font-weight-black" >Lista konferencji</h2>
         <v-spacer></v-spacer>
         <v-select
+          v-model="selected"
+          @change="sortByCategory"
           :items="items"
           label="Kategoria"
           solo
@@ -41,10 +43,46 @@ export default {
       conferences: [],
       items: [],
       loading: true,
+      selected: null
     }
   },
   created(){
-    db.collection("conferences")
+    this.getConferences()
+    this.getCategories()
+  },
+  methods: {
+    sortByCategory(){
+      this.loading = true
+      if(this.selected === "Dowolna"){
+        this.getConferences()
+      } else {
+      db.collection("conferences")
+      .where("category_id", "==", this.selected)
+      .orderBy("start_date", "asc")
+      .get()
+      .then(async querySnapshot => {
+        let docs = []
+        querySnapshot.forEach(doc => {
+          let dataRef = doc.data()
+          dataRef.id = doc.id
+          docs.push(dataRef)
+        })
+
+        for(let i in docs) {
+          const test = axios.post('https://maps.googleapis.com/maps/api/geocode/json?latlng=' + docs[i].location.latitude + ',' + docs[i].location.longitude + '&key=AIzaSyDtYbZokAi1OVXplmLIpuxlJpppE0fijPA')
+          let result = await test;
+          docs[i].address = result.data.results[0].formatted_address
+          // const link = `https://maps.google.com/?q=${address}`
+          const link = `https://maps.google.com/?q=${docs[i].location.latitude},${docs[i].location.longitude}`
+          docs[i].link = link
+        }
+        this.conferences = docs
+        this.loading = false
+        })
+      }
+    },
+    getConferences(){
+      db.collection("conferences")
       .orderBy("start_date", "asc")
       .get()
       .then(async querySnapshot => {
@@ -66,14 +104,19 @@ export default {
         this.conferences = docs
         this.loading = false
     })
-
-    db.collection("categories")
-    .get()
-    .then(querySnapshot => {
-      querySnapshot.forEach(doc => {
-        this.items.push(doc.id)
+    },
+    getCategories(){
+      db.collection("categories")
+      .get()
+      .then(querySnapshot => {
+        this.items.push("Dowolna")
+        querySnapshot.forEach(doc => {
+          this.items.push(doc.id)
+        })
       })
-    })
-  },
+    }
+  }
 }
 </script>
+
+
