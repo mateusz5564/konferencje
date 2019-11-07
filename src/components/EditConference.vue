@@ -7,6 +7,12 @@
       <v-card-text>
         <v-form @submit.prevent="updateConference">
           <v-textarea v-model="title" outlined auto-grow label="Tytuł" rows="1"></v-textarea>
+           <v-autocomplete
+          v-model="selectedCategory"
+          :items="categories"
+          label="Kategoria"
+          outlined
+          ></v-autocomplete>
           <v-textarea v-model="description" outlined auto-grow label="Opis" rows="1"></v-textarea>
 
           <h2 class="mt-4">Lokalizacja</h2>
@@ -220,12 +226,15 @@ export default {
       items: [],
       search: null,
       select: null,
-      candidates: []
+      candidates: [],
+      selectedCategory: null,
+      categories: []
     }
   },
   created(){
     this.id = this.$route.params.conference_id
     let ref = db.collection('conferences').doc(this.$route.params.conference_id)
+    this.getCategories()
     ref.get().then(doc => {
       if (doc.exists){
         let data = doc.data()
@@ -233,6 +242,7 @@ export default {
         this.description = data.description
         this.convertedStartDate(data.start_date)
         this.convertedEndDate(data.end_date)
+        this.selectedCategory = data.category_id
         this.logo = data.logo
         axios.post('https://maps.googleapis.com/maps/api/geocode/json?latlng=' + doc.data().location.latitude + ',' + doc.data().location.longitude + '&key=AIzaSyDtYbZokAi1OVXplmLIpuxlJpppE0fijPA')
               .then(response => {
@@ -303,6 +313,11 @@ export default {
       if(this.title != null && this.title !== ''){
         conf.title = this.title
       }
+      
+      if(this.selectedCategory){
+        conf.category_id = this.selectedCategory
+      }
+
       if(this.description != null && this.description !== ''){
         conf.description = this.description
       }
@@ -389,6 +404,15 @@ export default {
         }
       })
       this.loading = false
+    },
+    getCategories(){
+      db.collection("categories")
+      .get()
+      .then(querySnapshot => {
+        querySnapshot.forEach(doc => {
+          this.categories.push(doc.id)
+        })
+      })
     }
   }
 }
