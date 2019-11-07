@@ -10,14 +10,14 @@
       <div class="d-flex">
         <h2 class="mb-3 subtitle-1 font-weight-black" >Lista konferencji</h2>
         <v-spacer></v-spacer>
-        <v-select
+        <v-autocomplete
           v-model="selected"
           @change="sortByCategory"
           :items="items"
           label="Kategoria"
           solo
           flat
-        ></v-select>
+        ></v-autocomplete>
       </div>
 
     <v-row>
@@ -52,33 +52,35 @@ export default {
   },
   methods: {
     sortByCategory(){
-      this.loading = true
-      if(this.selected === "Dowolna"){
-        this.getConferences()
-      } else {
-      db.collection("conferences")
-      .where("category_id", "==", this.selected)
-      .orderBy("start_date", "asc")
-      .get()
-      .then(async querySnapshot => {
-        let docs = []
-        querySnapshot.forEach(doc => {
-          let dataRef = doc.data()
-          dataRef.id = doc.id
-          docs.push(dataRef)
-        })
+      if(this.selected){
+        this.loading = true
+        if(this.selected === "Dowolna"){
+          this.getConferences()
+        } else {
+        db.collection("conferences")
+        .where("category_id", "==", this.selected)
+        .orderBy("start_date", "asc")
+        .get()
+        .then(async querySnapshot => {
+          let docs = []
+          querySnapshot.forEach(doc => {
+            let dataRef = doc.data()
+            dataRef.id = doc.id
+            docs.push(dataRef)
+          })
 
-        for(let i in docs) {
-          const test = axios.post('https://maps.googleapis.com/maps/api/geocode/json?latlng=' + docs[i].location.latitude + ',' + docs[i].location.longitude + '&key=AIzaSyDtYbZokAi1OVXplmLIpuxlJpppE0fijPA')
-          let result = await test;
-          docs[i].address = result.data.results[0].formatted_address
-          // const link = `https://maps.google.com/?q=${address}`
-          const link = `https://maps.google.com/?q=${docs[i].location.latitude},${docs[i].location.longitude}`
-          docs[i].link = link
+          for(let i in docs) {
+            const test = axios.post('https://maps.googleapis.com/maps/api/geocode/json?latlng=' + docs[i].location.latitude + ',' + docs[i].location.longitude + '&key=AIzaSyDtYbZokAi1OVXplmLIpuxlJpppE0fijPA')
+            let result = await test;
+            docs[i].address = result.data.results[0].formatted_address
+            // const link = `https://maps.google.com/?q=${address}`
+            const link = `https://maps.google.com/?q=${docs[i].location.latitude},${docs[i].location.longitude}`
+            docs[i].link = link
+          }
+          this.conferences = docs
+          this.loading = false
+          })
         }
-        this.conferences = docs
-        this.loading = false
-        })
       }
     },
     getConferences(){

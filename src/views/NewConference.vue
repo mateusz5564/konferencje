@@ -7,12 +7,12 @@
       <v-card-text>
         <v-form @submit.prevent="addConference">
           <v-textarea outlined v-model="title" auto-grow label="Tytuł" rows="1"></v-textarea>
-          <v-select
+          <v-autocomplete
           v-model="selectedCategory"
           :items="categories"
           label="Kategoria"
           outlined
-          ></v-select>
+          ></v-autocomplete>
           <v-textarea outlined v-model="description" auto-grow label="Opis" rows="1"></v-textarea>
 
           <div class="test">
