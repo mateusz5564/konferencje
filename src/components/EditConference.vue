@@ -13,6 +13,15 @@
           label="Kategoria"
           outlined
           ></v-autocomplete>
+
+          <v-text-field
+            v-model="website"
+            :rules="[rules.www]"
+            label="Adres WWW"
+            outlined
+            hint="adres URL musi rozpoczynać się od https:// np. https://www.google.pl/"
+          ></v-text-field>
+
           <v-textarea v-model="description" outlined auto-grow label="Opis" rows="1"></v-textarea>
 
           <h2 class="mt-4">Lokalizacja</h2>
@@ -228,7 +237,16 @@ export default {
       select: null,
       candidates: [],
       selectedCategory: null,
-      categories: []
+      categories: [],
+      website: null,
+      rules: {
+        required: value => !!value || 'pole wymagane',
+        counter: value => value.length <= 100 || 'maksymalnie 100 znaków',
+        www: value => {
+          const pattern = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/gi
+          return pattern.test(value) || 'adres URL musi rozpoczynać się od https:// np. https://www.google.pl/'
+        },
+      },
     }
   },
   created(){
@@ -239,10 +257,11 @@ export default {
       if (doc.exists){
         let data = doc.data()
         this.title = data.title 
+        this.selectedCategory = data.category_id
+        this.website = data.website
         this.description = data.description
         this.convertedStartDate(data.start_date)
         this.convertedEndDate(data.end_date)
-        this.selectedCategory = data.category_id
         this.logo = data.logo
         axios.post('https://maps.googleapis.com/maps/api/geocode/json?latlng=' + doc.data().location.latitude + ',' + doc.data().location.longitude + '&key=AIzaSyDtYbZokAi1OVXplmLIpuxlJpppE0fijPA')
               .then(response => {
@@ -316,6 +335,10 @@ export default {
       
       if(this.selectedCategory){
         conf.category_id = this.selectedCategory
+      }
+
+      if(this.website){
+        conf.website = this.website
       }
 
       if(this.description != null && this.description !== ''){
