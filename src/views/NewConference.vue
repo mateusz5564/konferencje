@@ -6,18 +6,27 @@
       </v-card-title>
       <v-card-text>
         <v-form @submit.prevent="addConference">
-          <v-textarea outlined v-model="title" auto-grow label="Tytuł" rows="1"></v-textarea>
+          <v-textarea outlined v-model="title" auto-grow label="Tytuł" rows="1" :rules="[rules.required]"></v-textarea>
           <v-autocomplete
           v-model="selectedCategory"
           :items="categories"
           label="Kategoria"
           outlined
           ></v-autocomplete>
-          <v-textarea outlined v-model="description" auto-grow label="Opis" rows="1"></v-textarea>
+
+          <v-text-field
+            v-model="website"
+            :rules="[rules.www]"
+            label="Adres WWW"
+            outlined
+            hint="adres URL musi rozpoczynać się od https:// np. https://www.google.pl/"
+          ></v-text-field>
+
+          <v-textarea outlined v-model="description" auto-grow label="Opis" rows="1" :rules="[rules.required]"></v-textarea>
 
           <div class="test">
           <v-autocomplete
-          class="mb-5"
+            class="mb-5"
             label="Lokalizacja"
             v-model="select"
             :loading="loading"
@@ -33,6 +42,7 @@
             hide-details
             clearable
             append-icon="mdi-map-search-outline"
+            :rules="[rules.required]"
           ></v-autocomplete>
           </div>
           <v-row>
@@ -56,6 +66,7 @@
                     readonly
                     outlined
                     v-on="on"
+                    :rules="[rules.required]"
                   ></v-text-field>
                 </template>
                 <v-date-picker v-model="start_date" no-title scrollable>
@@ -88,6 +99,7 @@
                     readonly
                     outlined
                     v-on="on"
+                    :rules="[rules.required]"
                   ></v-text-field>
                 </template>
                 <v-time-picker
@@ -122,6 +134,7 @@
                     readonly
                     outlined
                     v-on="on"
+                    :rules="[rules.required]"
                   ></v-text-field>
                 </template>
                 <v-date-picker v-model="end_date" no-title scrollable>
@@ -154,6 +167,7 @@
                     readonly
                     outlined
                     v-on="on"
+                    :rules="[rules.required]"
                   ></v-text-field>
                 </template>
                 <v-time-picker
@@ -216,7 +230,16 @@ export default {
       candidates: [],
       loading: false,
       selectedCategory: null,
-      categories: []
+      categories: [],
+      website: null,
+      rules: {
+        required: value => !!value || 'pole wymagane',
+        counter: value => value.length <= 100 || 'maksymalnie 100 znaków',
+        www: value => {
+          const pattern = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/gi
+          return pattern.test(value) || 'adres URL musi rozpoczynać się od https:// np. https://www.google.pl/'
+        },
+      },
     }
   },
   created(){
@@ -267,6 +290,7 @@ export default {
         .add({
           title: this.title,
           category_id: this.selectedCategory,
+          website: this.website,
           description: this.description,
           location: geopoint,
           start_date: firebase.firestore.Timestamp.fromDate(
@@ -277,34 +301,37 @@ export default {
         })
         .then(response => {
           console.log(response)
-          const filename = this.image.name
-          const extention = filename.substring(
-            filename.lastIndexOf("."),
-            filename.length
-          );
-          key = response.id;
-          firebase
-            .storage()
-            .ref("conferences/" + response.id + extention)
-            .put(this.image)
-            .then(response => {
-              response.ref.getDownloadURL().then(downloadURL => {
-                db.collection("conferences")
-                  .doc(key)
-                  .update({ logo: downloadURL })
-                  .then(response => {
-                    console.log("pomyslnie dodano konferencje")
-                    this.$router.push({name: 'moje_konferencje'})
-                  });
-              });
-            });
+          if(this.image.name){
+            const filename = this.image.name
+            const extention = filename.substring(
+              filename.lastIndexOf("."),
+              filename.length
+            );
+            key = response.id;
+            firebase
+              .storage()
+              .ref("conferences/" + response.id + extention)
+              .put(this.image)
+              .then(response => {
+                response.ref.getDownloadURL().then(downloadURL => {
+                  db.collection("conferences")
+                    .doc(key)
+                    .update({ logo: downloadURL })
+                    .then(response => {
+                      console.log("pomyslnie dodano konferencje")
+                      this.$router.push({name: 'moje_konferencje'})
+                    });
+                });
+              }); 
+          } else {
+            this.$router.push({name: 'moje_konferencje'})
+          }
         })
         .catch(err => {
           console.log(err)
         });
     },
     querySelections(v) {
-      this.loading = true
       const service = new google.maps.places.PlacesService(document.createElement('div'))
 
       service.textSearch({query: v, fields: ['name', 'geometry', 'formatted_address']}, (results, status) => {
@@ -315,7 +342,6 @@ export default {
           })
         }
       })
-      this.loading = false
     },
     getCategories(){
       db.collection("categories")

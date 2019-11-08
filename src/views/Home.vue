@@ -7,9 +7,9 @@
         color="blue accent-4"
       ></v-progress-linear>
 
-      <div class="d-flex">
+      <div class="d-flex justify-space-between">
         <h2 class="mb-3 subtitle-1 font-weight-black" >Lista konferencji</h2>
-        <v-spacer></v-spacer>
+        <div class="category_box">
         <v-autocomplete
           v-model="selected"
           @change="sortByCategory"
@@ -18,6 +18,7 @@
           solo
           flat
         ></v-autocomplete>
+        </div>
       </div>
 
     <v-row>
@@ -119,6 +120,12 @@ export default {
     }
   }
 }
+
 </script>
 
+<style>
+  .category_box {
+    width: 376px;
+  }
+</style>
 

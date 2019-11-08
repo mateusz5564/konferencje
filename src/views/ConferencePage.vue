@@ -6,6 +6,15 @@
           <v-col lg="auto">
             <v-card class="mx-auto" outlined max-width="800px">
               <v-card-text class="headline font-weight-light mt-2 black--text">{{title}}</v-card-text>
+               <v-chip
+      class="ma-2"
+      color="grey"
+      label
+      text-color="white"
+    >
+      <v-icon left>mdi-label</v-icon>
+      {{category_id}}
+    </v-chip>
 
               <v-img :src="logo" height="auto"></v-img>
 
@@ -32,6 +41,33 @@
                   <span class="body-1">{{ location }}</span>
                   <a class="body-2" :href="link" target="_blank">zobacz na mapie</a>
                 </div>
+              </div>
+
+              <v-divider class="blue lighten-1"></v-divider>
+
+              <div class="d-flex flex-row pa-5 justify-center">
+                <v-chip
+                class="ma-2"
+                color="primary"
+                :href=website
+                target="_blank"
+                outlined
+                link
+                pill
+              >
+              <v-icon left>mdi-web</v-icon>
+                WWW
+              </v-chip>
+
+              <v-chip
+              class="ma-2"
+              color="orange"
+              text-color="white"
+            >
+              <v-icon left>mdi-star</v-icon>
+              Obserwuj
+              
+            </v-chip>
               </div>
             </v-card>
           </v-col>
@@ -92,6 +128,8 @@ export default {
         let data = doc.data();
         this.exist = true;
         this.title = data.title;
+        this.category_id = data.category_id;
+        this.website = data.website;
         this.description = data.description;
         this.start_date = data.start_date.toDate();
         this.end_date = data.end_date.toDate();
