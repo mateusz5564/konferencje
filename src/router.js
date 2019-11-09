@@ -6,6 +6,7 @@ import Register from '@/components/auth/Register'
 import NewConference from '@/views/NewConference'
 import EditConference from '@/components/EditConference'
 import UserConferences from '@/views/UserConferences'
+import ObservedConferences from '@/views/ObservedConferences'
 import Calendar from '@/views/Calendar'
 import AdminPanel from '@/views/AdminPanel'
 import ConferencePage from '@/views/ConferencePage'
@@ -58,6 +59,14 @@ const router = new Router({
       path: '/moje_konferencje',
       name: 'moje_konferencje',
       component: UserConferences,
+      meta: {
+        requireAuth: true
+      }
+    },
+    {
+      path: 'obserwowawne_konferencje',
+      name: 'obserwowane_konferencje',
+      component: ObservedConferences,
       meta: {
         requireAuth: true
       }

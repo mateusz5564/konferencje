@@ -47,6 +47,16 @@
             </v-list-item-content>
           </v-list-item>
 
+          <v-list-item link :to="{name: 'obserwowane_konferencje'}">
+            <v-list-item-icon>
+              <v-icon>mdi-star</v-icon>
+            </v-list-item-icon>
+
+            <v-list-item-content>
+              <v-list-item-title>Obserwowane</v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
+
           <v-list-item link v-if="profil" :to="{name: 'profil', params: {username: profil.username}}">
             <v-list-item-icon>
               <v-icon>mdi-account</v-icon>
@@ -59,7 +69,7 @@
 
           <v-list-item @click="logout" link>
             <v-list-item-icon>
-              <v-icon>mdi-account-circle</v-icon>
+              <v-icon>mdi-logout-variant</v-icon>
             </v-list-item-icon>
 
             <v-list-item-content>
