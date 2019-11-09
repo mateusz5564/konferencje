@@ -53,10 +53,11 @@
                   <v-icon left>mdi-web</v-icon>WWW
                 </v-chip>
 
-                <v-chip v-if="user" class="ma-2" color="orange" text-color="white" @click="test">
-                  <v-icon left>mdi-star</v-icon>
-                  Obserwuj
-                </v-chip>
+                  <v-chip v-if="user" class="ma-2" color="orange" text-color="white" @click="test">
+                    <v-icon v-if="!isObserved" left>mdi-star</v-icon>
+                      {{observeText}}
+                    </v-chip>
+
               </div>
             </v-card>
           </v-col>
@@ -103,12 +104,31 @@ export default {
       feedback: null,
       image: null,
       conference: {},
-      user: null
+      user: null,
+      isObserved: false,
+      observeText: "Obserwuj"
     };
   },
   created() {
-    var user = firebase.auth().currentUser
-    this.user = user
+    firebase.auth().onAuthStateChanged(user => {
+      this.user = user;
+      if (user) {
+        db.doc(`users/${user.uid}`)
+          .collection("observed_conferences")
+          .doc(this.id)
+          .get()
+          .then(docSnapshot => {
+            if (docSnapshot.exists) {
+              this.isObserved = true;
+              this.observeText = "Przestań obserwować";
+            } else {
+              this.isObserved = false;
+              this.observeText = "Obserwuj";
+            }
+          });
+      }
+    });
+
     this.id = this.$route.params.conference_id;
     let ref = db
       .collection("conferences")
@@ -158,7 +178,35 @@ export default {
   },
   methods: {
     test() {
-      console.log(this.user.uid);
+      if (this.isObserved) {
+        //unfollow conference
+        db.doc(`users/${this.user.uid}`)
+          .collection("observed_conferences")
+          .doc(this.id)
+          .delete()
+          .then(() => {
+            this.isObserved = false;
+            this.observeText = "Obserwuj";
+          })
+          .catch(err => {
+            console.log(err);
+          });
+      } else {
+        //follow conference
+        if (this.user) {
+          db.doc(`users/${this.user.uid}`)
+            .collection("observed_conferences")
+            .doc(this.id)
+            .set({})
+            .then(() => {
+              this.isObserved = true;
+              this.observeText = "Przestań obserwować";
+            })
+            .catch(err => {
+              console.log(err);
+            });
+        }
+      }
     }
   }
 };
