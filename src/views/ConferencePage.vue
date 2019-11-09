@@ -53,7 +53,7 @@
                   <v-icon left>mdi-web</v-icon>WWW
                 </v-chip>
 
-                <v-chip class="ma-2" color="orange" text-color="white" @click="test">
+                <v-chip v-if="user" class="ma-2" color="orange" text-color="white" @click="test">
                   <v-icon left>mdi-star</v-icon>
                   Obserwuj
                 </v-chip>
@@ -102,10 +102,13 @@ export default {
       logo: "",
       feedback: null,
       image: null,
-      conference: {}
+      conference: {},
+      user: null
     };
   },
   created() {
+    var user = firebase.auth().currentUser
+    this.user = user
     this.id = this.$route.params.conference_id;
     let ref = db
       .collection("conferences")
@@ -155,7 +158,7 @@ export default {
   },
   methods: {
     test() {
-      console.log("test");
+      console.log(this.user.uid);
     }
   }
 };
