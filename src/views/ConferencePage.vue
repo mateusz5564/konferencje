@@ -6,15 +6,10 @@
           <v-col lg="auto">
             <v-card class="mx-auto" outlined max-width="800px">
               <v-card-text class="headline font-weight-light mt-2 black--text">{{title}}</v-card-text>
-               <v-chip
-      class="ma-2"
-      color="grey"
-      label
-      text-color="white"
-    >
-      <v-icon left>mdi-label</v-icon>
-      {{category_id}}
-    </v-chip>
+              <v-chip class="ma-2" color="grey" label text-color="white">
+                <v-icon left>mdi-label</v-icon>
+                {{category_id}}
+              </v-chip>
 
               <v-img :src="logo" height="auto"></v-img>
 
@@ -29,7 +24,7 @@
                 <v-icon class="pr-3" color="blue" large>mdi-calendar</v-icon>
                 <div class="d-flex flex-column">
                   <span class="body-1">{{start_date | dateFilter}} - {{end_date | dateFilter}}</span>
-                    <a @click.stop="dialog = true">dodaj do kalendarza</a>
+                  <a @click.stop="dialog = true">dodaj do kalendarza</a>
                 </div>
               </div>
 
@@ -47,38 +42,30 @@
 
               <div class="d-flex flex-row pa-5 justify-center">
                 <v-chip
-                class="ma-2"
-                color="primary"
-                :href=website
-                target="_blank"
-                outlined
-                link
-                pill
-              >
-              <v-icon left>mdi-web</v-icon>
-                WWW
-              </v-chip>
+                  class="ma-2"
+                  color="primary"
+                  :href="website"
+                  target="_blank"
+                  outlined
+                  link
+                  pill
+                >
+                  <v-icon left>mdi-web</v-icon>WWW
+                </v-chip>
 
-              <v-chip
-              class="ma-2"
-              color="orange"
-              text-color="white"
-            >
-              <v-icon left>mdi-star</v-icon>
-              Obserwuj
-              
-            </v-chip>
+                <v-chip class="ma-2" color="orange" text-color="white" @click="test">
+                  <v-icon left>mdi-star</v-icon>
+                  Obserwuj
+                </v-chip>
               </div>
             </v-card>
           </v-col>
         </v-row>
       </v-container>
 
-    <v-dialog v-model="dialog" max-width="350px">
-      <ExportConference :conference="conference"/>
-    </v-dialog>
-      
-
+      <v-dialog v-model="dialog" max-width="350px">
+        <ExportConference :conference="conference" />
+      </v-dialog>
     </div>
 
     <div v-if="!exist" class="test">
@@ -92,7 +79,7 @@ import db from "@/firebase/init";
 import firebase from "firebase";
 import axios from "axios";
 import { saveAs } from "file-saver";
-import ExportConference from '@/components/ExportConference'
+import ExportConference from "@/components/ExportConference";
 
 export default {
   components: {
@@ -145,18 +132,18 @@ export default {
           )
           .then(response => {
             let address = response.data.results[0].formatted_address;
-            this.location = address; 
+            this.location = address;
             const link = `https://maps.google.com/?q=${address}`;
             this.link = link;
-            this.conference.id = this.id
-            this.conference.title = this.title
-            this.conference.start_date = this.start_date.toISOString()
-            this.conference.end_date = this.end_date.toISOString()
-            this.conference.location = this.location
-            this.conference.link = this.link
-            this.conference.description = this.description
-            this.conference.logo = this.logo
-            this.conference.geo = this.geo
+            this.conference.id = this.id;
+            this.conference.title = this.title;
+            this.conference.start_date = this.start_date.toISOString();
+            this.conference.end_date = this.end_date.toISOString();
+            this.conference.location = this.location;
+            this.conference.link = this.link;
+            this.conference.description = this.description;
+            this.conference.logo = this.logo;
+            this.conference.geo = this.geo;
           })
           .catch(e => {
             console.log(e);
@@ -165,6 +152,11 @@ export default {
         console.log("Taka konferencja nie istenieje!");
       }
     });
+  },
+  methods: {
+    test() {
+      console.log("test");
+    }
   }
 };
 </script>

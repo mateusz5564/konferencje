@@ -64,7 +64,7 @@ const router = new Router({
       }
     },
     {
-      path: 'obserwowawne_konferencje',
+      path: '/obserwowawne_konferencje',
       name: 'obserwowane_konferencje',
       component: ObservedConferences,
       meta: {
