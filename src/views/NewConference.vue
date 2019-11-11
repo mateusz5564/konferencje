@@ -6,13 +6,15 @@
       </v-card-title>
       <v-card-text>
         <v-form @submit.prevent="addConference">
-          <v-textarea outlined v-model="title" auto-grow label="Tytuł" rows="1" :rules="[rules.required]"></v-textarea>
-          <v-autocomplete
-          v-model="selectedCategory"
-          :items="categories"
-          label="Kategoria"
-          outlined
-          ></v-autocomplete>
+          <v-textarea
+            outlined
+            v-model="title"
+            auto-grow
+            label="Tytuł"
+            rows="1"
+            :rules="[rules.required]"
+          ></v-textarea>
+          <v-autocomplete v-model="selectedCategory" :items="categories" label="Kategoria" outlined></v-autocomplete>
 
           <v-text-field
             v-model="website"
@@ -22,28 +24,35 @@
             hint="adres URL musi rozpoczynać się od https:// np. https://www.google.pl/"
           ></v-text-field>
 
-          <v-textarea outlined v-model="description" auto-grow label="Opis" rows="1" :rules="[rules.required]"></v-textarea>
+          <v-textarea
+            outlined
+            v-model="description"
+            auto-grow
+            label="Opis"
+            rows="1"
+            :rules="[rules.required]"
+          ></v-textarea>
 
           <div class="test">
-          <v-autocomplete
-            class="mb-5"
-            label="Lokalizacja"
-            v-model="select"
-            :loading="loading"
-            :items="items"
-            :search-input.sync="search"
-            :return-object=true
-            item-text="name"
-            no-filter
-            auto-select-first
-            flat
-            outlined
-            hide-no-data
-            hide-details
-            clearable
-            append-icon="mdi-map-search-outline"
-            :rules="[rules.required]"
-          ></v-autocomplete>
+            <v-autocomplete
+              class="mb-5"
+              label="Lokalizacja"
+              v-model="select"
+              :loading="loading"
+              :items="items"
+              :search-input.sync="search"
+              :return-object="true"
+              item-text="name"
+              no-filter
+              auto-select-first
+              flat
+              outlined
+              hide-no-data
+              hide-details
+              clearable
+              append-icon="mdi-map-search-outline"
+              :rules="[rules.required]"
+            ></v-autocomplete>
           </div>
           <v-row>
             <!-- START DATE AND TIME PICKERS -->
@@ -184,11 +193,71 @@
           <v-file-input
             show-size
             label="Wybierz logo"
-            prepend-icon=""
+            prepend-icon
             prepend-inner-icon="mdi-camera"
             v-model="image"
             outlined
           ></v-file-input>
+
+
+          <v-card max-width="840" class="mx-auto mb-10">
+            <h3 class="elevation-3 pt-4 pb-4 title font-weight-regular text-center mb-3">Ważne terminy</h3>
+            {{importantDates}}
+
+            <div v-for="(date, index) in importantDates" :key="index">
+              <ImportantDate :importantDate="date"> 
+                <div slot="number">{{index + 1}}</div>
+                <div slot="delete-btn">
+                  <v-icon @click="deleteImportantDate(index)" color="darken-2">mdi-delete</v-icon>
+                </div>
+              </ImportantDate>
+            </div>
+
+            <v-card class="pt-5">
+              <div class="ml-4 mt-4 mr-4 pt-4">
+              <v-text-field
+              v-model="id_name"
+              label="Nazwa"
+              outlined
+              ></v-text-field>
+
+              <v-menu
+                ref="id_date_menu"
+                v-model="id_date_menu"
+                :close-on-content-click="false"
+                :return-value.sync="id_date"
+                transition="scale-transition"
+                offset-y
+                full-width
+                min-width="290px"
+              >
+                <template v-slot:activator="{ on }">
+                  <v-text-field
+                  class="test2"
+                    v-model="id_date"
+                    label="Data"
+                    prepend-inner-icon="mdi-calendar"
+                    readonly
+                    outlined
+                    v-on="on"
+                    :rules="[rules.required]"
+                  ></v-text-field>
+                </template>
+                <v-date-picker v-model="id_date" no-title scrollable>
+                  <div class="flex-grow-1"></div>
+                  <v-btn text color="primary" @click="id_date_menu = false">Cancel</v-btn>
+                  <v-btn text color="primary" @click="$refs.id_date_menu.save(id_date)">OK</v-btn>
+                </v-date-picker>
+              </v-menu>
+          </div>
+          <v-card-actions>
+              <v-btn @click="addImportantDate" text class="mb-5" color="blue accent-4">
+                <v-icon dark left>mdi-plus</v-icon>
+                Dodaj termin
+                </v-btn>
+            </v-card-actions>
+            </v-card>
+          </v-card>
 
           <p id="feedback" style="font-size: 30px; color: red;">{{ feedback }}</p>
           <v-btn class="ma-3" type="submit" color="blue" large dark>Dodaj konferencje</v-btn>
@@ -203,14 +272,21 @@
 <script>
 import firebase from "firebase";
 import db from "@/firebase/init";
-import axios from 'axios'
+import axios from "axios";
+import ImportantDate from '@/components/ImportantDate'
 
 export default {
+  components: {
+    ImportantDate
+  },
   data() {
     return {
       title: null,
       start_date: null,
       start_time: null,
+      id_name: null,
+      id_date: null,
+      id_start_time: null,
       end_date: null,
       end_time: null,
       location: null,
@@ -219,7 +295,9 @@ export default {
       feedback: null,
       modal: true,
       start_date_menu: false,
+      id_date_menu: false,
       end_date_menu: false,
+      id_start_time_menu: false,
       start_time_menu: false,
       end_time_menu: false,
       image: null,
@@ -232,60 +310,73 @@ export default {
       selectedCategory: null,
       categories: [],
       website: null,
+      importantDates: [],
       rules: {
-        required: value => !!value || 'pole wymagane',
-        counter: value => value.length <= 100 || 'maksymalnie 100 znaków',
+        required: value => !!value || "pole wymagane",
+        counter: value => value.length <= 100 || "maksymalnie 100 znaków",
         www: value => {
-          const pattern = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/gi
-          return pattern.test(value) || 'adres URL musi rozpoczynać się od https:// np. https://www.google.pl/'
-        },
-      },
-    }
+          const pattern = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/gi;
+          return (
+            pattern.test(value) ||
+            "adres URL musi rozpoczynać się od https:// np. https://www.google.pl/"
+          );
+        }
+      }
+    };
   },
-  created(){
-    this.getCategories()
+  created() {
+    this.getCategories();
   },
   watch: {
     search(val) {
-      val && val !== this.select && this.querySelections(val)
+      val && val !== this.select && this.querySelections(val);
     }
   },
   computed: {
     preparedStartDate() {
-      const date = new Date(this.start_date)
+      const date = new Date(this.start_date);
       if (typeof this.start_time === "string") {
-        let hours = this.start_time.match(/^(\d+)/)[1]
-        let minutes = this.start_time.match(/:(\d+)/)[1]
-        date.setHours(hours)
-        date.setMinutes(minutes)
+        let hours = this.start_time.match(/^(\d+)/)[1];
+        let minutes = this.start_time.match(/:(\d+)/)[1];
+        date.setHours(hours);
+        date.setMinutes(minutes);
       } else {
-        date.setHours(this.start_time.getHours())
-        date.setMinutes(this.start_time.getMinutes())
+        date.setHours(this.start_time.getHours());
+        date.setMinutes(this.start_time.getMinutes());
       }
       return date;
     },
     preparedEndDate() {
-      const date = new Date(this.end_date)
+      const date = new Date(this.end_date);
       if (typeof this.end_time === "string") {
-        let hours = this.end_time.match(/^(\d+)/)[1]
-        let minutes = this.end_time.match(/:(\d+)/)[1]
-        date.setHours(hours)
-        date.setMinutes(minutes)
+        let hours = this.end_time.match(/^(\d+)/)[1];
+        let minutes = this.end_time.match(/:(\d+)/)[1];
+        date.setHours(hours);
+        date.setMinutes(minutes);
       } else {
-        date.setHours(this.end_time.getHours())
-        date.setMinutes(this.end_time.getMinutes())
+        date.setHours(this.end_time.getHours());
+        date.setMinutes(this.end_time.getMinutes());
       }
       return date;
     }
   },
   methods: {
+    addImportantDate(){
+      let event = {}
+      event.name = this.id_name
+      event.deadline = this.id_date
+      this.importantDates.push(event)
+    },
+    deleteImportantDate(index){
+      this.importantDates.pop(index)
+    },
     addConference() {
-      const latitude = this.select.geometry.location.lat()
-      const longitude = this.select.geometry.location.lng()
-      const geopoint = new firebase.firestore.GeoPoint(latitude, longitude)
-      let user = firebase.auth().currentUser
+      const latitude = this.select.geometry.location.lat();
+      const longitude = this.select.geometry.location.lng();
+      const geopoint = new firebase.firestore.GeoPoint(latitude, longitude);
+      let user = firebase.auth().currentUser;
 
-      let key
+      let key;
       db.collection("conferences")
         .add({
           title: this.title,
@@ -300,9 +391,9 @@ export default {
           user_id: user.uid
         })
         .then(response => {
-          console.log(response)
-          if(this.image.name){
-            const filename = this.image.name
+          console.log(response);
+          if (this.image.name) {
+            const filename = this.image.name;
             const extention = filename.substring(
               filename.lastIndexOf("."),
               filename.length
@@ -318,44 +409,51 @@ export default {
                     .doc(key)
                     .update({ logo: downloadURL })
                     .then(response => {
-                      console.log("pomyslnie dodano konferencje")
-                      this.$router.push({name: 'moje_konferencje'})
+                      console.log("pomyslnie dodano konferencje");
+                      this.$router.push({ name: "moje_konferencje" });
                     });
                 });
-              }); 
+              });
           } else {
-            this.$router.push({name: 'moje_konferencje'})
+            this.$router.push({ name: "moje_konferencje" });
           }
         })
         .catch(err => {
-          console.log(err)
+          console.log(err);
         });
     },
     querySelections(v) {
-      const service = new google.maps.places.PlacesService(document.createElement('div'))
+      const service = new google.maps.places.PlacesService(
+        document.createElement("div")
+      );
 
-      service.textSearch({query: v, fields: ['name', 'geometry', 'formatted_address']}, (results, status) => {
-        if (status === google.maps.places.PlacesServiceStatus.OK) {
-          this.items = results
-          this.items.forEach(item => {
-            item.name = `${item.name}, ${item.formatted_address}`
-          })
+      service.textSearch(
+        { query: v, fields: ["name", "geometry", "formatted_address"] },
+        (results, status) => {
+          if (status === google.maps.places.PlacesServiceStatus.OK) {
+            this.items = results;
+            this.items.forEach(item => {
+              item.name = `${item.name}, ${item.formatted_address}`;
+            });
+          }
         }
-      })
+      );
     },
-    getCategories(){
+    getCategories() {
       db.collection("categories")
-      .get()
-      .then(querySnapshot => {
-        querySnapshot.forEach(doc => {
-          this.categories.push(doc.id)
-        })
-      })
+        .get()
+        .then(querySnapshot => {
+          querySnapshot.forEach(doc => {
+            this.categories.push(doc.id);
+          });
+        });
     }
   }
-}
+};
 </script>
 
 <style>
-
+.test2{
+  width: 140px
+}
 </style>
