@@ -34,23 +34,42 @@ export default {
     let user = firebase.auth().currentUser
      db.collection('conferences').where("user_id", "==", user.uid)
         .get()
-        .then(querySnapshot => {
-          querySnapshot.forEach(doc => {
-             axios.post('https://maps.googleapis.com/maps/api/geocode/json?latlng=' + doc.data().location.latitude + ',' + doc.data().location.longitude + '&key=AIzaSyDtYbZokAi1OVXplmLIpuxlJpppE0fijPA')
-              .then(response => {
-                let address = response.data.results[0].formatted_address
-                let dataRef = doc.data()
-                dataRef.id = doc.id
-                dataRef.location = address
-                const link = `https://maps.google.com/?q=${address}`
-                dataRef.link = link
-                this.conferences.push(dataRef)
-              })
-              .catch(e => {
-                console.log(e)
-            })
-          })
+        .then(async querySnapshot => {
+        let docs = []
+        querySnapshot.forEach(doc => {
+          let dataRef = doc.data()
+          dataRef.id = doc.id
+          docs.push(dataRef)
         })
+
+        for(let i in docs) {
+          const test = axios.post('https://maps.googleapis.com/maps/api/geocode/json?latlng=' + docs[i].location.latitude + ',' + docs[i].location.longitude + '&key=AIzaSyDtYbZokAi1OVXplmLIpuxlJpppE0fijPA')
+          let result = await test;
+          docs[i].address = result.data.results[0].formatted_address
+          // const link = `https://maps.google.com/?q=${address}`
+          const link = `https://maps.google.com/?q=${docs[i].location.latitude},${docs[i].location.longitude}`
+          docs[i].link = link
+        }
+        this.conferences = docs
+        this.loading = false
+    })
+        // .then(querySnapshot => {
+        //   querySnapshot.forEach(doc => {
+        //      axios.post('https://maps.googleapis.com/maps/api/geocode/json?latlng=' + doc.data().location.latitude + ',' + doc.data().location.longitude + '&key=AIzaSyDtYbZokAi1OVXplmLIpuxlJpppE0fijPA')
+        //       .then(response => {
+        //         let address = response.data.results[0].formatted_address
+        //         let dataRef = doc.data()
+        //         dataRef.id = doc.id
+        //         dataRef.location = address
+        //         const link = `https://maps.google.com/?q=${address}`
+        //         dataRef.link = link
+        //         this.conferences.push(dataRef)
+        //       })
+        //       .catch(e => {
+        //         console.log(e)
+        //     })
+        //   })
+        // })
   }
 }
 </script>
