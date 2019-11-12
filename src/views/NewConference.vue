@@ -199,13 +199,13 @@
             outlined
           ></v-file-input>
 
-
           <v-card max-width="840" class="mx-auto mb-10">
-            <h3 class="elevation-3 pt-4 pb-4 title font-weight-regular text-center mb-3">Ważne terminy</h3>
-            {{importantDates}}
+            <h3
+              class="elevation-3 pt-4 pb-4 title font-weight-regular text-center mb-3"
+            >Ważne terminy</h3>
 
             <div v-for="(date, index) in importantDates" :key="index">
-              <ImportantDate :importantDate="date"> 
+              <ImportantDate :importantDate="date">
                 <div slot="number">{{index + 1}}</div>
                 <div slot="delete-btn">
                   <v-icon @click="deleteImportantDate(index)" color="darken-2">mdi-delete</v-icon>
@@ -215,47 +215,42 @@
 
             <v-card class="pt-5">
               <div class="ml-4 mt-4 mr-4 pt-4">
-              <v-text-field
-              v-model="id_name"
-              label="Nazwa"
-              outlined
-              ></v-text-field>
+                <v-text-field v-model="id_name" label="Nazwa" outlined :rules="[rules.required]"></v-text-field>
 
-              <v-menu
-                ref="id_date_menu"
-                v-model="id_date_menu"
-                :close-on-content-click="false"
-                :return-value.sync="id_date"
-                transition="scale-transition"
-                offset-y
-                full-width
-                min-width="290px"
-              >
-                <template v-slot:activator="{ on }">
-                  <v-text-field
-                  class="test2"
-                    v-model="id_date"
-                    label="Data"
-                    prepend-inner-icon="mdi-calendar"
-                    readonly
-                    outlined
-                    v-on="on"
-                    :rules="[rules.required]"
-                  ></v-text-field>
-                </template>
-                <v-date-picker v-model="id_date" no-title scrollable>
-                  <div class="flex-grow-1"></div>
-                  <v-btn text color="primary" @click="id_date_menu = false">Cancel</v-btn>
-                  <v-btn text color="primary" @click="$refs.id_date_menu.save(id_date)">OK</v-btn>
-                </v-date-picker>
-              </v-menu>
-          </div>
-          <v-card-actions>
-              <v-btn @click="addImportantDate" text class="mb-5" color="blue accent-4">
-                <v-icon dark left>mdi-plus</v-icon>
-                Dodaj termin
+                <v-menu
+                  ref="id_date_menu"
+                  v-model="id_date_menu"
+                  :close-on-content-click="false"
+                  :return-value.sync="id_date"
+                  transition="scale-transition"
+                  offset-y
+                  full-width
+                  min-width="290px"
+                >
+                  <template v-slot:activator="{ on }">
+                    <v-text-field
+                      class="test2"
+                      v-model="id_date"
+                      label="Data"
+                      prepend-inner-icon="mdi-calendar"
+                      readonly
+                      outlined
+                      v-on="on"
+                      :rules="[rules.required]"
+                    ></v-text-field>
+                  </template>
+                  <v-date-picker v-model="id_date" no-title scrollable>
+                    <div class="flex-grow-1"></div>
+                    <v-btn text color="primary" @click="id_date_menu = false">Cancel</v-btn>
+                    <v-btn text color="primary" @click="$refs.id_date_menu.save(id_date)">OK</v-btn>
+                  </v-date-picker>
+                </v-menu>
+              </div>
+              <v-card-actions>
+                <v-btn @click="addImportantDate" text class="mb-5" color="blue accent-4">
+                  <v-icon dark left>mdi-plus</v-icon>Dodaj termin
                 </v-btn>
-            </v-card-actions>
+              </v-card-actions>
             </v-card>
           </v-card>
 
@@ -273,7 +268,7 @@
 import firebase from "firebase";
 import db from "@/firebase/init";
 import axios from "axios";
-import ImportantDate from '@/components/ImportantDate'
+import ImportantDate from "@/components/ImportantDate";
 
 export default {
   components: {
@@ -286,7 +281,6 @@ export default {
       start_time: null,
       id_name: null,
       id_date: null,
-      id_start_time: null,
       end_date: null,
       end_time: null,
       location: null,
@@ -361,14 +355,16 @@ export default {
     }
   },
   methods: {
-    addImportantDate(){
-      let event = {}
-      event.name = this.id_name
-      event.deadline = this.id_date
-      this.importantDates.push(event)
+    addImportantDate() {
+      let event = {};
+      event.name = this.id_name;
+      event.deadline = this.id_date;
+      this.id_name = "";
+      this.id_date = new Date().toISOString().substring(0, 10);
+      this.importantDates.push(event);
     },
-    deleteImportantDate(index){
-      this.importantDates.pop(index)
+    deleteImportantDate(index) {
+      this.importantDates.pop(index);
     },
     addConference() {
       const latitude = this.select.geometry.location.lat();
@@ -409,6 +405,20 @@ export default {
                     .doc(key)
                     .update({ logo: downloadURL })
                     .then(response => {
+                      for (let i in this.importantDates) {
+                        db.collection("conferences")
+                          .doc(key)
+                          .collection("important_dates")
+                          .add({
+                            name: this.importantDates[i].name,
+                            important_date: new Date(
+                              this.importantDates[i].deadline
+                            )
+                          })
+                          .then(response => {
+                            console.log(response);
+                          });
+                      }
                       console.log("pomyslnie dodano konferencje");
                       this.$router.push({ name: "moje_konferencje" });
                     });
@@ -453,7 +463,7 @@ export default {
 </script>
 
 <style>
-.test2{
-  width: 140px
+.test2 {
+  width: 140px;
 }
 </style>

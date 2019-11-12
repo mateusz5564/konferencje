@@ -14,13 +14,14 @@
               v-model="importantDate.name"
               label="Nazwa"
               outlined
+              :rules="[rules.required]"
               ></v-text-field>
 
               <v-menu
                 ref="start_date_menu"
                 v-model="start_date_menu"
                 :close-on-content-click="false"
-                :return-value.sync="start_date"
+                :return-value.sync="importantDate.deadline"
                 transition="scale-transition"
                 offset-y
                 full-width
