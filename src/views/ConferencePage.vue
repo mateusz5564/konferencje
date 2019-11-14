@@ -62,7 +62,7 @@
               </div>
             </v-card>
 
-            <v-card v-if="importantDates" class="mx-auto mt-6" outlined width="400">
+            <v-card v-if="importantDates[0]" class="mx-auto mt-6" outlined width="400">
               <v-card-title class="d-block title text-center font-weight-regular">Ważne daty</v-card-title> 
               <v-divider class="blue lighten-1"></v-divider>
               <div v-for="(date, index) in importantDates" :key="index" class="d-flex flex-row pa-5">
