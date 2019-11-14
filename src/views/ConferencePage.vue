@@ -88,7 +88,7 @@
 import db from "@/firebase/init"
 import firebase from "firebase"
 import axios from "axios"
-// import { saveAs } from "file-saver"
+import { saveAs } from "file-saver"
 import ExportConference from "@/components/ExportConference"
 import ImportantDateView from "@/components/ImportantDateView"
 
@@ -192,7 +192,11 @@ export default {
           .then(querySnapshot => {
             if(!querySnapshot.empty){
               querySnapshot.forEach(doc => {
-                this.importantDates.push(doc.data())
+                let important_date = doc.data()
+                important_date.location = this.location
+                important_date.geo = this.geo
+                important_date.id = this.id
+                this.importantDates.push(important_date)
               })
             }
           })

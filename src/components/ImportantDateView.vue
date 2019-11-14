@@ -10,11 +10,24 @@
         </div>
         <a @click.stop="dialog = true">dodaj do kalendarza</a>
       </div>
+
+      <v-dialog v-model="dialog" max-width="350px">
+        <ExportImportantDate :importantDate="importantDate" />
+      </v-dialog>
   </div>
 </template>
 
 <script>
+import ExportImportantDate from '@/components/ExportImportantDate'
 export default {
-  props: ["importantDate"]
+  props: ["importantDate"],
+  components: {
+    ExportImportantDate
+  },
+  data(){
+    return {
+      dialog: false
+    }
+  }
 }
 </script>
