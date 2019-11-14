@@ -18,6 +18,7 @@
               </v-card-text>
             </v-card>
           </v-col>
+
           <v-col lg="auto">
             <v-card class="mx-auto" outlined width="400">
               <div class="d-flex flex-row pa-5">
@@ -60,6 +61,14 @@
 
               </div>
             </v-card>
+
+            <v-card v-if="importantDates" class="mx-auto mt-6" outlined width="400">
+              <v-card-title class="d-block title text-center font-weight-regular">Ważne daty</v-card-title> 
+              <v-divider class="blue lighten-1"></v-divider>
+              <div v-for="(date, index) in importantDates" :key="index" class="d-flex flex-row pa-5">
+                <ImportantDateView :importantDate="date"/>
+              </div>
+            </v-card>
           </v-col>
         </v-row>
       </v-container>
@@ -76,15 +85,17 @@
 </template>
 
 <script>
-import db from "@/firebase/init";
-import firebase from "firebase";
-import axios from "axios";
-import { saveAs } from "file-saver";
-import ExportConference from "@/components/ExportConference";
+import db from "@/firebase/init"
+import firebase from "firebase"
+import axios from "axios"
+// import { saveAs } from "file-saver"
+import ExportConference from "@/components/ExportConference"
+import ImportantDateView from "@/components/ImportantDateView"
 
 export default {
   components: {
-    ExportConference
+    ExportConference,
+    ImportantDateView
   },
   data() {
     return {
@@ -104,6 +115,7 @@ export default {
       feedback: null,
       image: null,
       conference: {},
+      importantDates: [],
       user: null,
       isObserved: false,
       observeText: "Obserwuj"
@@ -111,7 +123,7 @@ export default {
   },
   created() {
     firebase.auth().onAuthStateChanged(user => {
-      this.user = user;
+      this.user = user
       if (user) {
         db.doc(`users/${user.uid}`)
           .collection("observed_conferences")
@@ -119,32 +131,32 @@ export default {
           .get()
           .then(docSnapshot => {
             if (docSnapshot.exists) {
-              this.isObserved = true;
-              this.observeText = "Przestań obserwować";
+              this.isObserved = true
+              this.observeText = "Przestań obserwować"
             } else {
-              this.isObserved = false;
-              this.observeText = "Obserwuj";
+              this.isObserved = false
+              this.observeText = "Obserwuj"
             }
           });
       }
     });
 
-    this.id = this.$route.params.conference_id;
-    let ref = db
-      .collection("conferences")
-      .doc(this.$route.params.conference_id);
-    ref.get().then(doc => {
+    this.id = this.$route.params.conference_id
+    db.collection("conferences")
+    .doc(this.$route.params.conference_id)
+    .get()
+    .then(doc => {
       if (doc.exists) {
-        let data = doc.data();
-        this.exist = true;
-        this.title = data.title;
-        this.category_id = data.category_id;
-        this.website = data.website;
+        let data = doc.data()
+        this.exist = true
+        this.title = data.title
+        this.category_id = data.category_id
+        this.website = data.website
         this.description = data.description;
-        this.start_date = data.start_date.toDate();
-        this.end_date = data.end_date.toDate();
-        this.logo = data.logo;
-        this.geo = data.location;
+        this.start_date = data.start_date.toDate()
+        this.end_date = data.end_date.toDate()
+        this.logo = data.logo
+        this.geo = data.location
         axios
           .post(
             "https://maps.googleapis.com/maps/api/geocode/json?latlng=" +
@@ -154,26 +166,42 @@ export default {
               "&key=AIzaSyDtYbZokAi1OVXplmLIpuxlJpppE0fijPA"
           )
           .then(response => {
-            let address = response.data.results[0].formatted_address;
-            this.location = address;
-            const link = `https://maps.google.com/?q=${address}`;
+            let address = response.data.results[0].formatted_address
+            this.location = address
+            const link = `https://maps.google.com/?q=${address}`
             this.link = link;
-            this.conference.id = this.id;
-            this.conference.title = this.title;
-            this.conference.start_date = this.start_date.toISOString();
-            this.conference.end_date = this.end_date.toISOString();
-            this.conference.location = this.location;
-            this.conference.link = this.link;
-            this.conference.description = this.description;
-            this.conference.logo = this.logo;
-            this.conference.geo = this.geo;
+            this.conference.id = this.id
+            this.conference.title = this.title
+            this.conference.start_date = this.start_date.toISOString()
+            this.conference.end_date = this.end_date.toISOString()
+            this.conference.location = this.location
+            this.conference.link = this.link
+            this.conference.description = this.description
+            this.conference.logo = this.logo
+            this.conference.geo = this.geo
           })
           .catch(e => {
-            console.log(e);
-          });
-      } else {
-        console.log("Taka konferencja nie istenieje!");
-      }
+            console.log(e)
+          })
+
+
+          db.collection("conferences")
+          .doc(this.$route.params.conference_id)
+          .collection('important_dates')
+          .get()
+          .then(querySnapshot => {
+            if(!querySnapshot.empty){
+              querySnapshot.forEach(doc => {
+                this.importantDates.push(doc.data())
+              })
+            }
+          })
+          .catch(err => {
+            console.log(err)
+          })
+        } else {
+          console.log("Taka konferencja nie istenieje!")
+        }
     });
   },
   methods: {
@@ -186,7 +214,7 @@ export default {
           .delete()
           .then(() => {
             this.isObserved = false;
-            this.observeText = "Obserwuj";
+            this.observeText = "Obserwuj"
           })
           .catch(err => {
             console.log(err);
@@ -200,10 +228,10 @@ export default {
             .set({})
             .then(() => {
               this.isObserved = true;
-              this.observeText = "Przestań obserwować";
+              this.observeText = "Przestań obserwować"
             })
             .catch(err => {
-              console.log(err);
+              console.log(err)
             });
         }
       }

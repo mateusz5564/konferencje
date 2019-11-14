@@ -215,7 +215,7 @@
 
             <v-card class="pt-5">
               <div class="ml-4 mt-4 mr-4 pt-4">
-                <v-text-field v-model="id_name" label="Nazwa" outlined :rules="[rules.required]"></v-text-field>
+                <v-text-field v-model="id_name" label="Nazwa" outlined></v-text-field>
 
                 <v-menu
                   ref="id_date_menu"
@@ -236,7 +236,6 @@
                       readonly
                       outlined
                       v-on="on"
-                      :rules="[rules.required]"
                     ></v-text-field>
                   </template>
                   <v-date-picker v-model="id_date" no-title scrollable>
@@ -359,8 +358,8 @@ export default {
       let event = {};
       event.name = this.id_name;
       event.deadline = this.id_date;
-      this.id_name = "";
-      this.id_date = new Date().toISOString().substring(0, 10);
+      this.id_name = null;
+      this.id_date = null
       this.importantDates.push(event);
     },
     deleteImportantDate(index) {
