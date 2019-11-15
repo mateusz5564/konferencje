@@ -6,13 +6,11 @@ import vuetify from './plugins/vuetify'
 import firebase from 'firebase'
 import DateFilter from '@/filters/dateFilter.js'
 
-
 Vue.config.productionTip = false
 export const bus = new Vue();
 
 //FILTERS
 Vue.filter('dateFilter', DateFilter)
-
 
 //init Vue instance only once
 let app = null

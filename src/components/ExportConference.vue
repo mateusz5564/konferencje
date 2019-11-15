@@ -53,7 +53,6 @@ export default {
       window.open(link, '_blank')
     },
     downloadIcsFile() {
-      //sssssssss
       var blob = new Blob(
         [
 `BEGIN:VCALENDAR

@@ -33,6 +33,10 @@
             :rules="[rules.required]"
           ></v-textarea>
 
+          <div class="editor mb-8">
+            <ckeditor :editor="editor" :config="editorConfig" v-model="editorData"></ckeditor>
+          </div>
+
           <div class="test">
             <v-autocomplete
               class="mb-5"
@@ -264,14 +268,18 @@
 </template>
 
 <script>
-import firebase from "firebase";
-import db from "@/firebase/init";
-import axios from "axios";
-import ImportantDate from "@/components/ImportantDate";
+import firebase from "firebase"
+import db from "@/firebase/init"
+import axios from "axios"
+import ImportantDate from "@/components/ImportantDate"
+import CKEditor from "@ckeditor/ckeditor5-vue";
+import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
+import pl from "@ckeditor/ckeditor5-build-classic/build/translations/pl.js";
 
 export default {
   components: {
-    ImportantDate
+    ImportantDate,
+    ckeditor: CKEditor.component
   },
   data() {
     return {
@@ -304,6 +312,14 @@ export default {
       categories: [],
       website: null,
       importantDates: [],
+      editor: ClassicEditor,
+      editorData: null,
+      editorConfig: {
+        language: {
+          ui: "pl",
+          content: "pl"
+        }
+      },
       rules: {
         required: value => !!value || "pole wymagane",
         counter: value => value.length <= 100 || "maksymalnie 100 znaków",
@@ -464,5 +480,8 @@ export default {
 <style>
 .test2 {
   width: 140px;
+}
+.ck-editor__editable_inline {
+    min-height: 100px;
 }
 </style>
