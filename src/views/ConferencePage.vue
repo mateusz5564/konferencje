@@ -6,11 +6,16 @@
           <v-col lg="auto">
             <v-card class="mx-auto" outlined max-width="800px">
               <v-card-text class="headline font-weight-light mt-2 black--text">{{title}}</v-card-text>
-              <v-chip class="ma-2" color="grey" label text-color="white">
+              <div class="d-flex justify-space-between">
+              <v-chip class="ma-2" color="blue lighten-1" label text-color="white">
                 <v-icon left>mdi-label</v-icon>
                 {{category_id}}
               </v-chip>
-
+              <v-chip v-if="user" class="ma-2" color="orange darken-1" text-color="white" @click="test">
+                <v-icon v-if="!isObserved" left>mdi-star</v-icon>
+                  {{observeText}}
+                </v-chip>
+              </div>
               <v-img :src="logo" height="auto"></v-img>
 
               <v-card-text class="body-2 mb-5 mt-5">
@@ -51,13 +56,9 @@
                   link
                   pill
                 >
-                  <v-icon left>mdi-web</v-icon>WWW
+                  <v-icon left>mdi-web</v-icon>strona internetowa
                 </v-chip>
 
-                  <v-chip v-if="user" class="ma-2" color="orange" text-color="white" @click="test">
-                    <v-icon v-if="!isObserved" left>mdi-star</v-icon>
-                      {{observeText}}
-                    </v-chip>
 
               </div>
             </v-card>

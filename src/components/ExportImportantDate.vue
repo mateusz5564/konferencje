@@ -43,19 +43,16 @@ export default {
     addToGoogleCalendar(){ 
       console.log(this.importantDate.important_date)
       let important_date = new Date(this.importantDate.important_date.seconds*1000)
-      console.log(important_date)
       let important_dateString = important_date.toISOString().replace(/-|:|/g, '').substring(0, 15) + 'Z'
 
-      let end = new Date(this.importantDate.important_date.seconds*1000)
-      let endString = end.toISOString().replace(/-|:|/g, '').substring(0, 15) + 'Z'
-      // console.log(this.conference.location.replace(/ /g, '+'))
 
       const link = `https://calendar.google.com/calendar/r/eventedit?location=${encodeURIComponent(this.importantDate.location)}
-      &text=${encodeURIComponent(this.importantDate.name)}&dates=${important_dateString}/${endString}&details=${encodeURIComponent("Więcej informacji: http://localhost:8080/#/konferencja/")}${this.importantDate.id}`
+      &text=${encodeURIComponent(this.importantDate.name)}&dates=${important_dateString}/${important_dateString}&details=${encodeURIComponent("Więcej informacji: http://localhost:8080/#/konferencja/")}${this.importantDate.id}`
       
       window.open(link, '_blank')
     },
     downloadIcsFile() {
+      let important_date = new Date(this.importantDate.important_date.seconds*1000)
       var blob = new Blob(
         [
 `BEGIN:VCALENDAR
@@ -63,8 +60,8 @@ VERSION:2.0
 METHOD:PUBLISH
 BEGIN:VEVENT
 SUMMARY:${this.importantDate.name}
-DTSTART:${this.importantDate.important_date}
-DTEND:${this.importantDate.important_date}
+DTSTART:${important_date.toISOString()}
+DTEND:${important_date.toISOString()}
 LOCATION:${this.importantDate.location}
 GEO:${this.importantDate.geo.latitude};${this.importantDate.geo.longitude}
 DESCRIPTION: Więcej informacji: http://localhost:8080/#/konferencja/${this.importantDate.id}

@@ -46,7 +46,6 @@ export default {
 
       let startString = start.toISOString().replace(/-|:|/g, '').substring(0, 15) + 'Z'
       let endString = end.toISOString().replace(/-|:|/g, '').substring(0, 15) + 'Z'
-      console.log(this.conference.location.replace(/ /g, '+'))
 
       const link = `https://calendar.google.com/calendar/r/eventedit?location=${encodeURIComponent(this.conference.location)}
       &text=${encodeURIComponent(this.conference.title)}&dates=${startString}/${endString}&details=${encodeURIComponent("Więcej informacji: http://localhost:8080/#/konferencja/")}${this.conference.id}`
