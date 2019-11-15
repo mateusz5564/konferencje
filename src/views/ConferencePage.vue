@@ -19,7 +19,7 @@
               <v-img :src="logo" height="auto"></v-img>
 
               <v-card-text class="body-2 mb-5 mt-5">
-                <div class="text--primary">{{description}}</div>
+                <div id="description" class="text--primary">{{description}}</div>
               </v-card-text>
             </v-card>
           </v-col>
@@ -177,7 +177,8 @@ export default {
             this.conference.end_date = this.end_date.toISOString()
             this.conference.location = this.location
             this.conference.link = this.link
-            this.conference.description = this.description
+            // this.conference.description = this.description
+            document.getElementById("description").innerHTML = this.description
             this.conference.logo = this.logo
             this.conference.geo = this.geo
           })

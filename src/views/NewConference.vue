@@ -16,6 +16,10 @@
           ></v-textarea>
           <v-autocomplete v-model="selectedCategory" :items="categories" label="Kategoria" outlined></v-autocomplete>
 
+          <div class="editor mb-8">
+            <ckeditor :editor="editor" :config="editorConfig" v-model="editorData"></ckeditor>
+          </div>
+
           <v-text-field
             v-model="website"
             :rules="[rules.www]"
@@ -24,18 +28,14 @@
             hint="adres URL musi rozpoczynać się od https:// np. https://www.google.pl/"
           ></v-text-field>
 
-          <v-textarea
+          <!-- <v-textarea
             outlined
             v-model="description"
             auto-grow
             label="Opis"
             rows="1"
             :rules="[rules.required]"
-          ></v-textarea>
-
-          <div class="editor mb-8">
-            <ckeditor :editor="editor" :config="editorConfig" v-model="editorData"></ckeditor>
-          </div>
+          ></v-textarea> -->
 
           <div class="test">
             <v-autocomplete
@@ -205,7 +205,7 @@
 
           <v-card max-width="840" class="mx-auto mb-10">
             <h3
-              class="elevation-3 pt-4 pb-4 title font-weight-regular text-center mb-3"
+              class="elevation-1 pt-4 pb-4 title font-weight-regular text-center mb-3"
             >Ważne terminy</h3>
 
             <div v-for="(date, index) in importantDates" :key="index">
@@ -217,7 +217,7 @@
               </ImportantDate>
             </div>
 
-            <v-card class="pt-5">
+            <v-card class="pt-5 elevation-1">
               <div class="ml-4 mt-4 mr-4 pt-4">
                 <v-text-field v-model="id_name" label="Nazwa" outlined></v-text-field>
 
@@ -291,7 +291,6 @@ export default {
       end_date: null,
       end_time: null,
       location: null,
-      description: null,
       logo: null,
       feedback: null,
       modal: true,
@@ -318,7 +317,8 @@ export default {
         language: {
           ui: "pl",
           content: "pl"
-        }
+        },
+        placeholder: "Opis konferencji"
       },
       rules: {
         required: value => !!value || "pole wymagane",
@@ -393,7 +393,7 @@ export default {
           title: this.title,
           category_id: this.selectedCategory,
           website: this.website,
-          description: this.description,
+          description: this.editorData,
           location: geopoint,
           start_date: firebase.firestore.Timestamp.fromDate(
             this.preparedStartDate
@@ -483,5 +483,12 @@ export default {
 }
 .ck-editor__editable_inline {
     min-height: 100px;
+    color: rgba(0, 0, 0, 0.87);
+    font-size: 16px;
+}
+.ck.ck-editor__editable > .ck-placeholder::before {
+    font-size: 18px;
+    display: inline-block;
+    margin-top: 10px;
 }
 </style>

@@ -5,7 +5,7 @@
           <v-icon color="blue">mdi-alert-rhombus-outline</v-icon>
         <span
           class="sub-title1 font-weight-regular ml-1"
-        > {{importantDate.name}} zgloszenie abstraktów</span>
+        > {{importantDate.name}}</span>
         </div>
         <div>
           <v-icon small>mdi-calendar</v-icon>
