@@ -1,16 +1,18 @@
 <template>
   <div class="admin_panel">
+
+    <!-- dodawanie admina
     <v-card class="login__card" max-width="400px">
       <v-card-text>
         <v-form @submit.prevent="makeAdmin">
           <v-text-field label="Email" type="email" v-model="email"></v-text-field>
-          <!-- <p v-if="feedback" class="red--text">{{ feedback }}</p> -->
+          <p v-if="feedback" class="red--text">{{ feedback }}</p>
           <v-btn class="ma-3" color="blue" type="submit" large dark>Dodaj Administratora</v-btn>
         </v-form>
       </v-card-text>
-    </v-card>
+    </v-card> -->
 
-    <v-card class="mt-10">
+    <v-card class="">
 
       <v-tabs v-model="tab" background-color="transparent" grow>
         <v-tab>Konferencje</v-tab>
@@ -20,12 +22,11 @@
       <v-tabs-items v-model="tab">
         <!-- CONFERENCES TAB -->
         <v-tab-item>
-          <v-card flat>
-            <v-card-text>
+              <div class="mt-5">
               <v-data-table
                 :headers="headersConferences"
                 :items="conferences"
-                sort-by="conferences.isAccepted"
+                sort-by="isAccepted"
                 class="elevation-1"
               >
                 <template v-slot:top>
@@ -41,14 +42,12 @@
                   <v-chip :color="getColor(item.isAccepted)" dark>{{ item.isAccepted }}</v-chip>
                 </template>
               </v-data-table>
-            </v-card-text>
-          </v-card>
+            </div>
         </v-tab-item>
 
         <!-- USERS TAB -->
         <v-tab-item>
-          <v-card flat>
-            <v-card-text>
+          <div class="mt-5">
               <v-data-table
                 :headers="headersUsers"
                 :items="users"
@@ -61,8 +60,7 @@
                   <v-icon small @click="deleteItem(item)">mdi-delete</v-icon>
                 </template>
               </v-data-table>
-            </v-card-text>
-          </v-card>
+          </div>
         </v-tab-item>
       </v-tabs-items>
     </v-card>
@@ -155,7 +153,7 @@ export default {
                 .data()
                 .end_date.toDate()
                 .toLocaleString()
-              dataRef.isAccepted = String(doc.data().isAccepted);
+              dataRef.isAccepted = String(doc.data().isAccepted) === "true" ? "zaakceptowano" : "oczekuje"
               this.conferences.push(dataRef);
             })
             .catch(e => {
@@ -174,7 +172,7 @@ export default {
     },
 
     getColor(flag) {
-      if (flag === "true") return "green";
+      if (flag === "zaakceptowano") return "green";
       else return "red";
     },
 
