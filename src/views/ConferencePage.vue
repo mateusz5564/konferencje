@@ -5,16 +5,24 @@
         <v-row justify="center">
           <v-col lg="auto">
             <v-card class="mx-auto" outlined max-width="800px">
+              {{this.isAccepted}}
+              <div v-if="$admin" class="d-flex justify-center mt-4">
+                <v-btn :color="acceptColor" dark @click="updateAccepted">
+                  <v-icon v-if="!isAccepted" left>mdi-check-circle-outline</v-icon>
+                  <v-icon v-if="isAccepted" left>mdi-cancel</v-icon>
+                    {{acceptText}}
+                </v-btn>
+              </div>
               <v-card-text class="headline font-weight-light mt-2 black--text">{{title}}</v-card-text>
               <div class="d-flex justify-space-between">
               <v-chip class="ma-2" color="blue lighten-1" label text-color="white">
                 <v-icon left>mdi-label</v-icon>
                 {{category_id}}
               </v-chip>
-              <v-chip v-if="user" class="ma-2" color="orange darken-1" text-color="white" @click="test">
+              <v-chip v-if="user" class="ma-2" color="orange darken-1" text-color="white" @click="updateObserved">
                 <v-icon v-if="!isObserved" left>mdi-star</v-icon>
                   {{observeText}}
-                </v-chip>
+              </v-chip>
               </div>
               <v-img :src="logo" height="auto"></v-img>
 
@@ -119,7 +127,10 @@ export default {
       importantDates: [],
       user: null,
       isObserved: false,
-      observeText: "Obserwuj"
+      observeText: "Obserwuj",
+      isAccepted: false,
+      acceptText: "Zaakceptuj",
+      acceptColor: "green"
     };
   },
   created() {
@@ -150,6 +161,7 @@ export default {
       if (doc.exists) {
         let data = doc.data()
         this.exist = true
+        this.isAccepted = data.isAccepted
         this.title = data.title
         this.category_id = data.category_id
         this.website = data.website
@@ -158,8 +170,8 @@ export default {
         this.end_date = data.end_date.toDate()
         this.logo = data.logo
         this.geo = data.location
-        axios
-          .post(
+        this.isAccepted ? this.setIsNotAccepted() : this.setAccepted()
+        axios.post(
             "https://maps.googleapis.com/maps/api/geocode/json?latlng=" +
               doc.data().location.latitude +
               "," +
@@ -172,6 +184,7 @@ export default {
             const link = `https://maps.google.com/?q=${address}`
             this.link = link;
             this.conference.id = this.id
+            this.conference.isAccepted = this.isAccepted
             this.conference.title = this.title
             this.conference.start_date = this.start_date.toISOString()
             this.conference.end_date = this.end_date.toISOString()
@@ -211,7 +224,47 @@ export default {
     });
   },
   methods: {
-    test() {
+
+    setAccepted(){
+      this.isAccepted = false;
+      this.acceptText = "Zaakceptuj"
+      this.acceptColor = "green"
+    },
+
+    setIsNotAccepted(){
+      this.isAccepted = true;
+      this.acceptText = "Anuluj akceptację"
+      this.acceptColor = "red"
+    },
+
+    updateAccepted(){
+      if (this.isAccepted) {
+        console.log('aaaaaa')
+        db.collection("conferences").doc(this.id)
+          .update({isAccepted: false})
+          .then(() => {
+            this.isAccepted = false;
+            this.acceptText = "Zaakceptuj"
+            this.acceptColor = "green"
+          })
+          .catch(err => {
+            console.log(err);
+          })
+      } else {
+        console.log('ssssss')
+          db.collection("conferences").doc(this.id)
+          .update({isAccepted: true})
+            .then(() => {
+              this.isAccepted = true;
+              this.acceptText = "Anuluj akceptację"
+              this.acceptColor = "red"
+            })
+            .catch(err => {
+              console.log(err)
+            })
+      }
+    },
+    updateObserved() {
       if (this.isObserved) {
         //unfollow conference
         db.doc(`users/${this.user.uid}`)
@@ -223,7 +276,7 @@ export default {
             this.observeText = "Obserwuj"
           })
           .catch(err => {
-            console.log(err);
+            console.log(err)
           });
       } else {
         //follow conference
@@ -233,7 +286,7 @@ export default {
             .doc(this.id)
             .set({})
             .then(() => {
-              this.isObserved = true;
+              this.isObserved = true
               this.observeText = "Przestań obserwować"
             })
             .catch(err => {

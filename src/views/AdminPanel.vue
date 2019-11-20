@@ -34,6 +34,9 @@
                     <EditConference />
                   </v-dialog>
                 </template>
+                <template v-slot:item.preview="{ item }">
+                  <v-btn text :to="{name: 'konferencja', params: { conference_id: item.id}}" color="blue accent-4"><v-icon small>mdi-eye-outline</v-icon></v-btn>
+                </template>
                 <template v-slot:item.action="{ item }">
                   <v-icon small class="mr-2" @click="editConference(item)">mdi-pencil</v-icon>
                   <v-icon small @click="deleteItem(item)">mdi-delete</v-icon>
@@ -100,6 +103,12 @@ export default {
       ],
       conferences: [],
       headersConferences: [
+        {
+          text: "Podgląd",
+          align: "center",
+          sortable: false,
+          value: "preview"
+        },
         {
           text: "Tytuł",
           align: "left",
