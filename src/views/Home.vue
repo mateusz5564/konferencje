@@ -86,6 +86,7 @@ export default {
     },
     getConferences(){
       db.collection("conferences")
+      .where("isAccepted", "==", true)
       .orderBy("start_date", "asc")
       .get()
       .then(async querySnapshot => {

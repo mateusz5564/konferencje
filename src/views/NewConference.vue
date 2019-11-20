@@ -292,6 +292,7 @@ export default {
       end_time: null,
       location: null,
       logo: null,
+      isAccepted: false,
       feedback: null,
       modal: true,
       start_date_menu: false,
@@ -387,9 +388,20 @@ export default {
       const geopoint = new firebase.firestore.GeoPoint(latitude, longitude);
       let user = firebase.auth().currentUser;
 
+      //gdy zalogowany admin, automatycznie zaakceptuj
+      firebase.auth().onAuthStateChanged(user => {
+        user.getIdTokenResult().then((token) => {
+           if(token.claims.admin){
+             this.isAccepted = true
+           }
+        })
+      })
+
+
       let key;
       db.collection("conferences")
         .add({
+          isAccepted: this.isAccepted,
           title: this.title,
           category_id: this.selectedCategory,
           website: this.website,
