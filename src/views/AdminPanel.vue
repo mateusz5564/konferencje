@@ -24,6 +24,8 @@
         <v-tab-item>
               <div class="mt-5">
               <v-data-table
+              :loading="loading"
+              loading-text="trwa ładowanie"
                 :headers="headersConferences"
                 :items="conferences"
                 sort-by="isAccepted"
@@ -86,6 +88,7 @@ export default {
       email: null,
       tab: null,
       editConferenceDialog: false,
+      loading: true,
       users: [
         { username: "test1", email: "test1@interia.pl", status: "aktywny" },
         { username: "test2", email: "test2@interia.pl", status: "wyłączony" },
@@ -163,7 +166,8 @@ export default {
                 .end_date.toDate()
                 .toLocaleString()
               dataRef.isAccepted = String(doc.data().isAccepted) === "true" ? "zaakceptowano" : "oczekuje"
-              this.conferences.push(dataRef);
+              this.conferences.push(dataRef)
+              this.loading = false
             })
             .catch(e => {
               console.log(e);

@@ -5,7 +5,6 @@
         <v-row justify="center">
           <v-col lg="auto">
             <v-card class="mx-auto" outlined max-width="800px">
-              {{this.isAccepted}}
               <div v-if="$admin" class="d-flex justify-center mt-4">
                 <v-btn :color="acceptColor" dark @click="updateAccepted">
                   <v-icon v-if="!isAccepted" left>mdi-check-circle-outline</v-icon>
@@ -109,7 +108,7 @@ export default {
   data() {
     return {
       dialog: false,
-      exist: false,
+      exist: true,
       id: null,
       title: null,
       start_date: null,
