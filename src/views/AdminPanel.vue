@@ -11,16 +11,40 @@
     </v-card>
 
     <v-card class="mt-10">
-      <!-- <v-card-title class="text-center justify-center py-6">
-      <h1 class="font-weight-bold display-3 basil--text">BASiL</h1>
-      </v-card-title>-->
 
       <v-tabs v-model="tab" background-color="transparent" grow>
-        <v-tab>Uzytkownicy</v-tab>
         <v-tab>Konferencje</v-tab>
+        <v-tab>Uzytkownicy</v-tab>
       </v-tabs>
 
       <v-tabs-items v-model="tab">
+        <!-- CONFERENCES TAB -->
+        <v-tab-item>
+          <v-card flat>
+            <v-card-text>
+              <v-data-table
+                :headers="headersConferences"
+                :items="conferences"
+                sort-by="conferences.isAccepted"
+                class="elevation-1"
+              >
+                <template v-slot:top>
+                  <v-dialog v-model="editConferenceDialog" max-width="1000px">
+                    <EditConference />
+                  </v-dialog>
+                </template>
+                <template v-slot:item.action="{ item }">
+                  <v-icon small class="mr-2" @click="editConference(item)">mdi-pencil</v-icon>
+                  <v-icon small @click="deleteItem(item)">mdi-delete</v-icon>
+                </template>
+                <template v-slot:item.isAccepted="{ item }">
+                  <v-chip :color="getColor(item.isAccepted)" dark>{{ item.isAccepted }}</v-chip>
+                </template>
+              </v-data-table>
+            </v-card-text>
+          </v-card>
+        </v-tab-item>
+
         <!-- USERS TAB -->
         <v-tab-item>
           <v-card flat>
@@ -39,37 +63,6 @@
               </v-data-table>
             </v-card-text>
           </v-card>
-        </v-tab-item>
-
-        <!-- CONFERENCES TAB -->
-        <v-tab-item>
-    
-              <v-card flat>
-                <v-card-text>
-                  <v-data-table
-                    :headers="headersConferences"
-                    :items="conferences"
-                    sort-by="calories"
-                    class="elevation-1"
-                  >
-                    <template v-slot:top>
-                      <v-dialog v-model="editConferenceDialog" max-width="1000px">
-                        <!-- <template v-slot:activator="{ on }">
-                        <v-btn color="primary" dark class="mb-2" v-on="on">Dodaj konferencje</v-btn>
-                        </template>-->
-
-                        <EditConference /> 
-               
-                      </v-dialog>
-                    </template>
-                    <template v-slot:item.action="{ item }">
-                      <v-icon small class="mr-2" @click="editConference(item)">mdi-pencil</v-icon>
-                      <v-icon small @click="deleteItem(item)">mdi-delete</v-icon>
-                    </template>
-                  </v-data-table>
-                </v-card-text>
-              </v-card>
-  
         </v-tab-item>
       </v-tabs-items>
     </v-card>
@@ -93,9 +86,9 @@ export default {
       tab: null,
       editConferenceDialog: false,
       users: [
-        { username: "test1", email: "test1@interia.pl" },
-        { username: "test2", email: "test2@interia.pl" },
-        { username: "test3", email: "test3@interia.pl" }
+        { username: "test1", email: "test1@interia.pl", status: "aktywny" },
+        { username: "test2", email: "test2@interia.pl", status: "wyłączony" },
+        { username: "test3", email: "test3@interia.pl", status: "aktywny" }
       ],
       headersUsers: [
         {
@@ -104,9 +97,8 @@ export default {
           value: "username"
         },
         { text: "Email", value: "email" },
-        { text: "Logo", value: "logo" },
-        { text: "Opis", value: "opis" },
-        { text: "Actions", value: "action", sortable: false }
+        { text: "Status", value: "status" },
+        { text: "Actions", value: "action", align: "right", sortable: false }
       ],
       conferences: [],
       headersConferences: [
@@ -116,29 +108,14 @@ export default {
           sortable: false,
           value: "title"
         },
-        { text: "Opis", value: "description" },
-        { text: "Lokalizacja", value: "location" },
+        { text: "Akceptacja", value: "isAccepted" },
         { text: "Data rozpoczęcia", value: "start_date" },
         { text: "Data zakończenia", value: "end_date" },
-        { text: "Logo", value: "link" },
+        { text: "Lokalizacja", value: "location" },
         { text: "Akcje", value: "action", sortable: false }
       ],
       desserts: [],
-      editedIndex: -1,
-      editedItem: {
-        name: "",
-        calories: 0,
-        fat: 0,
-        carbs: 0,
-        protein: 0
-      },
-      defaultItem: {
-        name: "",
-        calories: 0,
-        fat: 0,
-        carbs: 0,
-        protein: 0
-      }
+      editedIndex: -1
     };
   },
   computed: {
@@ -171,12 +148,15 @@ export default {
               let dataRef = doc.data();
               dataRef.location = address;
               const link = `https://maps.google.com/?q=${address}`;
-              dataRef.link = link
-              dataRef.id = doc.id
-              dataRef.start_date = doc.data().start_date.toDate().toISOString();
-              dataRef.end_date = doc.data().end_date.toDate().toISOString();
+              dataRef.link = link;
+              dataRef.id = doc.id;
+              dataRef.start_date = doc.data().start_date.toDate().toLocaleString()
+              dataRef.end_date = doc
+                .data()
+                .end_date.toDate()
+                .toLocaleString()
+              dataRef.isAccepted = String(doc.data().isAccepted);
               this.conferences.push(dataRef);
-              console.log(dataRef);
             })
             .catch(e => {
               console.log(e);
@@ -193,8 +173,16 @@ export default {
       });
     },
 
+    getColor(flag) {
+      if (flag === "true") return "green";
+      else return "red";
+    },
+
     editConference(item) {
-      this.$router.push({name: 'edytuj_konferencje', params: {conference_id: item.id}})
+      this.$router.push({
+        name: "edytuj_konferencje",
+        params: { conference_id: item.id }
+      });
     },
 
     deleteItem(item) {
