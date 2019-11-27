@@ -14,6 +14,11 @@
           outlined
           ></v-autocomplete>
 
+          <div class="editor mb-8">
+            <ckeditor :editor="editor" :config="editorConfig" v-model="editorData"></ckeditor>
+          </div>
+
+
           <v-text-field
             v-model="website"
             :rules="[rules.www]"
@@ -22,7 +27,7 @@
             hint="adres URL musi rozpoczynać się od https:// np. https://www.google.pl/"
           ></v-text-field>
 
-          <v-textarea v-model="description" outlined auto-grow label="Opis" rows="1"></v-textarea>
+          <!-- <v-textarea v-model="description" outlined auto-grow label="Opis" rows="1"></v-textarea> -->
 
           <h2 class="mt-4">Lokalizacja</h2>
           <div class="pt-2 pb-2 mb-2 body-1 font-weight-medium">
@@ -210,8 +215,16 @@
 import db from '@/firebase/init'
 import firebase from 'firebase'
 import axios from 'axios'
+import ImportantDate from "@/components/ImportantDate"
+import CKEditor from "@ckeditor/ckeditor5-vue";
+import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
+import pl from "@ckeditor/ckeditor5-build-classic/build/translations/pl.js";
 
 export default {
+  components: {
+    ImportantDate,
+    ckeditor: CKEditor.component
+  },
   data() {
     return {
       id: null,
@@ -239,6 +252,15 @@ export default {
       selectedCategory: null,
       categories: [],
       website: null,
+      editor: ClassicEditor,
+      editorData: null,
+      editorConfig: {
+        language: {
+          ui: "pl",
+          content: "pl"
+        },
+        placeholder: "Opis konferencji"
+      },
       rules: {
         required: value => !!value || 'pole wymagane',
         counter: value => value.length <= 100 || 'maksymalnie 100 znaków',
@@ -259,7 +281,7 @@ export default {
         this.title = data.title 
         this.selectedCategory = data.category_id
         this.website = data.website
-        this.description = data.description
+        this.editorData = data.description
         this.convertedStartDate(data.start_date)
         this.convertedEndDate(data.end_date)
         this.logo = data.logo
@@ -341,8 +363,8 @@ export default {
         conf.website = this.website
       }
 
-      if(this.description != null && this.description !== ''){
-        conf.description = this.description
+      if(this.editorData){
+        conf.description = this.editorData
       }
       if(this.select !== null){
         const latitude = this.select.geometry.location.lat()
