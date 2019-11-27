@@ -246,7 +246,6 @@ export default {
 
     updateAccepted(){
       if (this.isAccepted) {
-        console.log('aaaaaa')
         db.collection("conferences").doc(this.id)
           .update({isAccepted: false})
           .then(() => {

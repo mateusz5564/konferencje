@@ -22,6 +22,8 @@ if(user){
   user.getIdTokenResult().then((token) => {
     Vue.prototype.$admin = token.claims.admin
   })
+} else {
+    Vue.prototype.$admin = false
 }
 
 

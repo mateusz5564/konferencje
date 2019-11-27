@@ -35,7 +35,7 @@
             label="Opis"
             rows="1"
             :rules="[rules.required]"
-          ></v-textarea> -->
+          ></v-textarea>-->
 
           <div class="test">
             <v-autocomplete
@@ -268,10 +268,10 @@
 </template>
 
 <script>
-import firebase from "firebase"
-import db from "@/firebase/init"
-import axios from "axios"
-import ImportantDate from "@/components/ImportantDate"
+import firebase from "firebase";
+import db from "@/firebase/init";
+import axios from "axios";
+import ImportantDate from "@/components/ImportantDate";
 import CKEditor from "@ckeditor/ckeditor5-vue";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 import pl from "@ckeditor/ckeditor5-build-classic/build/translations/pl.js";
@@ -376,7 +376,7 @@ export default {
       event.name = this.id_name;
       event.deadline = this.id_date;
       this.id_name = null;
-      this.id_date = null
+      this.id_date = null;
       this.importantDates.push(event);
     },
     deleteImportantDate(index) {
@@ -388,15 +388,9 @@ export default {
       const geopoint = new firebase.firestore.GeoPoint(latitude, longitude);
       let user = firebase.auth().currentUser;
 
-      //gdy zalogowany admin, automatycznie zaakceptuj
-      firebase.auth().onAuthStateChanged(user => {
-        user.getIdTokenResult().then((token) => {
-           if(token.claims.admin){
-             this.isAccepted = true
-           }
-        })
-      })
-
+      if (this.$admin) {
+        this.isAccepted = true;
+      }
 
       let key;
       db.collection("conferences")
@@ -494,13 +488,13 @@ export default {
   width: 140px;
 }
 .ck-editor__editable_inline {
-    min-height: 100px;
-    color: rgba(0, 0, 0, 0.87);
-    font-size: 16px;
+  min-height: 100px;
+  color: rgba(0, 0, 0, 0.87);
+  font-size: 16px;
 }
 .ck.ck-editor__editable > .ck-placeholder::before {
-    font-size: 18px;
-    display: inline-block;
-    margin-top: 10px;
+  font-size: 18px;
+  display: inline-block;
+  margin-top: 10px;
 }
 </style>
