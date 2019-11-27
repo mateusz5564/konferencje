@@ -408,7 +408,6 @@ export default {
         })
         .then(response => {
           const key = response.id;
-          console.log(response);
           for (let i in this.importantDates) {
             db.collection("conferences")
               .doc(key)

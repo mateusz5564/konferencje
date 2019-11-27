@@ -195,8 +195,7 @@
             v-model="image"
           ></v-file-input>
 
-
-            <v-card max-width="840" class="mx-auto mb-10">
+          <v-card max-width="840" class="mx-auto mb-10">
             <h3
               class="elevation-1 pt-4 pb-4 title font-weight-regular text-center mb-3"
             >Ważne terminy</h3>
@@ -249,8 +248,6 @@
               </v-card-actions>
             </v-card>
           </v-card>
-
-
 
           <p id="feedback" style="font-size: 30px; color: red;">{{ feedback }}</p>
           <v-btn class="ma-3" type="submit" color="blue" large dark>Zapisz konferencje</v-btn>
@@ -364,27 +361,27 @@ export default {
             console.log(e);
           });
 
-
-          db.collection("conferences")
+        db.collection("conferences")
           .doc(this.$route.params.conference_id)
-          .collection('important_dates')
+          .collection("important_dates")
           .get()
           .then(querySnapshot => {
-            if(!querySnapshot.empty){
+            if (!querySnapshot.empty) {
               querySnapshot.forEach(doc => {
-                let important_date = doc.data()
-                important_date.location = this.location
-                important_date.geo = this.geo
-                important_date.id = this.id
-                this.importantDates.push(important_date)
-              })
+                let important_date = doc.data();
+                console.log(this.importantDates);
+                // important_date.location = this.location
+                // important_date.geo = this.geo
+                const date = new Date(doc.data().important_date.seconds * 1000);
+                important_date.deadline = date.toISOString().substring(0, 10);
+                important_date.id = this.id;
+                this.importantDates.push(important_date);
+              });
             }
           })
           .catch(err => {
-            console.log(err)
-          })
-
-
+            console.log(err);
+          });
       } else {
         console.log("Taka konferencja nie istenieje!");
       }
@@ -481,9 +478,42 @@ export default {
           .update(conf)
           .then(response => {
             if (this.image == null) {
-              console.log("zaaktualizowano konferencje");
-              // this.$router.push({name: 'moje_konferencje'})
-              this.$router.go(-1);
+              db.collection("conferences")
+                .doc(this.$route.params.conference_id)
+                .collection("important_dates")
+                .get()
+                .then(querySnapshot => {
+                  if (!querySnapshot.empty) {
+                    querySnapshot.forEach(doc => {
+                      db.collection("conferences")
+                        .doc(this.$route.params.conference_id)
+                        .collection("important_dates")
+                        .doc(doc.id)
+                        .delete();
+                    });
+                  }
+                  for (let i in this.importantDates) {
+                    db.collection("conferences")
+                      .doc(this.id)
+                      .collection("important_dates")
+                      .add({
+                        name: this.importantDates[i].name,
+                        important_date: new Date(
+                          this.importantDates[i].deadline
+                        )
+                      })
+                      .then(response => {
+                        console.log("zaaktualizowano konferencje");
+                        this.$router.push({name: 'konferencja', params: { conference_id: this.id}})
+                      })
+                      .catch(err => {
+                        console.log(err);
+                      });
+                  }
+                })
+                .catch(err => {
+                  console.log(err);
+                });
             }
           })
           .catch(err => {
@@ -516,8 +546,7 @@ export default {
                     .update({ logo: downloadURL })
                     .then(response => {
                       console.log("pomyslnie edytowano konferencje");
-                      // this.$router.push({name: 'moje_konferencje'})
-                      this.$router.go(-1);
+                      this.$router.push({name: 'konferencja', params: { conference_id: this.id}})
                     });
                 });
               });
