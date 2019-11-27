@@ -1,19 +1,6 @@
 <template>
   <div class="admin_panel">
-
-    <!-- dodawanie admina
-    <v-card class="login__card" max-width="400px">
-      <v-card-text>
-        <v-form @submit.prevent="makeAdmin">
-          <v-text-field label="Email" type="email" v-model="email"></v-text-field>
-          <p v-if="feedback" class="red--text">{{ feedback }}</p>
-          <v-btn class="ma-3" color="blue" type="submit" large dark>Dodaj Administratora</v-btn>
-        </v-form>
-      </v-card-text>
-    </v-card> -->
-
-    <v-card class="">
-
+    <v-card>
       <v-tabs v-model="tab" background-color="transparent" grow>
         <v-tab>Konferencje</v-tab>
         <v-tab>Uzytkownicy</v-tab>
@@ -22,52 +9,69 @@
       <v-tabs-items v-model="tab">
         <!-- CONFERENCES TAB -->
         <v-tab-item>
-              <div class="mt-5">
-              <v-data-table
+          <div class="mt-5">
+            <v-data-table
               :loading="loading"
               loading-text="trwa ładowanie"
-                :headers="headersConferences"
-                :items="conferences"
-                sort-by="isAccepted"
-                class="elevation-1"
-              >
-                <template v-slot:top>
-                  <v-dialog v-model="editConferenceDialog" max-width="1000px">
-                    <EditConference />
-                  </v-dialog>
-                </template>
-                <template v-slot:item.preview="{ item }">
-                  <v-btn text :to="{name: 'konferencja', params: { conference_id: item.id}}" color="blue accent-4"><v-icon small>mdi-eye-outline</v-icon></v-btn>
-                </template>
-                <template v-slot:item.action="{ item }">
-                  <v-icon small class="mr-2" @click="editConference(item)">mdi-pencil</v-icon>
-                  <v-icon small @click="deleteItem(item)">mdi-delete</v-icon>
-                </template>
-                <template v-slot:item.isAccepted="{ item }">
-                  <v-chip :color="getColor(item.isAccepted)" dark>{{ item.isAccepted }}</v-chip>
-                </template>
-              </v-data-table>
-            </div>
+              :headers="headersConferences"
+              :items="conferences"
+              sort-by="isAccepted"
+              class="elevation-1"
+            >
+              <template v-slot:top>
+                <v-dialog v-model="editConferenceDialog" max-width="1000px">
+                  <EditConference />
+                </v-dialog>
+              </template>
+              <template v-slot:item.preview="{ item }">
+                <v-btn
+                  text
+                  :to="{name: 'konferencja', params: { conference_id: item.id}}"
+                  color="blue accent-4"
+                >
+                  <v-icon small>mdi-eye-outline</v-icon>
+                </v-btn>
+              </template>
+              <template v-slot:item.action="{ item }">
+                <v-icon small class="mr-2" @click="editConference(item)">mdi-pencil</v-icon>
+                <v-icon small @click="deleteConference(item)">mdi-delete</v-icon>
+              </template>
+              <template v-slot:item.isAccepted="{ item }">
+                <v-chip :color="getColor(item.isAccepted)" dark>{{ item.isAccepted }}</v-chip>
+              </template>
+            </v-data-table>
+          </div>
         </v-tab-item>
 
         <!-- USERS TAB -->
         <v-tab-item>
           <div class="mt-5">
-              <v-data-table
-                :headers="headersUsers"
-                :items="users"
-                sort-by="calories"
-                class="elevation-1"
-              >
-                <template v-slot:top></template>
-                <template v-slot:item.action="{ item }">
-                  <v-icon small class="mr-2" @click="editConference(item)">mdi-pencil</v-icon>
-                  <v-icon small @click="deleteItem(item)">mdi-delete</v-icon>
-                </template>
-              </v-data-table>
+            <v-data-table
+              :headers="headersUsers"
+              :items="users"
+              sort-by="calories"
+              class="elevation-1"
+            >
+              <template v-slot:top></template>
+              <template v-slot:item.action="{ item }">
+                <v-icon small class="mr-2" @click="editConference(item)">mdi-pencil</v-icon>
+                <v-icon small>mdi-delete</v-icon>
+              </template>
+            </v-data-table>
           </div>
         </v-tab-item>
       </v-tabs-items>
+    </v-card>
+
+     <!-- add admin -->
+    <v-card class="login__card mt-5" max-width="400px">
+      <v-card-text>
+        <v-form @submit.prevent="makeAdmin">
+          <v-text-field label="Email" type="email" v-model="email"></v-text-field>
+          <p v-if="feedback" class="red--text">{{ feedback }}</p>
+          <v-btn class="ma-3" color="blue" type="submit" large dark>Dodaj Administratora</v-btn>
+        </v-form>
+      </v-card-text>
     </v-card>
   </div>
 </template>
@@ -89,6 +93,7 @@ export default {
       tab: null,
       editConferenceDialog: false,
       loading: true,
+      feedback: null,
       users: [
         { username: "test1", email: "test1@interia.pl", status: "aktywny" },
         { username: "test2", email: "test2@interia.pl", status: "wyłączony" },
@@ -107,7 +112,7 @@ export default {
       conferences: [],
       headersConferences: [
         {
-          text: "Podgląd",
+          text: "Przejdź",
           align: "center",
           sortable: false,
           value: "preview"
@@ -118,13 +123,12 @@ export default {
           sortable: false,
           value: "title"
         },
-        { text: "Akceptacja", value: "isAccepted" },
+        { text: "Status", value: "isAccepted" },
         { text: "Data rozpoczęcia", value: "start_date" },
         { text: "Data zakończenia", value: "end_date" },
         { text: "Lokalizacja", value: "location" },
         { text: "Akcje", value: "action", sortable: false }
       ],
-      desserts: [],
       editedIndex: -1
     };
   },
@@ -160,14 +164,20 @@ export default {
               const link = `https://maps.google.com/?q=${address}`;
               dataRef.link = link;
               dataRef.id = doc.id;
-              dataRef.start_date = doc.data().start_date.toDate().toLocaleString()
+              dataRef.start_date = doc
+                .data()
+                .start_date.toDate()
+                .toLocaleString();
               dataRef.end_date = doc
                 .data()
                 .end_date.toDate()
-                .toLocaleString()
-              dataRef.isAccepted = String(doc.data().isAccepted) === "true" ? "zaakceptowano" : "oczekuje"
-              this.conferences.push(dataRef)
-              this.loading = false
+                .toLocaleString();
+              dataRef.isAccepted =
+                String(doc.data().isAccepted) === "true"
+                  ? "zaakceptowano"
+                  : "oczekuje";
+              this.conferences.push(dataRef);
+              this.loading = false;
             })
             .catch(e => {
               console.log(e);
@@ -181,6 +191,7 @@ export default {
       let addAdmin = firebase.functions().httpsCallable("addAdminRole");
       addAdmin({ email: this.email }).then(result => {
         console.log(result);
+        this.feedback = result.data.errorInfo.message;
       });
     },
 
@@ -196,10 +207,31 @@ export default {
       });
     },
 
-    deleteItem(item) {
-      const index = this.desserts.indexOf(item);
-      confirm("Are you sure you want to delete this item?") &&
-        this.desserts.splice(index, 1);
+    deleteConference(item) {
+      const index = this.conferences.indexOf(item);
+      confirm("Czy na pewno chcesz usunąć konferencje?") &&
+        db
+          .collection("conferences")
+          .doc(item.id)
+          .delete()
+          .then(() => {
+            this.conferences.splice(index, 1);
+            console.log("Konferencja usunięta");
+            //delete logo
+            firebase
+              .storage()
+              .refFromURL(item.logo)
+              .delete()
+              .then(() => {
+                console.log("usunieto logo");
+              })
+              .catch(err => {
+                console.log(err);
+              });
+          })
+          .catch(err => {
+            console.error(err);
+          });
     },
 
     close() {
@@ -223,4 +255,7 @@ export default {
 </script>
 
 <style>
+#description .media {
+  height: 200px;
+}
 </style>

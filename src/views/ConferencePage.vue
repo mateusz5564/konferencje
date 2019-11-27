@@ -86,7 +86,7 @@
       </v-dialog>
     </div>
 
-    <div v-if="!exist" class="test">
+    <div v-if="noExist" class="test">
       <h2>Nie znaleziono konferencji</h2>
     </div>
   </div>
@@ -100,6 +100,8 @@ import { saveAs } from "file-saver"
 import ExportConference from "@/components/ExportConference"
 import ImportantDateView from "@/components/ImportantDateView"
 
+
+
 export default {
   components: {
     ExportConference,
@@ -108,7 +110,8 @@ export default {
   data() {
     return {
       dialog: false,
-      exist: true,
+      exist: false,
+      noExist: false,
       id: null,
       title: null,
       start_date: null,
@@ -133,6 +136,10 @@ export default {
     };
   },
   created() {
+
+
+
+
     firebase.auth().onAuthStateChanged(user => {
       this.user = user
       if (user) {
@@ -218,6 +225,7 @@ export default {
             console.log(err)
           })
         } else {
+          this.noExist = true;
           console.log("Taka konferencja nie istenieje!")
         }
     });
