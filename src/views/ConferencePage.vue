@@ -4,7 +4,7 @@
       <v-container>
         <v-row justify="center">
           <v-col lg="auto">
-            <v-card class="mx-auto" outlined max-width="800px">
+            <v-card class="mx-auto" outlined width="800px">
               <div v-if="$admin" class="d-flex justify-center mt-4">
                 <v-btn :color="acceptColor" dark @click="updateAccepted">
                   <v-icon v-if="!isAccepted" left>mdi-check-circle-outline</v-icon>

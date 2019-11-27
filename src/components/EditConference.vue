@@ -1,6 +1,6 @@
 <template>
   <div class="edit_conference">
-    <v-card class="register__card pa-5" max-width="1000px">
+    <v-card class="register__card pa-5" max-width="900px">
       <v-card-title class="justify-center">
         <h3 class="mb-5 headline">Edycja konferencji</h3>
       </v-card-title>
@@ -195,6 +195,63 @@
             v-model="image"
           ></v-file-input>
 
+
+            <v-card max-width="840" class="mx-auto mb-10">
+            <h3
+              class="elevation-1 pt-4 pb-4 title font-weight-regular text-center mb-3"
+            >Ważne terminy</h3>
+
+            <div v-for="(date, index) in importantDates" :key="index">
+              <ImportantDate :importantDate="date">
+                <div slot="number">{{index + 1}}</div>
+                <div slot="delete-btn">
+                  <v-icon @click="deleteImportantDate(index)" color="darken-2">mdi-delete</v-icon>
+                </div>
+              </ImportantDate>
+            </div>
+
+            <v-card class="pt-5 elevation-1">
+              <div class="ml-4 mt-4 mr-4 pt-4">
+                <v-text-field v-model="id_name" label="Nazwa" outlined></v-text-field>
+
+                <v-menu
+                  ref="id_date_menu"
+                  v-model="id_date_menu"
+                  :close-on-content-click="false"
+                  :return-value.sync="id_date"
+                  transition="scale-transition"
+                  offset-y
+                  full-width
+                  min-width="290px"
+                >
+                  <template v-slot:activator="{ on }">
+                    <v-text-field
+                      class="test2"
+                      v-model="id_date"
+                      label="Data"
+                      prepend-inner-icon="mdi-calendar"
+                      readonly
+                      outlined
+                      v-on="on"
+                    ></v-text-field>
+                  </template>
+                  <v-date-picker v-model="id_date" no-title scrollable>
+                    <div class="flex-grow-1"></div>
+                    <v-btn text color="primary" @click="id_date_menu = false">Cancel</v-btn>
+                    <v-btn text color="primary" @click="$refs.id_date_menu.save(id_date)">OK</v-btn>
+                  </v-date-picker>
+                </v-menu>
+              </div>
+              <v-card-actions>
+                <v-btn @click="addImportantDate" text class="mb-5" color="blue accent-4">
+                  <v-icon dark left>mdi-plus</v-icon>Dodaj termin
+                </v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-card>
+
+
+
           <p id="feedback" style="font-size: 30px; color: red;">{{ feedback }}</p>
           <v-btn class="ma-3" type="submit" color="blue" large dark>Zapisz konferencje</v-btn>
           <br />
@@ -225,6 +282,8 @@ export default {
       title: null,
       start_date: null,
       start_time: null,
+      id_name: null,
+      id_date: null,
       end_date: null,
       end_time: null,
       location: null,
@@ -233,6 +292,7 @@ export default {
       logo: "",
       feedback: null,
       modal: true,
+      id_date_menu: false,
       start_date_menu: false,
       end_date_menu: false,
       start_time_menu: false,
@@ -247,6 +307,7 @@ export default {
       categories: [],
       website: null,
       isAccepted: false,
+      importantDates: [],
       editor: ClassicEditor,
       editorData: null,
       editorConfig: {
@@ -302,6 +363,28 @@ export default {
           .catch(e => {
             console.log(e);
           });
+
+
+          db.collection("conferences")
+          .doc(this.$route.params.conference_id)
+          .collection('important_dates')
+          .get()
+          .then(querySnapshot => {
+            if(!querySnapshot.empty){
+              querySnapshot.forEach(doc => {
+                let important_date = doc.data()
+                important_date.location = this.location
+                important_date.geo = this.geo
+                important_date.id = this.id
+                this.importantDates.push(important_date)
+              })
+            }
+          })
+          .catch(err => {
+            console.log(err)
+          })
+
+
       } else {
         console.log("Taka konferencja nie istenieje!");
       }
@@ -479,6 +562,17 @@ export default {
             this.categories.push(doc.id);
           });
         });
+    },
+    addImportantDate() {
+      let event = {};
+      event.name = this.id_name;
+      event.deadline = this.id_date;
+      this.id_name = null;
+      this.id_date = null;
+      this.importantDates.push(event);
+    },
+    deleteImportantDate(index) {
+      this.importantDates.pop(index);
     }
   }
 };

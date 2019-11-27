@@ -298,7 +298,7 @@ export default {
       start_date_menu: false,
       id_date_menu: false,
       end_date_menu: false,
-      id_start_time_menu: false,
+      // id_start_time_menu: false,
       start_time_menu: false,
       end_time_menu: false,
       image: null,
@@ -392,7 +392,6 @@ export default {
         this.isAccepted = true;
       }
 
-      let key;
       db.collection("conferences")
         .add({
           isAccepted: this.isAccepted,
@@ -408,14 +407,27 @@ export default {
           user_id: user.uid
         })
         .then(response => {
+          const key = response.id;
           console.log(response);
-          if (this.image.name) {
+          for (let i in this.importantDates) {
+            db.collection("conferences")
+              .doc(key)
+              .collection("important_dates")
+              .add({
+                name: this.importantDates[i].name,
+                important_date: new Date(this.importantDates[i].deadline)
+              })
+              .then(response => {
+                console.log(response);
+              });
+          }
+          if (this.image) {
             const filename = this.image.name;
             const extention = filename.substring(
               filename.lastIndexOf("."),
               filename.length
             );
-            key = response.id;
+
             firebase
               .storage()
               .ref("conferences/" + response.id + extention)
@@ -426,27 +438,25 @@ export default {
                     .doc(key)
                     .update({ logo: downloadURL })
                     .then(response => {
-                      for (let i in this.importantDates) {
-                        db.collection("conferences")
-                          .doc(key)
-                          .collection("important_dates")
-                          .add({
-                            name: this.importantDates[i].name,
-                            important_date: new Date(
-                              this.importantDates[i].deadline
-                            )
-                          })
-                          .then(response => {
-                            console.log(response);
-                          });
-                      }
                       console.log("pomyslnie dodano konferencje");
                       this.$router.push({ name: "moje_konferencje" });
                     });
                 });
               });
           } else {
-            this.$router.push({ name: "moje_konferencje" });
+            db.collection("conferences")
+              .doc(key)
+              .set(
+                {
+                  logo:
+                    "https://firebasestorage.googleapis.com/v0/b/konferencje-95600.appspot.com/o/conferences%2FdefaultLogo.png?alt=media&token=c034e5d6-e95d-4322-ae41-a8dc95cad9f9"
+                },
+                { merge: true }
+              )
+              .then(response => {
+                console.log("pomyslnie dodano konferencje");
+                this.$router.push({ name: "moje_konferencje" });
+              });
           }
         })
         .catch(err => {
