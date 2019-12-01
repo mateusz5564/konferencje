@@ -28,8 +28,7 @@
 
       <v-card-actions>
         <div class="flex-grow-1"></div>
-        <v-btn text :href="link" target="_blank" color="blue accent-4">więcej informacji</v-btn>
-        {{generateLink}}
+        <v-btn text :to="{name: 'konferencja', params: { conference_id: conference.id}}" color="blue accent-4">więcej informacji</v-btn>
       </v-card-actions>
     </v-card>
   </div>
@@ -40,15 +39,8 @@ export default {
   props: ["conference"],
   data() {
     return {
-      link: null,
     }
   },
-  created(){
-    this.link = `/#/konferencja/${this.conference.id}`
-  },
-  beforeUpdate(){
-    this.link = `/#/konferencja/${this.conference.id}`
-  }
 }
 </script>
 
