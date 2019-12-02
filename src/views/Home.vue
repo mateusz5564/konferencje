@@ -50,6 +50,9 @@ export default {
   created(){
     this.getConferences()
     this.getCategories()
+
+    let data = new Date(firebase.firestore.Timestamp.now().seconds*1000)
+    console.log(data)
   },
   methods: {
     sortByCategory(){
@@ -87,7 +90,8 @@ export default {
     getConferences(){
       db.collection("conferences")
       .where("isAccepted", "==", true)
-      .orderBy("start_date", "asc")
+      .where("end_date", ">", firebase.firestore.Timestamp.now())
+      // .orderBy("start_date", "asc")
       .get()
       .then(async querySnapshot => {
         let docs = []
