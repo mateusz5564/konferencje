@@ -244,6 +244,7 @@ import axios from 'axios'
               .then(response => {
                 let address = response.data.results[0].formatted_address
                 let dataRef = doc.data()
+                console.log(address)
                 dataRef.id = doc.id
                 dataRef.location = address
                 const link = `https://maps.google.com/?q=${address}`

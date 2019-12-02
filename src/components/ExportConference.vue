@@ -63,7 +63,6 @@ SUMMARY:${this.conference.title}
 DTSTART:${this.conference.start_date}
 DTEND:${this.conference.end_date}
 LOCATION:${this.conference.location}
-GEO:${this.conference.geo.latitude};${this.conference.geo.longitude}
 DESCRIPTION: Więcej informacji: http://localhost:8080/#/konferencja/${this.conference.id}
 URL:http://localhost:8080/#/konferencja/${this.conference.id}
 END:VEVENT
