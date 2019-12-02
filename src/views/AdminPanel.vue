@@ -3,7 +3,6 @@
     <v-card>
       <v-tabs v-model="tab" background-color="transparent" grow>
         <v-tab>Konferencje</v-tab>
-        <v-tab>Uzytkownicy</v-tab>
       </v-tabs>
 
       <v-tabs-items v-model="tab">
@@ -42,24 +41,6 @@
             </v-data-table>
           </div>
         </v-tab-item>
-
-        <!-- USERS TAB -->
-        <v-tab-item>
-          <div class="mt-5">
-            <v-data-table
-              :headers="headersUsers"
-              :items="users"
-              sort-by="calories"
-              class="elevation-1"
-            >
-              <template v-slot:top></template>
-              <template v-slot:item.action="{ item }">
-                <v-icon small class="mr-2" @click="editConference(item)">mdi-pencil</v-icon>
-                <v-icon small>mdi-delete</v-icon>
-              </template>
-            </v-data-table>
-          </div>
-        </v-tab-item>
       </v-tabs-items>
     </v-card>
 
@@ -94,21 +75,6 @@ export default {
       editConferenceDialog: false,
       loading: true,
       feedback: null,
-      users: [
-        { username: "test1", email: "test1@interia.pl", status: "aktywny" },
-        { username: "test2", email: "test2@interia.pl", status: "wyłączony" },
-        { username: "test3", email: "test3@interia.pl", status: "aktywny" }
-      ],
-      headersUsers: [
-        {
-          text: "Nazwa użytkownika",
-          align: "left",
-          value: "username"
-        },
-        { text: "Email", value: "email" },
-        { text: "Status", value: "status" },
-        { text: "Actions", value: "action", align: "right", sortable: false }
-      ],
       conferences: [],
       headersConferences: [
         {
@@ -242,14 +208,14 @@ export default {
       }, 300);
     },
 
-    save() {
-      if (this.editedIndex > -1) {
-        Object.assign(this.desserts[this.editedIndex], this.editedItem);
-      } else {
-        this.desserts.push(this.editedItem);
-      }
-      this.close();
-    }
+    // save() {
+    //   if (this.editedIndex > -1) {
+    //     Object.assign(this.desserts[this.editedIndex], this.editedItem);
+    //   } else {
+    //     this.desserts.push(this.editedItem);
+    //   }
+    //   this.close();
+    // }
   }
 };
 </script>
