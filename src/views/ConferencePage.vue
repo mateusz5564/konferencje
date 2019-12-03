@@ -25,9 +25,8 @@
               </div>
               <v-img :src="logo" height="auto"></v-img>
 
-              <v-card-text class="body-2 mb-5 mt-5">
-                <div id="description" class="text--primary">{{description}}</div>
-              </v-card-text>
+              <div id="description_content" class="text-primary pa-3 mt-5"></div>
+
             </v-card>
           </v-col>
 
@@ -84,9 +83,12 @@
       </v-dialog>
     </div>
 
-    <div v-if="noExist" class="test">
+    <div v-if="noExist" class="description_content">
       <h2>Nie znaleziono konferencji</h2>
     </div>
+
+
+    
   </div>
 </template>
 
@@ -135,10 +137,6 @@ export default {
     };
   },
   created() {
-
-
-
-
     firebase.auth().onAuthStateChanged(user => {
       this.user = user
       if (user) {
@@ -185,7 +183,6 @@ export default {
           )
           .then(response => {
             let address = response.data.results[0].formatted_address
-            console.log(address)
             this.location = address
             const link = `https://maps.google.com/?q=${address}`
             this.link = link;
@@ -197,9 +194,13 @@ export default {
             this.conference.location = this.location
             this.conference.link = this.link
             // this.conference.description = this.description
-            document.getElementById("description").innerHTML = this.description
+            document.getElementById("description_content").innerHTML = this.description
             this.conference.logo = this.logo
             this.conference.geo = this.geo
+
+document.querySelectorAll( 'oembed[url]' ).forEach( element => {
+        iframely.load( element, element.attributes.url.value );
+    } );
           })
           .catch(e => {
             console.log(e)
@@ -231,7 +232,6 @@ export default {
     });
   },
   methods: {
-
     setAccepted(){
       this.isAccepted = false;
       this.acceptText = "Zaakceptuj"
@@ -257,7 +257,6 @@ export default {
             console.log(err);
           })
       } else {
-        console.log('ssssss')
           db.collection("conferences").doc(this.id)
           .update({isAccepted: true})
             .then(() => {
@@ -304,7 +303,6 @@ export default {
   }
 };
 </script>
-
 
 <style>
 </style>
