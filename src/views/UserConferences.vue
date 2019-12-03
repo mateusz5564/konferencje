@@ -1,5 +1,12 @@
 <template>
   <v-container class="grey lighten-5">
+    <v-progress-linear
+      class="mb-4"
+      :active="loading"
+      :indeterminate="loading"
+      color="blue accent-4"
+    ></v-progress-linear>  
+
     <h2 class="mb-3 subtitle-1 font-weight-black" >Moje konferencje</h2>
     <v-row>
       <v-col v-for="(conference, index) in conferences" :key="index" cols="12" xs="12" md="4" xl="3">
@@ -27,11 +34,13 @@ export default {
   },
   data(){
     return {
-      conferences: []
+      conferences: [],
+      loading: false
     }
   },
   created(){
     let user = firebase.auth().currentUser
+    this.loading = true;
      db.collection('conferences').where("user_id", "==", user.uid)
         .get()
         .then(async querySnapshot => {
@@ -70,6 +79,7 @@ export default {
         //     })
         //   })
         // })
+    this.loading = false;
   }
 }
 </script>

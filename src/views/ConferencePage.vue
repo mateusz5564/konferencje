@@ -51,9 +51,9 @@
                 </div>
               </div>
 
-              <v-divider class="blue lighten-1"></v-divider>
+              <v-divider v-if="website" class="blue lighten-1"></v-divider>
 
-              <div class="d-flex flex-row pa-5 justify-center">
+              <div v-if="website" class="d-flex flex-row pa-5 justify-center">
                 <v-chip
                   class="ma-2"
                   color="primary"
@@ -65,8 +65,6 @@
                 >
                   <v-icon left>mdi-web</v-icon>strona internetowa
                 </v-chip>
-
-
               </div>
             </v-card>
 
@@ -119,6 +117,7 @@ export default {
       end_date: null,
       end_time: null,
       location: null,
+      website: null,
       geo: null,
       link: null,
       description: null,

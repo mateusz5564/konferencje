@@ -1,5 +1,12 @@
 <template>
   <div class="user-profile mx-auto">
+    <v-progress-linear
+      class="mb-4"
+      :active="loading"
+      :indeterminate="loading"
+      color="blue accent-4"
+    ></v-progress-linear>
+
     <v-card class="mb-5 pa-10" max-width="800px" v-if="profile">
       <div class="d-flex flex-row">
         <div class="avatar">
@@ -136,7 +143,8 @@ export default {
       email: null,
       newPassword: null,
       selectedImage: null,
-      avatarSrc: "https://firebasestorage.googleapis.com/v0/b/konferencje-95600.appspot.com/o/avatars%2FdefaultAvatar.png?alt=media&token=f5fbdbef-b80e-41e5-bf48-e99b0d6f91a6"
+      avatarSrc: "https://firebasestorage.googleapis.com/v0/b/konferencje-95600.appspot.com/o/avatars%2FdefaultAvatar.png?alt=media&token=f5fbdbef-b80e-41e5-bf48-e99b0d6f91a6",
+      loading: true
     };
   },
   created() {
@@ -157,10 +165,12 @@ export default {
                 this.currentUser = user;
                 this.email = user.email
               }
+              this.loading = false;
             });
           });
       }
     });
+    this.loading = false;
   },
   methods: {
     onImageSelected(event){

@@ -91,7 +91,8 @@ export default {
       db.collection("conferences")
       .where("isAccepted", "==", true)
       .where("end_date", ">", firebase.firestore.Timestamp.now())
-      // .orderBy("start_date", "asc")
+      .orderBy("end_date", "asc")
+      .orderBy("start_date", "asc")
       .get()
       .then(async querySnapshot => {
         let docs = []
