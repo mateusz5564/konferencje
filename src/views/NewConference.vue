@@ -5,7 +5,7 @@
         <h2 class="headline mb-5">Nowa konferencja</h2>
       </v-card-title>
       <v-card-text>
-        <v-form @submit.prevent="addConference">
+        <v-form @submit.prevent="addConference" ref="form">
           <v-textarea
             outlined
             v-model="title"
@@ -14,10 +14,10 @@
             rows="1"
             :rules="[rules.required]"
           ></v-textarea>
-          <v-autocomplete v-model="selectedCategory" :items="categories" label="Kategoria" outlined></v-autocomplete>
+          <v-autocomplete v-model="selectedCategory" :items="categories" label="Kategoria" outlined :rules="[rules.required]"></v-autocomplete>
 
           <div class="editor mb-8">
-            <ckeditor :editor="editor" :config="editorConfig" v-model="editorData"></ckeditor>
+            <ckeditor :editor="editor" :config="editorConfig" v-model="editorData" ></ckeditor>
           </div>
 
           <v-text-field
@@ -27,15 +27,6 @@
             outlined
             hint="adres URL musi rozpoczynać się od https:// np. https://www.google.pl/"
           ></v-text-field>
-
-          <!-- <v-textarea
-            outlined
-            v-model="description"
-            auto-grow
-            label="Opis"
-            rows="1"
-            :rules="[rules.required]"
-          ></v-textarea>-->
 
           <div class="test">
             <v-autocomplete
@@ -59,7 +50,7 @@
             ></v-autocomplete>
           </div>
           <v-row>
-            <!-- START DATE AND TIME PICKERS -->
+            <!-- START DATE PICKER -->
             <v-col class="pb-0 ma-0" cols="12" sm="6">
               <v-menu
                 ref="start_date_menu"
@@ -126,8 +117,8 @@
             </v-col>
           </v-row>
 
-          <!-- END DATE AND TIME PICKERS -->
           <v-row>
+            <!-- END DATE PICKER -->
             <v-col class="pb-0 pt-0 ma-0" cols="12" sm="6">
               <v-menu
                 ref="end_date_menu"
@@ -201,6 +192,7 @@
             prepend-inner-icon="mdi-camera"
             v-model="image"
             outlined
+            :rules="[rules.required]"
           ></v-file-input>
 
           <v-card max-width="840" class="mx-auto mb-10">
@@ -220,7 +212,6 @@
             <v-card class="pt-5 elevation-1">
               <div class="ml-4 mt-4 mr-4 pt-4">
                 <v-text-field v-model="id_name" label="Nazwa" outlined></v-text-field>
-
                 <v-menu
                   ref="id_date_menu"
                   v-model="id_date_menu"
@@ -233,7 +224,7 @@
                 >
                   <template v-slot:activator="{ on }">
                     <v-text-field
-                      class="test2"
+                      class="date_field"
                       v-model="id_date"
                       label="Data"
                       prepend-inner-icon="mdi-calendar"
@@ -298,7 +289,6 @@ export default {
       start_date_menu: false,
       id_date_menu: false,
       end_date_menu: false,
-      // id_start_time_menu: false,
       start_time_menu: false,
       end_time_menu: false,
       image: null,
@@ -383,6 +373,7 @@ export default {
       this.importantDates.pop(index);
     },
     addConference() {
+      if(this.$refs.form.validate()){
       const latitude = this.select.geometry.location.lat();
       const longitude = this.select.geometry.location.lng();
       const geopoint = new firebase.firestore.GeoPoint(latitude, longitude);
@@ -461,6 +452,7 @@ export default {
         .catch(err => {
           console.log(err);
         });
+        }
     },
     querySelections(v) {
       const service = new google.maps.places.PlacesService(
@@ -493,7 +485,7 @@ export default {
 </script>
 
 <style>
-.test2 {
+.date_field {
   width: 140px;
 }
 .ck-editor__editable_inline {
@@ -505,5 +497,8 @@ export default {
   font-size: 18px;
   display: inline-block;
   margin-top: 10px;
+}
+.ck.ck-toolbar.ck-toolbar_grouping > .ck-toolbar__items {
+  min-height: 62px;
 }
 </style>

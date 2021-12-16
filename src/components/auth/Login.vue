@@ -53,9 +53,9 @@ export default {
       feedback: null,
       dialog: false,
       snackbar: false,
-      color: '',
-      icon: '',
-      text: '',
+      color: "",
+      icon: "",
+      text: "",
       timeout: 5000
     };
   },
@@ -76,23 +76,21 @@ export default {
         this.feedback = "Wypełnij wszystkie pola";
       }
     },
-    setSnackbar(){
-      this.dialog = false
-      this.color = "success"
-      this.icon = "mdi-check-circle"
-      this.text = "Pomyślnie wysłano wiadomość!"
-      this.snackbar = true
+    setSnackbar() {
+      this.dialog = false;
+      this.color = "success";
+      this.icon = "mdi-check-circle";
+      this.text = "Pomyślnie wysłano wiadomość!";
+      this.snackbar = true;
     }
   }
 };
 </script>
 
 <style>
-/* .login{
-        margin-top: 
-    } */
 .login__card {
   margin: 0 auto;
   text-align: center;
 }
 </style>
+

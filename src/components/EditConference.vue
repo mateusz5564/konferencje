@@ -5,9 +5,22 @@
         <h3 class="mb-5 headline">Edycja konferencji</h3>
       </v-card-title>
       <v-card-text>
-        <v-form @submit.prevent="updateConference">
-          <v-textarea v-model="title" outlined auto-grow label="Tytuł" rows="1"></v-textarea>
-          <v-autocomplete v-model="selectedCategory" :items="categories" label="Kategoria" outlined></v-autocomplete>
+        <v-form @submit.prevent="updateConference" ref="edit_form">
+          <v-textarea
+            v-model="title"
+            outlined
+            auto-grow
+            label="Tytuł"
+            rows="1"
+            :rules="[rules.required]"
+          ></v-textarea>
+          <v-autocomplete
+            v-model="selectedCategory"
+            :items="categories"
+            label="Kategoria"
+            outlined
+            :rules="[rules.required]"
+          ></v-autocomplete>
 
           <div class="editor mb-8">
             <ckeditor :editor="editor" :config="editorConfig" v-model="editorData"></ckeditor>
@@ -20,8 +33,6 @@
             outlined
             hint="adres URL musi rozpoczynać się od https:// np. https://www.google.pl/"
           ></v-text-field>
-
-          <!-- <v-textarea v-model="description" outlined auto-grow label="Opis" rows="1"></v-textarea> -->
 
           <h2 class="mt-4">Lokalizacja</h2>
           <div class="pt-2 pb-2 mb-2 body-1 font-weight-medium">
@@ -51,7 +62,7 @@
 
           <h2 class="mt-10">Data rozpoczęcia</h2>
           <v-row class="mt-2">
-            <!-- START DATE AND TIME PICKERS -->
+            <!-- START DATE PICKER -->
             <v-col cols="12" sm="6">
               <v-menu
                 ref="start_date_menu"
@@ -71,6 +82,7 @@
                     readonly
                     outlined
                     v-on="on"
+                    :rules="[rules.required]"
                   ></v-text-field>
                 </template>
                 <v-date-picker v-model="start_date" no-title scrollable>
@@ -103,6 +115,7 @@
                     readonly
                     outlined
                     v-on="on"
+                    :rules="[rules.required]"
                   ></v-text-field>
                 </template>
                 <v-time-picker
@@ -116,9 +129,9 @@
             </v-col>
           </v-row>
 
-          <!-- END DATE AND TIME PICKERS -->
           <h2 class>Data zakończenia</h2>
           <v-row class="mt-2">
+            <!-- END DATE PICKER -->
             <v-col cols="12" sm="6">
               <v-menu
                 ref="end_date_menu"
@@ -138,6 +151,7 @@
                     readonly
                     outlined
                     v-on="on"
+                    :rules="[rules.required]"
                   ></v-text-field>
                 </template>
                 <v-date-picker v-model="end_date" no-title scrollable>
@@ -170,6 +184,7 @@
                     readonly
                     outlined
                     v-on="on"
+                    :rules="[rules.required]"
                   ></v-text-field>
                 </template>
                 <v-time-picker
@@ -256,6 +271,16 @@
         </v-form>
       </v-card-text>
     </v-card>
+
+    <v-snackbar v-model="snackbar" :color="color" top :timeout="timeout">
+      <div>
+        <v-icon class="mr-2">{{icon}}</v-icon>
+        {{ text }}
+      </div>
+      <v-btn text @click="snackbar = false">
+        <v-icon>mdi-close</v-icon>
+      </v-btn>
+    </v-snackbar>
   </div>
 </template>
 
@@ -324,7 +349,12 @@ export default {
             "adres URL musi rozpoczynać się od https:// np. https://www.google.pl/"
           );
         }
-      }
+      },
+      snackbar: false,
+      color: "",
+      icon: "",
+      text: "",
+      timeout: 5000
     };
   },
   created() {
@@ -369,9 +399,6 @@ export default {
             if (!querySnapshot.empty) {
               querySnapshot.forEach(doc => {
                 let important_date = doc.data();
-                console.log(this.importantDates);
-                // important_date.location = this.location
-                // important_date.geo = this.geo
                 const date = new Date(doc.data().important_date.seconds * 1000);
                 important_date.deadline = date.toISOString().substring(0, 10);
                 important_date.id = this.id;
@@ -393,9 +420,6 @@ export default {
     }
   },
   computed: {
-    //read data
-
-    //updating
     preparedStartDate() {
       const date = new Date(this.start_date);
       if (typeof this.start_time === "string") {
@@ -424,7 +448,6 @@ export default {
     }
   },
   methods: {
-    //read data
     convertedStartDate(timestamp) {
       const date = new Date(timestamp.seconds * 1000);
       this.start_date = date.toISOString().substring(0, 10);
@@ -437,47 +460,52 @@ export default {
     },
     //update data
     updateConference() {
-      const conf = {};
-      if (this.title != null && this.title !== "") {
-        conf.title = this.title;
-      }
+      if (this.$refs.edit_form.validate()) {
+        const conf = {};
+        if (this.title != null && this.title !== "") {
+          conf.title = this.title;
+        }
 
-      if (this.selectedCategory) {
-        conf.category_id = this.selectedCategory;
-      }
+        if (this.selectedCategory) {
+          conf.category_id = this.selectedCategory;
+        }
 
-      if (this.website) {
-        conf.website = this.website;
-      }
+        if (this.website) {
+          conf.website = this.website;
+        }
 
-      if (this.editorData) {
-        conf.description = this.editorData;
-      }
-      if (this.select !== null) {
-        const latitude = this.select.geometry.location.lat();
-        const longitude = this.select.geometry.location.lng();
-        const geopoint = new firebase.firestore.GeoPoint(latitude, longitude);
-        conf.location = geopoint;
-      }
-      if (this.start_date !== null) {
-        conf.start_date = this.preparedStartDate;
-      }
-      if (this.end_date !== null) {
-        conf.end_date = this.preparedEndDate;
-      }
+        if (this.editorData) {
+          conf.description = this.editorData;
+        }
 
-      if (this.$admin) {
-        this.isAccepted = true;
-      }
+        if (this.select !== null) {
+          const latitude = this.select.geometry.location.lat();
+          const longitude = this.select.geometry.location.lng();
+          const geopoint = new firebase.firestore.GeoPoint(latitude, longitude);
+          conf.location = geopoint;
+        }
 
-      conf.isAccepted = this.isAccepted;
+        if (this.start_date !== null) {
+          conf.start_date = this.preparedStartDate;
+        }
 
-      if (!this.isEmpty(conf)) {
-        db.collection("conferences")
-          .doc(this.id)
-          .update(conf)
-          .then(response => {
-            if (this.image == null) {
+        if (this.end_date !== null) {
+          conf.end_date = this.preparedEndDate;
+        }
+
+        if (this.$admin) {
+          this.isAccepted = true;
+        }
+
+        conf.isAccepted = this.isAccepted;
+
+        if (!this.isEmpty(conf)) {
+          db.collection("conferences")
+            .doc(this.id)
+            .update(conf)
+            .then(response => {
+              this.setSnackbar("success", "Zaaktualizowano konferencje");
+              // if (this.image == null) {
               db.collection("conferences")
                 .doc(this.$route.params.conference_id)
                 .collection("important_dates")
@@ -504,7 +532,10 @@ export default {
                       })
                       .then(response => {
                         console.log("zaaktualizowano konferencje");
-                        this.$router.push({name: 'konferencja', params: { conference_id: this.id}})
+                        this.$router.push({
+                          name: "konferencja",
+                          params: { conference_id: this.id }
+                        });
                       })
                       .catch(err => {
                         console.log(err);
@@ -514,46 +545,51 @@ export default {
                 .catch(err => {
                   console.log(err);
                 });
-            }
-          })
-          .catch(err => {
-            console.log(err);
-          });
-      }
+              // }
+            })
+            .catch(err => {
+              this.setSnackbar("error", "Nie udało się zaaktualizować!");
+              console.log(err);
+            });
+        }
 
-      //update logo
-      if (this.image !== null) {
-        const filename = this.image.name;
-        const extention = filename.substring(
-          filename.lastIndexOf("."),
-          filename.length
-        );
+        //update logo
+        if (this.image !== null) {
+          const filename = this.image.name;
+          const extention = filename.substring(
+            filename.lastIndexOf("."),
+            filename.length
+          );
 
-        firebase
-          .storage()
-          .refFromURL(this.logo)
-          .delete()
-          .then(() => {
-            console.log("usunieto obecne logo");
-            firebase
-              .storage()
-              .ref("conferences/" + this.id + extention)
-              .put(this.image)
-              .then(response => {
-                response.ref.getDownloadURL().then(downloadURL => {
-                  db.collection("conferences")
-                    .doc(this.id)
-                    .update({ logo: downloadURL })
-                    .then(response => {
-                      console.log("pomyslnie edytowano konferencje");
-                      this.$router.push({name: 'konferencja', params: { conference_id: this.id}})
-                    });
+          firebase
+            .storage()
+            .refFromURL(this.logo)
+            .delete()
+            .then(() => {
+              console.log("usunieto obecne logo");
+              firebase
+                .storage()
+                .ref("conferences/" + this.id + extention)
+                .put(this.image)
+                .then(response => {
+                  response.ref.getDownloadURL().then(downloadURL => {
+                    db.collection("conferences")
+                      .doc(this.id)
+                      .update({ logo: downloadURL })
+                      .then(response => {
+                        console.log("pomyslnie edytowano konferencje");
+                        this.$router.push({
+                          name: "konferencja",
+                          params: { conference_id: this.id }
+                        });
+                      });
+                  });
                 });
-              });
-          })
-          .catch(err => {
-            console.log(err);
-          });
+            })
+            .catch(err => {
+              console.log(err);
+            });
+        }
       }
     },
     isEmpty(obj) {
@@ -602,6 +638,16 @@ export default {
     },
     deleteImportantDate(index) {
       this.importantDates.pop(index);
+    },
+    setSnackbar(color, text) {
+      this.color = color;
+      this.text = text;
+      if (color == "success") {
+        this.icon = "mdi-check-circle";
+      } else {
+        this.icon = "mdi-alert-circle";
+      }
+      this.snackbar = true;
     }
   }
 };

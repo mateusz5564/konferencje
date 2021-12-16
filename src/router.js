@@ -16,7 +16,6 @@ import firebase from 'firebase'
 Vue.use(Router)
 
 const router = new Router({
-
   routes: [
     {
       path: '/',
@@ -97,10 +96,8 @@ const router = new Router({
         let user = firebase.auth().currentUser
         user.getIdTokenResult().then((token) => {
           if(token.claims.admin){
-            // console.log("You are an admin")
             next()
           } else {
-            console.log("You are not an admin")
             next(false)
           }
         })
@@ -128,10 +125,8 @@ router.beforeEach((to, from, next) => {
   if(to.matched.some(rec => rec.meta.requireAuth)){
     let user = firebase.auth().currentUser
     if(user){
-      // console.log("You are logged in")
       next()
     } else {
-      console.log("You are not logged in")
       next(false)
     }
   } else {

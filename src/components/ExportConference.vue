@@ -1,9 +1,5 @@
 <template>
-   <v-card
-    class="mx-auto"
-    max-width="350"
-    tile
-  >
+  <v-card class="mx-auto" max-width="350" tile>
     <v-list flat>
       <v-subheader class="title text-center">Dodaj do kalendarza</v-subheader>
       <v-divider></v-divider>
@@ -28,29 +24,40 @@
       </v-list-item-group>
     </v-list>
   </v-card>
-
 </template>
 
 <script>
 export default {
   props: ["conference"],
-  data(){
-    return {
-      
-    }
+  data() {
+    return {};
   },
   methods: {
-    addToGoogleCalendar(){ 
-      let start = new Date(this.conference.start_date)
-      let end = new Date(this.conference.end_date)
+    addToGoogleCalendar() {
+      let start = new Date(this.conference.start_date);
+      let end = new Date(this.conference.end_date);
 
-      let startString = start.toISOString().replace(/-|:|/g, '').substring(0, 15) + 'Z'
-      let endString = end.toISOString().replace(/-|:|/g, '').substring(0, 15) + 'Z'
+      let startString =
+        start
+          .toISOString()
+          .replace(/-|:|/g, "")
+          .substring(0, 15) + "Z";
+      let endString =
+        end
+          .toISOString()
+          .replace(/-|:|/g, "")
+          .substring(0, 15) + "Z";
 
-      const link = `https://calendar.google.com/calendar/r/eventedit?location=${encodeURIComponent(this.conference.location)}
-      &text=${encodeURIComponent(this.conference.title)}&dates=${startString}/${endString}&details=${encodeURIComponent("Więcej informacji: http://localhost:8080/#/konferencja/")}${this.conference.id}`
-      
-      window.open(link, '_blank')
+      const link = `https://calendar.google.com/calendar/r/eventedit?location=${encodeURIComponent(
+        this.conference.location
+      )}
+      &text=${encodeURIComponent(
+        this.conference.title
+      )}&dates=${startString}/${endString}&details=${encodeURIComponent(
+        "Więcej informacji: http://localhost:8080/#/konferencja/"
+      )}${this.conference.id}`;
+
+      window.open(link, "_blank");
     },
     downloadIcsFile() {
       var blob = new Blob(
@@ -72,9 +79,9 @@ END:VCALENDAR
         { type: "text/plain;charset=utf-8" }
       );
 
-      const filename = this.conference.title + ".ics"
+      const filename = this.conference.title + ".ics";
       saveAs(blob, filename);
     }
   }
-}
+};
 </script>

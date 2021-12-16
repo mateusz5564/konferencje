@@ -9,24 +9,29 @@
                 <v-btn :color="acceptColor" dark @click="updateAccepted">
                   <v-icon v-if="!isAccepted" left>mdi-check-circle-outline</v-icon>
                   <v-icon v-if="isAccepted" left>mdi-cancel</v-icon>
-                    {{acceptText}}
+                  {{acceptText}}
                 </v-btn>
               </div>
               <v-card-text class="headline font-weight-light mt-2 black--text">{{title}}</v-card-text>
               <div class="d-flex justify-space-between">
-              <v-chip class="ma-2" color="blue lighten-1" label text-color="white">
-                <v-icon left>mdi-label</v-icon>
-                {{category_id}}
-              </v-chip>
-              <v-chip v-if="user" class="ma-2" color="orange darken-1" text-color="white" @click="updateObserved">
-                <v-icon v-if="!isObserved" left>mdi-star</v-icon>
+                <v-chip class="ma-2" color="blue lighten-1" label text-color="white">
+                  <v-icon left>mdi-label</v-icon>
+                  {{category_id}}
+                </v-chip>
+                <v-chip
+                  v-if="user"
+                  class="ma-2"
+                  color="orange darken-1"
+                  text-color="white"
+                  @click="updateObserved"
+                >
+                  <v-icon v-if="!isObserved" left>mdi-star</v-icon>
                   {{observeText}}
-              </v-chip>
+                </v-chip>
               </div>
               <v-img :src="logo" height="auto"></v-img>
 
               <div id="description_content" class="text-primary pa-3 mt-5"></div>
-
             </v-card>
           </v-col>
 
@@ -68,10 +73,14 @@
             </v-card>
 
             <v-card v-if="importantDates[0]" class="mx-auto mt-6" outlined width="400">
-              <v-card-title class="d-block title text-center font-weight-regular">Ważne daty</v-card-title> 
+              <v-card-title class="d-block title text-center font-weight-regular">Ważne daty</v-card-title>
               <v-divider class="blue lighten-1"></v-divider>
-              <div v-for="(date, index) in importantDates" :key="index" class="d-flex flex-row pa-5">
-                <ImportantDateView :importantDate="date"/>
+              <div
+                v-for="(date, index) in importantDates"
+                :key="index"
+                class="d-flex flex-row pa-5"
+              >
+                <ImportantDateView :importantDate="date" />
               </div>
             </v-card>
           </v-col>
@@ -86,21 +95,16 @@
     <div v-if="noExist" class="description_content">
       <h2>Nie znaleziono konferencji</h2>
     </div>
-
-
-    
   </div>
 </template>
 
 <script>
-import db from "@/firebase/init"
-import firebase from "firebase"
-import axios from "axios"
-import { saveAs } from "file-saver"
-import ExportConference from "@/components/ExportConference"
-import ImportantDateView from "@/components/ImportantDateView"
-
-
+import db from "@/firebase/init";
+import firebase from "firebase";
+import axios from "axios";
+import { saveAs } from "file-saver";
+import ExportConference from "@/components/ExportConference";
+import ImportantDateView from "@/components/ImportantDateView";
 
 export default {
   components: {
@@ -138,7 +142,7 @@ export default {
   },
   created() {
     firebase.auth().onAuthStateChanged(user => {
-      this.user = user
+      this.user = user;
       if (user) {
         db.doc(`users/${user.uid}`)
           .collection("observed_conferences")
@@ -146,127 +150,130 @@ export default {
           .get()
           .then(docSnapshot => {
             if (docSnapshot.exists) {
-              this.isObserved = true
-              this.observeText = "Przestań obserwować"
+              this.isObserved = true;
+              this.observeText = "Przestań obserwować";
             } else {
-              this.isObserved = false
-              this.observeText = "Obserwuj"
+              this.isObserved = false;
+              this.observeText = "Obserwuj";
             }
           });
       }
     });
 
-    this.id = this.$route.params.conference_id
+    this.id = this.$route.params.conference_id;
     db.collection("conferences")
-    .doc(this.$route.params.conference_id)
-    .get()
-    .then(doc => {
-      if (doc.exists) {
-        let data = doc.data()
-        this.exist = true
-        this.isAccepted = data.isAccepted
-        this.title = data.title
-        this.category_id = data.category_id
-        this.website = data.website
-        this.description = data.description;
-        this.start_date = data.start_date.toDate()
-        this.end_date = data.end_date.toDate()
-        this.logo = data.logo
-        this.geo = data.location
-        this.isAccepted ? this.setIsNotAccepted() : this.setAccepted()
-        axios.post(
-            "https://maps.googleapis.com/maps/api/geocode/json?latlng=" +
-              doc.data().location.latitude +
-              "," +
-              doc.data().location.longitude +
-              "&key=AIzaSyDtYbZokAi1OVXplmLIpuxlJpppE0fijPA"
-          )
-          .then(response => {
-            let address = response.data.results[0].formatted_address
-            this.location = address
-            const link = `https://maps.google.com/?q=${address}`
-            this.link = link;
-            this.conference.id = this.id
-            this.conference.isAccepted = this.isAccepted
-            this.conference.title = this.title
-            this.conference.start_date = this.start_date.toISOString()
-            this.conference.end_date = this.end_date.toISOString()
-            this.conference.location = this.location
-            this.conference.link = this.link
-            // this.conference.description = this.description
-            document.getElementById("description_content").innerHTML = this.description
-            this.conference.logo = this.logo
-            this.conference.geo = this.geo
+      .doc(this.$route.params.conference_id)
+      .get()
+      .then(doc => {
+        if (doc.exists) {
+          let data = doc.data();
+          this.exist = true;
+          this.isAccepted = data.isAccepted;
+          this.title = data.title;
+          this.category_id = data.category_id;
+          this.website = data.website;
+          this.description = data.description;
+          this.start_date = data.start_date.toDate();
+          this.end_date = data.end_date.toDate();
+          this.logo = data.logo;
+          this.geo = data.location;
+          this.isAccepted ? this.setIsNotAccepted() : this.setAccepted();
+          axios
+            .post(
+              "https://maps.googleapis.com/maps/api/geocode/json?latlng=" +
+                doc.data().location.latitude +
+                "," +
+                doc.data().location.longitude +
+                "&key=AIzaSyDtYbZokAi1OVXplmLIpuxlJpppE0fijPA"
+            )
+            .then(response => {
+              let address = response.data.results[0].formatted_address;
+              this.location = address;
+              const link = `https://maps.google.com/?q=${address}`;
+              this.link = link;
+              this.conference.id = this.id;
+              this.conference.isAccepted = this.isAccepted;
+              this.conference.title = this.title;
+              this.conference.start_date = this.start_date.toISOString();
+              this.conference.end_date = this.end_date.toISOString();
+              this.conference.location = this.location;
+              this.conference.link = this.link;
+              document.getElementById(
+                "description_content"
+              ).innerHTML = this.description;
+              this.conference.logo = this.logo;
+              this.conference.geo = this.geo;
 
-document.querySelectorAll( 'oembed[url]' ).forEach( element => {
-        iframely.load( element, element.attributes.url.value );
-    } );
-          })
-          .catch(e => {
-            console.log(e)
-          })
-
+              document.querySelectorAll("oembed[url]").forEach(element => {
+                iframely.load(element, element.attributes.url.value);
+              });
+            })
+            .catch(e => {
+              console.log(e);
+            });
 
           db.collection("conferences")
-          .doc(this.$route.params.conference_id)
-          .collection('important_dates')
-          .get()
-          .then(querySnapshot => {
-            if(!querySnapshot.empty){
-              querySnapshot.forEach(doc => {
-                let important_date = doc.data()
-                important_date.location = this.location
-                important_date.geo = this.geo
-                important_date.id = this.id
-                this.importantDates.push(important_date)
-              })
-            }
-          })
-          .catch(err => {
-            console.log(err)
-          })
+            .doc(this.$route.params.conference_id)
+            .collection("important_dates")
+            .get()
+            .then(querySnapshot => {
+              if (!querySnapshot.empty) {
+                querySnapshot.forEach(doc => {
+                  let important_date = doc.data();
+                  important_date.location = this.conference.location;
+                  important_date.geo = this.conference.geo;
+                  important_date.id = this.conference.id;
+                  this.importantDates.push(important_date);
+                });
+              }
+            })
+            .catch(err => {
+              console.log(err);
+            });
         } else {
           this.noExist = true;
-          console.log("Taka konferencja nie istenieje!")
+          console.log("Taka konferencja nie istenieje!");
         }
-    });
+      });
   },
   methods: {
-    setAccepted(){
+    setAccepted() {
       this.isAccepted = false;
-      this.acceptText = "Zaakceptuj"
-      this.acceptColor = "green"
+      this.acceptText = "Zaakceptuj";
+      this.acceptColor = "green";
     },
 
-    setIsNotAccepted(){
+    setIsNotAccepted() {
       this.isAccepted = true;
-      this.acceptText = "Anuluj akceptację"
-      this.acceptColor = "red"
+      this.acceptText = "Anuluj akceptację";
+      this.acceptColor = "red";
     },
 
-    updateAccepted(){
+    updateAccepted() {
       if (this.isAccepted) {
-        db.collection("conferences").doc(this.id)
-          .update({isAccepted: false})
+        db.collection("conferences")
+          .doc(this.id)
+          .update({ isAccepted: false })
           .then(() => {
             this.isAccepted = false;
-            this.acceptText = "Zaakceptuj"
-            this.acceptColor = "green"
+            this.acceptText = "Zaakceptuj";
+            this.acceptColor = "green";
           })
           .catch(err => {
             console.log(err);
-          })
+          });
       } else {
-          db.collection("conferences").doc(this.id)
-          .update({isAccepted: true})
-            .then(() => {
-              this.isAccepted = true;
-              this.acceptText = "Anuluj akceptację"
-              this.acceptColor = "red"
-            })
-            .catch(err => {
-              console.log(err)
-            })
+        db.collection("conferences")
+          .doc(this.id)
+          .update({ isAccepted: true })
+          .then(() => {
+            this.isAccepted = true;
+            this.acceptText = "Anuluj akceptację";
+            this.acceptColor = "red";
+          })
+          .catch(err => {
+            console.log(err);
+          });
       }
     },
     updateObserved() {
@@ -278,10 +285,10 @@ document.querySelectorAll( 'oembed[url]' ).forEach( element => {
           .delete()
           .then(() => {
             this.isObserved = false;
-            this.observeText = "Obserwuj"
+            this.observeText = "Obserwuj";
           })
           .catch(err => {
-            console.log(err)
+            console.log(err);
           });
       } else {
         //follow conference
@@ -291,11 +298,11 @@ document.querySelectorAll( 'oembed[url]' ).forEach( element => {
             .doc(this.id)
             .set({})
             .then(() => {
-              this.isObserved = true
-              this.observeText = "Przestań obserwować"
+              this.isObserved = true;
+              this.observeText = "Przestań obserwować";
             })
             .catch(err => {
-              console.log(err)
+              console.log(err);
             });
         }
       }

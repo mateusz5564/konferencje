@@ -43,17 +43,6 @@
         </v-tab-item>
       </v-tabs-items>
     </v-card>
-
-     <!-- add admin -->
-    <v-card class="login__card mt-5" max-width="400px">
-      <v-card-text>
-        <v-form @submit.prevent="makeAdmin">
-          <v-text-field label="Email" type="email" v-model="email"></v-text-field>
-          <p v-if="feedback" class="red--text">{{ feedback }}</p>
-          <v-btn class="ma-3" color="blue" type="submit" large dark>Dodaj Administratora</v-btn>
-        </v-form>
-      </v-card-text>
-    </v-card>
   </div>
 </template>
 
@@ -104,12 +93,6 @@ export default {
     }
   },
 
-  watch: {
-    editConferenceDialog(val) {
-      val || this.close();
-    }
-  },
-
   created() {
     db.collection("conferences")
       .get()
@@ -153,14 +136,6 @@ export default {
   },
 
   methods: {
-    makeAdmin() {
-      let addAdmin = firebase.functions().httpsCallable("addAdminRole");
-      addAdmin({ email: this.email }).then(result => {
-        console.log(result);
-        this.feedback = result.data.errorInfo.message;
-      });
-    },
-
     getColor(flag) {
       if (flag === "zaakceptowano") return "green";
       else return "red";
@@ -198,24 +173,7 @@ export default {
           .catch(err => {
             console.error(err);
           });
-    },
-
-    close() {
-      this.editConferenceDialog = false;
-      setTimeout(() => {
-        this.editedItem = Object.assign({}, this.defaultItem);
-        this.editedIndex = -1;
-      }, 300);
-    },
-
-    // save() {
-    //   if (this.editedIndex > -1) {
-    //     Object.assign(this.desserts[this.editedIndex], this.editedItem);
-    //   } else {
-    //     this.desserts.push(this.editedItem);
-    //   }
-    //   this.close();
-    // }
+    }
   }
 };
 </script>

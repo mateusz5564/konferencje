@@ -23,9 +23,8 @@ if(user){
     Vue.prototype.$admin = token.claims.admin
   })
 } else {
-    Vue.prototype.$admin = false
+  Vue.prototype.$admin = false
 }
-
 
   if(!app){
     app = new Vue({

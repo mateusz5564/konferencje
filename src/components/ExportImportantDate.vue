@@ -1,9 +1,5 @@
 <template>
-   <v-card
-    class="mx-auto"
-    max-width="350"
-    tile
-  >
+  <v-card class="mx-auto" max-width="350" tile>
     <v-list flat>
       <v-subheader class="title text-center">Dodaj do kalendarza</v-subheader>
       <v-divider></v-divider>
@@ -28,31 +24,32 @@
       </v-list-item-group>
     </v-list>
   </v-card>
-
 </template>
 
 <script>
 export default {
   props: ["importantDate"],
-  data(){
-    return {
-      
-    }
+  data() {
+    return {};
   },
   methods: {
-    addToGoogleCalendar(){ 
-      console.log(this.importantDate.important_date)
-      let important_date = new Date(this.importantDate.important_date.seconds*1000)
-      let important_dateString = important_date.toISOString().replace(/-|:|/g, '').substring(0, 15) + 'Z'
-
-
-      const link = `https://calendar.google.com/calendar/r/eventedit?location=${encodeURIComponent(this.importantDate.location)}
-      &text=${encodeURIComponent(this.importantDate.name)}&dates=${important_dateString}/${important_dateString}&details=${encodeURIComponent("Więcej informacji: http://localhost:8080/#/konferencja/")}${this.importantDate.id}`
-      
-      window.open(link, '_blank')
+    addToGoogleCalendar() {
+      console.log(this.importantDate.important_date);
+      let important_date = new Date(
+        this.importantDate.important_date.seconds * 1000
+      );
+      let important_dateString =
+        important_date
+          .toISOString()
+          .replace(/-|:|/g, "")
+          .substring(0, 15) + "Z";
+      const link = `https://calendar.google.com/calendar/r/eventedit?location=${encodeURIComponent(this.importantDate.location)}&text=${encodeURIComponent(this.importantDate.name)}&dates=${important_dateString}/${important_dateString}&details=${encodeURIComponent("Więcej informacji: http://localhost:8080/#/konferencja/")}${this.importantDate.id}`;
+      window.open(link, "_blank");
     },
     downloadIcsFile() {
-      let important_date = new Date(this.importantDate.important_date.seconds*1000)
+      let important_date = new Date(
+        this.importantDate.important_date.seconds * 1000
+      );
       var blob = new Blob(
         [
 `BEGIN:VCALENDAR
@@ -73,9 +70,9 @@ END:VCALENDAR
         { type: "text/plain;charset=utf-8" }
       );
 
-      const filename = this.importantDate.name + ".ics"
+      const filename = this.importantDate.name + ".ics";
       saveAs(blob, filename);
     }
   }
-}
+};
 </script>
