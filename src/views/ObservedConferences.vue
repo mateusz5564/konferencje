@@ -49,38 +49,38 @@ export default {
     getConferences() {
       firebase.auth().onAuthStateChanged(user => {
         if (user) {
-        db.doc(`users/${user.uid}`)
-          .collection("observed_conferences")
-          .get()
-          .then(querySnapshot => {
-            querySnapshot.forEach(doc => {
-              db.collection("conferences")
-                .doc(doc.id)
-                .get()
-                .then(async querySnapshot => {
-                  let dataRef = querySnapshot.data();
-                  dataRef.id = doc.id;
-                  const test = axios.post(
-                    "https://maps.googleapis.com/maps/api/geocode/json?latlng=" +
-                      dataRef.location.latitude +
-                      "," +
-                      dataRef.location.longitude +
-                      "&key=AIzaSyDtYbZokAi1OVXplmLIpuxlJpppE0fijPA"
-                  );
-                  let result = await test;
-                  dataRef.address = result.data.results[0].formatted_address;
-                  // const link = `https://maps.google.com/?q=${address}`
-                  const link = `https://maps.google.com/?q=${
-                    querySnapshot.data().location.latitude
-                  },${dataRef.location.longitude}`;
-                  dataRef.link = link;
-                  this.conferences.push(dataRef);
-                  this.loading = false;
-                });
+          db.doc(`users/${user.uid}`)
+            .collection("observed_conferences")
+            .get()
+            .then(querySnapshot => {
+              querySnapshot.forEach(doc => {
+                db.collection("conferences")
+                  .doc(doc.id)
+                  .get()
+                  .then(async querySnapshot => {
+                    let dataRef = querySnapshot.data();
+                    dataRef.id = doc.id;
+                    const geocoding = axios.post(
+                      "https://maps.googleapis.com/maps/api/geocode/json?latlng=" +
+                        dataRef.location.latitude +
+                        "," +
+                        dataRef.location.longitude +
+                        "&key=AIzaSyDtYbZokAi1OVXplmLIpuxlJpppE0fijPA"
+                    );
+                    let result = await geocoding;
+                    dataRef.address = result.data.results[0].formatted_address;
+                    const link = `https://maps.google.com/?q=${
+                      querySnapshot.data().location.latitude
+                    },${dataRef.location.longitude}`;
+                    dataRef.link = link;
+                    this.conferences.push(dataRef);
+                    this.loading = false;
+                  });
+              });
             });
-          });
         }
       });
+      this.loading = false;
     }
   }
 };

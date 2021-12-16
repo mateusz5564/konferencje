@@ -1,36 +1,34 @@
 <template>
   <div class="idv">
-      <div class="d-flex flex-column">
-        <div class="d-flex mb-1">
-          <v-icon color="blue">mdi-alert-rhombus-outline</v-icon>
-        <span
-          class="sub-title1 font-weight-regular ml-1"
-        > {{importantDate.name}} zgloszenie abstraktów</span>
-        </div>
-        <div>
-          <v-icon small>mdi-calendar</v-icon>
-          <span class="ml-1 body-2">{{importantDate.important_date.toDate() | dateFilter}}</span>
-        </div>
-        <a @click.stop="dialog = true">dodaj do kalendarza</a>
+    <div class="d-flex flex-column">
+      <div class="d-flex mb-1">
+        <v-icon color="blue">mdi-alert-rhombus-outline</v-icon>
+        <span class="sub-title1 font-weight-regular ml-1">{{importantDate.name}}</span>
       </div>
+      <div>
+        <v-icon small>mdi-calendar</v-icon>
+        <span class="ml-1 body-2">{{importantDate.important_date.toDate() | dateFilter}}</span>
+      </div>
+      <a @click.stop="dialog = true">dodaj do kalendarza</a>
+    </div>
 
-      <v-dialog v-model="dialog" max-width="350px">
-        <ExportImportantDate :importantDate="importantDate" />
-      </v-dialog>
+    <v-dialog v-model="dialog" max-width="350px">
+      <ExportImportantDate :importantDate="importantDate" />
+    </v-dialog>
   </div>
 </template>
 
 <script>
-import ExportImportantDate from '@/components/ExportImportantDate'
+import ExportImportantDate from "@/components/ExportImportantDate";
 export default {
   props: ["importantDate"],
   components: {
     ExportImportantDate
   },
-  data(){
+  data() {
     return {
       dialog: false
-    }
+    };
   }
-}
+};
 </script>

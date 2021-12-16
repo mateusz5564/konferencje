@@ -1,75 +1,45 @@
 <template>
   <div class="admin_panel">
-    <v-card class="login__card" max-width="400px">
-      <v-card-text>
-        <v-form @submit.prevent="makeAdmin">
-          <v-text-field label="Email" type="email" v-model="email"></v-text-field>
-          <!-- <p v-if="feedback" class="red--text">{{ feedback }}</p> -->
-          <v-btn class="ma-3" color="blue" type="submit" large dark>Dodaj Administratora</v-btn>
-        </v-form>
-      </v-card-text>
-    </v-card>
-
-    <v-card class="mt-10">
-      <!-- <v-card-title class="text-center justify-center py-6">
-      <h1 class="font-weight-bold display-3 basil--text">BASiL</h1>
-      </v-card-title>-->
-
+    <v-card>
       <v-tabs v-model="tab" background-color="transparent" grow>
-        <v-tab>Uzytkownicy</v-tab>
         <v-tab>Konferencje</v-tab>
       </v-tabs>
 
       <v-tabs-items v-model="tab">
-        <!-- USERS TAB -->
-        <v-tab-item>
-          <v-card flat>
-            <v-card-text>
-              <v-data-table
-                :headers="headersUsers"
-                :items="users"
-                sort-by="calories"
-                class="elevation-1"
-              >
-                <template v-slot:top></template>
-                <template v-slot:item.action="{ item }">
-                  <v-icon small class="mr-2" @click="editConference(item)">mdi-pencil</v-icon>
-                  <v-icon small @click="deleteItem(item)">mdi-delete</v-icon>
-                </template>
-              </v-data-table>
-            </v-card-text>
-          </v-card>
-        </v-tab-item>
-
         <!-- CONFERENCES TAB -->
         <v-tab-item>
-    
-              <v-card flat>
-                <v-card-text>
-                  <v-data-table
-                    :headers="headersConferences"
-                    :items="conferences"
-                    sort-by="calories"
-                    class="elevation-1"
-                  >
-                    <template v-slot:top>
-                      <v-dialog v-model="editConferenceDialog" max-width="1000px">
-                        <!-- <template v-slot:activator="{ on }">
-                        <v-btn color="primary" dark class="mb-2" v-on="on">Dodaj konferencje</v-btn>
-                        </template>-->
-
-                        <EditConference /> 
-               
-                      </v-dialog>
-                    </template>
-                    <template v-slot:item.action="{ item }">
-                      <v-icon small class="mr-2" @click="editConference(item)">mdi-pencil</v-icon>
-                      <v-icon small @click="deleteItem(item)">mdi-delete</v-icon>
-                    </template>
-                  </v-data-table>
-                </v-card-text>
-              </v-card>
-  
+          <div class="mt-5">
+            <v-data-table
+              :loading="loading"
+              loading-text="trwa ładowanie"
+              :headers="headersConferences"
+              :items="conferences"
+              sort-by="isAccepted"
+              class="elevation-1"
+            >
+              <template v-slot:top>
+                <v-dialog v-model="editConferenceDialog" max-width="1000px">
+                  <EditConference />
+                </v-dialog>
+              </template>
+              <template v-slot:item.preview="{ item }">
+                <v-btn
+                  text
+                  :to="{name: 'konferencja', params: { conference_id: item.id}}"
+                  color="blue accent-4"
+                >
+                  <v-icon small>mdi-eye-outline</v-icon>
+                </v-btn>
+              </template>
+              <template v-slot:item.action="{ item }">
+                <v-icon small class="mr-2" @click="editConference(item)">mdi-pencil</v-icon>
+                <v-icon small @click="deleteConference(item)">mdi-delete</v-icon>
+              </template>
+              <template v-slot:item.isAccepted="{ item }">
+                <v-chip :color="getColor(item.isAccepted)" dark>{{ item.isAccepted }}</v-chip>
+              </template>
+            </v-data-table>
+          </div>
         </v-tab-item>
       </v-tabs-items>
     </v-card>
@@ -92,64 +62,34 @@ export default {
       email: null,
       tab: null,
       editConferenceDialog: false,
-      users: [
-        { username: "test1", email: "test1@interia.pl" },
-        { username: "test2", email: "test2@interia.pl" },
-        { username: "test3", email: "test3@interia.pl" }
-      ],
-      headersUsers: [
-        {
-          text: "Nazwa użytkownika",
-          align: "left",
-          value: "username"
-        },
-        { text: "Email", value: "email" },
-        { text: "Logo", value: "logo" },
-        { text: "Opis", value: "opis" },
-        { text: "Actions", value: "action", sortable: false }
-      ],
+      loading: true,
+      feedback: null,
       conferences: [],
       headersConferences: [
+        {
+          text: "Przejdź",
+          align: "center",
+          sortable: false,
+          value: "preview"
+        },
         {
           text: "Tytuł",
           align: "left",
           sortable: false,
           value: "title"
         },
-        { text: "Opis", value: "description" },
-        { text: "Lokalizacja", value: "location" },
+        { text: "Status", value: "isAccepted" },
         { text: "Data rozpoczęcia", value: "start_date" },
         { text: "Data zakończenia", value: "end_date" },
-        { text: "Logo", value: "link" },
+        { text: "Lokalizacja", value: "location" },
         { text: "Akcje", value: "action", sortable: false }
       ],
-      desserts: [],
-      editedIndex: -1,
-      editedItem: {
-        name: "",
-        calories: 0,
-        fat: 0,
-        carbs: 0,
-        protein: 0
-      },
-      defaultItem: {
-        name: "",
-        calories: 0,
-        fat: 0,
-        carbs: 0,
-        protein: 0
-      }
+      editedIndex: -1
     };
   },
   computed: {
     formTitle() {
       return this.editedIndex === -1 ? "New Item" : "Edit Item";
-    }
-  },
-
-  watch: {
-    editConferenceDialog(val) {
-      val || this.close();
     }
   },
 
@@ -171,12 +111,22 @@ export default {
               let dataRef = doc.data();
               dataRef.location = address;
               const link = `https://maps.google.com/?q=${address}`;
-              dataRef.link = link
-              dataRef.id = doc.id
-              dataRef.start_date = doc.data().start_date.toDate().toISOString();
-              dataRef.end_date = doc.data().end_date.toDate().toISOString();
+              dataRef.link = link;
+              dataRef.id = doc.id;
+              dataRef.start_date = doc
+                .data()
+                .start_date.toDate()
+                .toLocaleString();
+              dataRef.end_date = doc
+                .data()
+                .end_date.toDate()
+                .toLocaleString();
+              dataRef.isAccepted =
+                String(doc.data().isAccepted) === "true"
+                  ? "zaakceptowano"
+                  : "oczekuje";
               this.conferences.push(dataRef);
-              console.log(dataRef);
+              this.loading = false;
             })
             .catch(e => {
               console.log(e);
@@ -186,42 +136,50 @@ export default {
   },
 
   methods: {
-    makeAdmin() {
-      let addAdmin = firebase.functions().httpsCallable("addAdminRole");
-      addAdmin({ email: this.email }).then(result => {
-        console.log(result);
-      });
+    getColor(flag) {
+      if (flag === "zaakceptowano") return "green";
+      else return "red";
     },
 
     editConference(item) {
-      this.$router.push({name: 'edytuj_konferencje', params: {conference_id: item.id}})
+      this.$router.push({
+        name: "edytuj_konferencje",
+        params: { conference_id: item.id }
+      });
     },
 
-    deleteItem(item) {
-      const index = this.desserts.indexOf(item);
-      confirm("Are you sure you want to delete this item?") &&
-        this.desserts.splice(index, 1);
-    },
-
-    close() {
-      this.editConferenceDialog = false;
-      setTimeout(() => {
-        this.editedItem = Object.assign({}, this.defaultItem);
-        this.editedIndex = -1;
-      }, 300);
-    },
-
-    save() {
-      if (this.editedIndex > -1) {
-        Object.assign(this.desserts[this.editedIndex], this.editedItem);
-      } else {
-        this.desserts.push(this.editedItem);
-      }
-      this.close();
+    deleteConference(item) {
+      const index = this.conferences.indexOf(item);
+      confirm("Czy na pewno chcesz usunąć konferencje?") &&
+        db
+          .collection("conferences")
+          .doc(item.id)
+          .delete()
+          .then(() => {
+            this.conferences.splice(index, 1);
+            console.log("Konferencja usunięta");
+            //delete logo
+            firebase
+              .storage()
+              .refFromURL(item.logo)
+              .delete()
+              .then(() => {
+                console.log("usunieto logo");
+              })
+              .catch(err => {
+                console.log(err);
+              });
+          })
+          .catch(err => {
+            console.error(err);
+          });
     }
   }
 };
 </script>
 
 <style>
+#description .media {
+  height: 200px;
+}
 </style>

@@ -8,26 +8,29 @@
         <v-form @submit.prevent="signup">
           <v-text-field type="email" label="Email" v-model="email"></v-text-field>
           <v-text-field type="password" label="Hasło" v-model="password"></v-text-field>
-          <v-text-field @keyup="isUsernameTaken" type="text" label="Nazwa użytkownika" v-model="username"></v-text-field>
-          <p class="body-1 red--text" id="unFeedback" >{{ usernameFeedback }}</p>
-          <p class="red--text">{{ feedback }}</p>
+          <v-text-field
+            @keyup="isUsernameValid"
+            type="text"
+            label="Nazwa użytkownika"
+            v-model="username"
+          ></v-text-field>
+          <p class="body-1 red--text" id="unFeedback">{{ usernameFeedback }}</p>
+          <p class="body-1 red--text">{{ feedback }}</p>
           <v-btn class="ma-3" type="submit" color="blue" large dark>Zarejestruj się</v-btn>
           <br />
           <br />
         </v-form>
-        <!-- <v-btn @click="signupGoogle" color="red" outlined class="ma-3">Zarejestruj z Google</v-btn> -->
         <hr />
         <v-btn color="blue" outlined class="ma-3 mt-10" :to="{name: 'logowanie'}">Logowanie</v-btn>
       </v-card-text>
     </v-card>
-
   </div>
 </template>
 
 
 <script>
-import db from '@/firebase/init'
-import firebase from 'firebase'
+import db from "@/firebase/init";
+import firebase from "firebase";
 
 export default {
   data() {
@@ -40,67 +43,44 @@ export default {
     };
   },
   methods: {
-    isUsernameTaken(){
-      if(this.username){
-        db.collection('users').where("username", "==", this.username)
-        .get()
-        .then(querySnapshot => {
-          querySnapshot.forEach(doc => {
-            this.usernameFeedback = "Nazwa użytkownika zajęta!"
-            document.getElementById("unFeedback").style.color = "red";
-            return true
-          })
-        })
-        this.usernameFeedback = ""
-        document.getElementById("unFeedback").style.color = "green";
-        return false
+    isUsernameValid() {
+      if (this.username) {
+        db.collection("users")
+          .where("username", "==", this.username)
+          .get()
+          .then(querySnapshot => {
+            querySnapshot.forEach(doc => {
+              this.usernameFeedback = "Nazwa użytkownika zajęta!";
+              return true;
+            });
+          });
+        this.usernameFeedback = "";
+        return false;
       } else {
-        this.usernameFeedback = null
+        this.usernameFeedback = "Nie podano nazwy użytkownika!";
+        return true
       }
     },
-    signup(){
-      if(this.email && this.password && !this.isUsernameTaken()){
-        console.log(this.isUsernameTaken)
-        firebase.auth().createUserWithEmailAndPassword(this.email, this.password)
-        .then(response => {
-          db.collection('users').doc(response.user.uid).set({user_id: response.user.uid, username: this.username})
-          .then(() => {
-            this.$router.push({name: "home"})
+    signup() {
+      if (this.email && this.password && !this.isUsernameValid()) {
+        firebase
+          .auth()
+          .createUserWithEmailAndPassword(this.email, this.password)
+          .then(response => {
+            db.collection("users")
+              .doc(response.user.uid)
+              .set({ user_id: response.user.uid, username: this.username })
+              .then(() => {
+                this.$router.push({ name: "home" });
+              });
           })
-        })
-        .catch(err => {
-          console.log(err)
-          this.feedback = err.message
-        })
+          .catch(err => {
+            this.feedback = err.message;
+          });
+      } else {
+        this.feedback = "Wszystkie pola muszą być wypełnione"
       }
-    },
-    // signupGoogle(){
-
-    
-    //   let provider = new firebase.auth.GoogleAuthProvider();
-
-    //   firebase.auth().signInWithPopup(provider).then(result => {
-    //   // This gives you a Google Access Token. You can use it to access the Google API.
-    //   let token = result.credential.accessToken;
-    //   // The signed-in user info.
-    //   let user = result.user;
-
-    //   const usersRef = db.child('users')
-    //   const query = usersRef.orderByChild('username').equalTo(user.displayName)
-    //   console.log(query)
-
-    //   db.collection('users').doc(user.uid).set({username: user.displayName}).then(router.push({ name: 'home'}))
-    //   }).catch(error => {
-    //   // Handle Errors here.
-    //   let errorCode = error.code;
-    //   let errorMessage = error.message;
-    //   // The email of the user's account used.
-    //   let email = error.email;
-    //   // The firebase.auth.AuthCredential type that was used.
-    //   let credential = error.credential;
-
-    // });
-    // }
+    }
   }
 };
 </script>

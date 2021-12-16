@@ -4,7 +4,9 @@
       <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
 
       <v-toolbar-title>
-        <router-link :to="{name: 'home'}" tag="span" style="cursor: pointer;"><span class="font-weight-bold headline">konferencje</span></router-link>
+        <router-link :to="{name: 'home'}" tag="span" style="cursor: pointer;">
+          <span class="font-weight-bold headline">konferencje</span>
+        </router-link>
       </v-toolbar-title>
 
       <div class="flex-grow-1"></div>
@@ -14,10 +16,10 @@
       </v-btn>
 
       <v-btn v-if="user" class="mx-2" small icon fab :to="{ name: 'dodaj_konferencje'}">
-        <v-icon >mdi-calendar-plus</v-icon>
+        <v-icon>mdi-calendar-plus</v-icon>
       </v-btn>
 
-      <!-- current user's menu -->
+      <!-- CURRENT USER MENU -->
       <v-menu v-if="user" offset-y min-width="300px">
         <template v-slot:activator="{ on }">
           <v-btn icon small v-on="on" fab>
@@ -57,7 +59,11 @@
             </v-list-item-content>
           </v-list-item>
 
-          <v-list-item link v-if="profil" :to="{name: 'profil', params: {username: profil.username}}">
+          <v-list-item
+            link
+            v-if="profil"
+            :to="{name: 'profil', params: {username: profil.username}}"
+          >
             <v-list-item-icon>
               <v-icon>mdi-account</v-icon>
             </v-list-item-icon>
@@ -79,9 +85,6 @@
         </v-list>
       </v-menu>
     </v-app-bar>
-
-
-
 
     <!-- NAVIGATION DRAWER -->
     <v-navigation-drawer app v-model="drawer" width="260" clipped color="blue darken-3" dark>
@@ -123,9 +126,9 @@
 </template>
 
 <script>
-import firebase from "firebase"
-import db from '@/firebase/init'
-import { bus } from '../main'
+import firebase from "firebase";
+import db from "@/firebase/init";
+import { bus } from "../main";
 
 export default {
   data() {
@@ -135,7 +138,8 @@ export default {
       user: null,
       isAdmin: null,
       profil: null,
-      avatarSrc: "https://firebasestorage.googleapis.com/v0/b/konferencje-95600.appspot.com/o/avatars%2FdefaultAvatar.png?alt=media&token=f5fbdbef-b80e-41e5-bf48-e99b0d6f91a6"
+      avatarSrc:
+        "https://firebasestorage.googleapis.com/v0/b/konferencje-95600.appspot.com/o/avatars%2FdefaultAvatar.png?alt=media&token=f5fbdbef-b80e-41e5-bf48-e99b0d6f91a6"
     };
   },
   methods: {
@@ -149,34 +153,32 @@ export default {
     }
   },
   created() {
-    // this.avatarSrc = "https://firebasestorage.googleapis.com/v0/b/konferencje-95600.appspot.com/o/avatars%2FdefaultAvatar.png?alt=media&token=f5fbdbef-b80e-41e5-bf48-e99b0d6f91a6"
     firebase.auth().onAuthStateChanged(user => {
       if (user) {
         this.user = user;
-        db.collection('users').where("user_id", "==", user.uid)
-        .get()
-        .then(querySnapshot => {
-          querySnapshot.forEach(doc => {
-            this.profil = doc.data()
-            if(this.profil.logo){
-                this.avatarSrc = this.profil.logo
-            }
-          })
-        })
-        user.getIdTokenResult().then((token) => {
-           this.isAdmin = token.claims.admin
-        })
+        db.collection("users")
+          .where("user_id", "==", user.uid)
+          .get()
+          .then(querySnapshot => {
+            querySnapshot.forEach(doc => {
+              this.profil = doc.data();
+              if (this.profil.logo) {
+                this.avatarSrc = this.profil.logo;
+              }
+            });
+          });
+        user.getIdTokenResult().then(token => {
+          this.isAdmin = token.claims.admin;
+        });
       } else {
         this.user = null;
       }
-    })
+    });
 
-    bus.$on('updateAvatar', (data) =>{
-      this.avatarSrc = data
-    })
-
-  
-  },
+    bus.$on("updateAvatar", data => {
+      this.avatarSrc = data;
+    });
+  }
 };
 </script>
 
