@@ -2,7 +2,7 @@ import firebase from 'firebase'
 import firestore from 'firebase/firestore'
 
 var firebaseConfig = {
-    apiKey: "AIzaSyDBxFr9CexMI5-yvchO-diGgVei8D97MEY",
+    apiKey: process.env.VUE_APP_FIREBASE_KEY,
     authDomain: "konferencje-95600.firebaseapp.com",
     databaseURL: "https://konferencje-95600.firebaseio.com",
     projectId: "konferencje-95600",

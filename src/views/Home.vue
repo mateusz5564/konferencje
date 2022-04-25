@@ -44,14 +44,14 @@ import axios from "axios";
 
 export default {
   components: {
-    ConferenceThumbnail
+    ConferenceThumbnail,
   },
   data() {
     return {
       conferences: [],
       items: [],
       loading: true,
-      selected: null
+      selected: null,
     };
   },
   created() {
@@ -89,11 +89,14 @@ export default {
                     docs[i].location.latitude +
                     "," +
                     docs[i].location.longitude +
-                    "&key=AIzaSyDtYbZokAi1OVXplmLIpuxlJpppE0fijPA"
+                    "&key=" +
+                    process.env.VUE_APP_GEOCODING_KEY
                 );
                 let result = await geocoding;
                 docs[i].address = result.data.results[0].formatted_address;
-                const link = `https://maps.google.com/?q=${docs[i].location.latitude},${docs[i].location.longitude}`;
+                const link = `https://maps.google.com/?q=${docs[i].location.latitude},${
+                  docs[i].location.longitude
+                }`;
                 docs[i].link = link;
               }
               this.conferences = docs;
@@ -123,11 +126,15 @@ export default {
                 docs[i].location.latitude +
                 "," +
                 docs[i].location.longitude +
-                "&key=AIzaSyDtYbZokAi1OVXplmLIpuxlJpppE0fijPA"
+                "&key=" +
+                process.env.VUE_APP_GEOCODING_KEY
             );
             let result = await geocoding;
+            console.log(result.data);
             docs[i].address = result.data.results[0].formatted_address;
-            const link = `https://maps.google.com/?q=${docs[i].location.latitude},${docs[i].location.longitude}`;
+            const link = `https://maps.google.com/?q=${docs[i].location.latitude},${
+              docs[i].location.longitude
+            }`;
             docs[i].link = link;
           }
           this.conferences = docs;
@@ -143,8 +150,8 @@ export default {
             this.items.push(doc.id);
           });
         });
-    }
-  }
+    },
+  },
 };
 </script>
 
@@ -153,4 +160,3 @@ export default {
   width: 376px;
 }
 </style>
-

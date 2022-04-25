@@ -34,12 +34,12 @@ import axios from "axios";
 
 export default {
   components: {
-    ConferenceThumbnail
+    ConferenceThumbnail,
   },
   data() {
     return {
       conferences: [],
-      loading: true
+      loading: true,
     };
   },
   created() {
@@ -65,7 +65,8 @@ export default {
                         dataRef.location.latitude +
                         "," +
                         dataRef.location.longitude +
-                        "&key=AIzaSyDtYbZokAi1OVXplmLIpuxlJpppE0fijPA"
+                        "&key=" +
+                        process.env.VUE_APP_GEOCODING_KEY
                     );
                     let result = await geocoding;
                     dataRef.address = result.data.results[0].formatted_address;
@@ -81,7 +82,7 @@ export default {
         }
       });
       this.loading = false;
-    }
-  }
+    },
+  },
 };
 </script>

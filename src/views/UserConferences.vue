@@ -23,7 +23,7 @@
             <v-btn
               fab
               color="blue accent-2"
-              :to="{name: 'edytuj_konferencje', params: {conference_id: conference.id}}"
+              :to="{ name: 'edytuj_konferencje', params: { conference_id: conference.id } }"
               top
               right
               absolute
@@ -45,12 +45,12 @@ import axios from "axios";
 
 export default {
   components: {
-    ConferenceThumbnail
+    ConferenceThumbnail,
   },
   data() {
     return {
       conferences: [],
-      loading: false
+      loading: false,
     };
   },
   created() {
@@ -73,7 +73,7 @@ export default {
               docs[i].location.latitude +
               "," +
               docs[i].location.longitude +
-              "&key=AIzaSyDtYbZokAi1OVXplmLIpuxlJpppE0fijPA"
+              "&key=" + process.env.VUE_APP_GEOCODING_KEY
           );
           let result = await geocoding;
           docs[i].address = result.data.results[0].formatted_address;
@@ -84,6 +84,6 @@ export default {
         this.loading = false;
       });
     this.loading = false;
-  }
+  },
 };
 </script>

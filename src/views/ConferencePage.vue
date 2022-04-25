@@ -9,14 +9,16 @@
                 <v-btn :color="acceptColor" dark @click="updateAccepted">
                   <v-icon v-if="!isAccepted" left>mdi-check-circle-outline</v-icon>
                   <v-icon v-if="isAccepted" left>mdi-cancel</v-icon>
-                  {{acceptText}}
+                  {{ acceptText }}
                 </v-btn>
               </div>
-              <v-card-text class="headline font-weight-light mt-2 black--text">{{title}}</v-card-text>
+              <v-card-text class="headline font-weight-light mt-2 black--text">{{
+                title
+              }}</v-card-text>
               <div class="d-flex justify-space-between">
                 <v-chip class="ma-2" color="blue lighten-1" label text-color="white">
                   <v-icon left>mdi-label</v-icon>
-                  {{category_id}}
+                  {{ category_id }}
                 </v-chip>
                 <v-chip
                   v-if="user"
@@ -26,7 +28,7 @@
                   @click="updateObserved"
                 >
                   <v-icon v-if="!isObserved" left>mdi-star</v-icon>
-                  {{observeText}}
+                  {{ observeText }}
                 </v-chip>
               </div>
               <v-img :src="logo" height="auto"></v-img>
@@ -40,7 +42,9 @@
               <div class="d-flex flex-row pa-5">
                 <v-icon class="pr-3" color="blue" large>mdi-calendar</v-icon>
                 <div class="d-flex flex-column">
-                  <span class="body-1">{{start_date | dateFilter}} - {{end_date | dateFilter}}</span>
+                  <span class="body-1"
+                    >{{ start_date | dateFilter }} - {{ end_date | dateFilter }}</span
+                  >
                   <a @click.stop="dialog = true">dodaj do kalendarza</a>
                 </div>
               </div>
@@ -73,7 +77,9 @@
             </v-card>
 
             <v-card v-if="importantDates[0]" class="mx-auto mt-6" outlined width="400">
-              <v-card-title class="d-block title text-center font-weight-regular">Ważne daty</v-card-title>
+              <v-card-title class="d-block title text-center font-weight-regular"
+                >Ważne daty</v-card-title
+              >
               <v-divider class="blue lighten-1"></v-divider>
               <div
                 v-for="(date, index) in importantDates"
@@ -109,7 +115,7 @@ import ImportantDateView from "@/components/ImportantDateView";
 export default {
   components: {
     ExportConference,
-    ImportantDateView
+    ImportantDateView,
   },
   data() {
     return {
@@ -137,7 +143,7 @@ export default {
       observeText: "Obserwuj",
       isAccepted: false,
       acceptText: "Zaakceptuj",
-      acceptColor: "green"
+      acceptColor: "green",
     };
   },
   created() {
@@ -184,7 +190,8 @@ export default {
                 doc.data().location.latitude +
                 "," +
                 doc.data().location.longitude +
-                "&key=AIzaSyDtYbZokAi1OVXplmLIpuxlJpppE0fijPA"
+                "&key=" +
+                process.env.VUE_APP_GEOCODING_KEY
             )
             .then(response => {
               let address = response.data.results[0].formatted_address;
@@ -198,9 +205,7 @@ export default {
               this.conference.end_date = this.end_date.toISOString();
               this.conference.location = this.location;
               this.conference.link = this.link;
-              document.getElementById(
-                "description_content"
-              ).innerHTML = this.description;
+              document.getElementById("description_content").innerHTML = this.description;
               this.conference.logo = this.logo;
               this.conference.geo = this.geo;
 
@@ -306,10 +311,9 @@ export default {
             });
         }
       }
-    }
-  }
+    },
+  },
 };
 </script>
 
-<style>
-</style>
+<style></style>

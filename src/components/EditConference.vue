@@ -88,7 +88,9 @@
                 <v-date-picker v-model="start_date" no-title scrollable>
                   <div class="flex-grow-1"></div>
                   <v-btn text color="primary" @click="start_date_menu = false">Cancel</v-btn>
-                  <v-btn text color="primary" @click="$refs.start_date_menu.save(start_date)">OK</v-btn>
+                  <v-btn text color="primary" @click="$refs.start_date_menu.save(start_date)"
+                    >OK</v-btn
+                  >
                 </v-date-picker>
               </v-menu>
             </v-col>
@@ -211,13 +213,13 @@
           ></v-file-input>
 
           <v-card max-width="840" class="mx-auto mb-10">
-            <h3
-              class="elevation-1 pt-4 pb-4 title font-weight-regular text-center mb-3"
-            >Ważne terminy</h3>
+            <h3 class="elevation-1 pt-4 pb-4 title font-weight-regular text-center mb-3">
+              Ważne terminy
+            </h3>
 
             <div v-for="(date, index) in importantDates" :key="index">
               <ImportantDate :importantDate="date">
-                <div slot="number">{{index + 1}}</div>
+                <div slot="number">{{ index + 1 }}</div>
                 <div slot="delete-btn">
                   <v-icon @click="deleteImportantDate(index)" color="darken-2">mdi-delete</v-icon>
                 </div>
@@ -274,7 +276,7 @@
 
     <v-snackbar v-model="snackbar" :color="color" top :timeout="timeout">
       <div>
-        <v-icon class="mr-2">{{icon}}</v-icon>
+        <v-icon class="mr-2">{{ icon }}</v-icon>
         {{ text }}
       </div>
       <v-btn text @click="snackbar = false">
@@ -296,7 +298,7 @@ import pl from "@ckeditor/ckeditor5-build-classic/build/translations/pl.js";
 export default {
   components: {
     ImportantDate,
-    ckeditor: CKEditor.component
+    ckeditor: CKEditor.component,
   },
   data() {
     return {
@@ -335,9 +337,9 @@ export default {
       editorConfig: {
         language: {
           ui: "pl",
-          content: "pl"
+          content: "pl",
         },
-        placeholder: "Opis konferencji"
+        placeholder: "Opis konferencji",
       },
       rules: {
         required: value => !!value || "pole wymagane",
@@ -348,20 +350,18 @@ export default {
             pattern.test(value) ||
             "adres URL musi rozpoczynać się od https:// np. https://www.google.pl/"
           );
-        }
+        },
       },
       snackbar: false,
       color: "",
       icon: "",
       text: "",
-      timeout: 5000
+      timeout: 5000,
     };
   },
   created() {
     this.id = this.$route.params.conference_id;
-    let ref = db
-      .collection("conferences")
-      .doc(this.$route.params.conference_id);
+    let ref = db.collection("conferences").doc(this.$route.params.conference_id);
     this.getCategories();
     ref.get().then(doc => {
       if (doc.exists) {
@@ -379,7 +379,8 @@ export default {
               doc.data().location.latitude +
               "," +
               doc.data().location.longitude +
-              "&key=AIzaSyDtYbZokAi1OVXplmLIpuxlJpppE0fijPA"
+              "&key=" +
+              process.env.VUE_APP_GEOCODING_KEY
           )
           .then(response => {
             let address = response.data.results[0].formatted_address;
@@ -417,7 +418,7 @@ export default {
   watch: {
     search(val) {
       val && val !== this.select && this.querySelections(val);
-    }
+    },
   },
   computed: {
     preparedStartDate() {
@@ -445,7 +446,7 @@ export default {
         date.setMinutes(this.end_time.getMinutes());
       }
       return date;
-    }
+    },
   },
   methods: {
     convertedStartDate(timestamp) {
@@ -526,15 +527,13 @@ export default {
                       .collection("important_dates")
                       .add({
                         name: this.importantDates[i].name,
-                        important_date: new Date(
-                          this.importantDates[i].deadline
-                        )
+                        important_date: new Date(this.importantDates[i].deadline),
                       })
                       .then(response => {
                         console.log("zaaktualizowano konferencje");
                         this.$router.push({
                           name: "konferencja",
-                          params: { conference_id: this.id }
+                          params: { conference_id: this.id },
                         });
                       })
                       .catch(err => {
@@ -556,10 +555,7 @@ export default {
         //update logo
         if (this.image !== null) {
           const filename = this.image.name;
-          const extention = filename.substring(
-            filename.lastIndexOf("."),
-            filename.length
-          );
+          const extention = filename.substring(filename.lastIndexOf("."), filename.length);
 
           firebase
             .storage()
@@ -580,7 +576,7 @@ export default {
                         console.log("pomyslnie edytowano konferencje");
                         this.$router.push({
                           name: "konferencja",
-                          params: { conference_id: this.id }
+                          params: { conference_id: this.id },
                         });
                       });
                   });
@@ -602,9 +598,7 @@ export default {
     },
     querySelections(v) {
       this.loading = true;
-      const service = new google.maps.places.PlacesService(
-        document.createElement("div")
-      );
+      const service = new google.maps.places.PlacesService(document.createElement("div"));
 
       service.textSearch(
         { query: v, fields: ["name", "geometry", "formatted_address"] },
@@ -648,8 +642,8 @@ export default {
         this.icon = "mdi-alert-circle";
       }
       this.snackbar = true;
-    }
-  }
+    },
+  },
 };
 </script>
 

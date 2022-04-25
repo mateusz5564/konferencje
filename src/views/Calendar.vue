@@ -239,7 +239,7 @@ export default {
                 doc.data().location.latitude +
                 "," +
                 doc.data().location.longitude +
-                "&key=AIzaSyDtYbZokAi1OVXplmLIpuxlJpppE0fijPA"
+                "&key=" + process.env.VUE_APP_GEOCODING_KEY
             )
             .then(response => {
               let address = response.data.results[0].formatted_address;
